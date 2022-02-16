@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  ros_dev:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        - USER=${USER}
+    image: ros_dev
+    container_name: ros_dev
+    volumes:
+      # host.docker.internal:0を使う場合以下は不要
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    tty: true
+    environment:
+      - DISPLAY=${DISPLAY} #host.docker.internal:0
+    devices:
+      - /dev/dri/card0:/dev/dri/card0
+    networks:
+      - ros_dev_external
+    # TODO: moveitの実行時のために特権つけてるが限定的な権限に置き換えたい
+    privileged: true
+
+networks:
+  ros_dev_external:
+    external: true

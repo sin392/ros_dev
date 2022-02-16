@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# docker-compose exec ros_dev /bin/bash --login
+docker-compose exec ros_dev /bin/bash
