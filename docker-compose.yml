@@ -9,12 +9,12 @@ services:
         - USER=${USER}
     image: ros_dev
     container_name: ros_dev
-    volumes:
-      # host.docker.internal:0を使う場合以下は不要
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    # volumes:
+    # host.docker.internal:0を使う場合以下は不要
+    # - /tmp/.X11-unix:/tmp/.X11-unix:rw
     tty: true
     environment:
-      - DISPLAY=${DISPLAY} #host.docker.internal:0
+      - DISPLAY=host.docker.internal:0
     devices:
       - /dev/dri/card0:/dev/dri/card0
     networks:
