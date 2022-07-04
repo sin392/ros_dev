@@ -15,8 +15,9 @@ services:
     tty: true
     environment:
       - DISPLAY=${DISPLAY} #host.docker.internal:0
-    devices:
-      - /dev/dri/card0:/dev/dri/card0
+    # devices:
+    #   - /dev/dri/card0:/dev/dri/card0
+    #   - /dev/video0:/dev/video0
     networks:
       - ros_dev_external
     # TODO: moveitの実行時のために特権つけてるが限定的な権限に置き換えたい

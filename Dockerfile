@@ -18,9 +18,10 @@ RUN apt install -y\
     ros-melodic-gazebo-ros-pkgs ros-melodic-gazebo-ros-control \
     ros-melodic-robot-state-publisher \
     ros-melodic-joint-state-publisher \
+    ros-melodic-image-view \
+    ros-melodic-usb-cam \
     python-catkin-tools \
     iputils-ping net-tools
-
 
 RUN mkdir -p ${ROS_WS}/src
 RUN git clone -b melodic-devel https://github.com/DENSORobot/denso_robot_ros.git ~/catkin_ws/src
@@ -39,4 +40,7 @@ RUN usermod -d ${HOME} ${USER}
 RUN gpasswd -a ${USER} sudo
 RUN chown -R ${USER} ${HOME}
 RUN echo "${USER}:${PASS}" | chpasswd
+# /dev/video0のPermission Denided回避
+RUN usermod -aG sudo,video ${USER}
+
 USER ${USER}
