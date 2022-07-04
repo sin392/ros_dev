@@ -44,3 +44,8 @@ RUN echo "${USER}:${PASS}" | chpasswd
 RUN usermod -aG sudo,video ${USER}
 
 USER ${USER}
+WORKDIR ${ROS_WS}
+
+# エイリアス
+RUN echo 'alias ccp="catkin_create_pkg"' >> ~/.bashrc
+RUN echo 'alias cb="catkin build"' >> ~/.bashrc
