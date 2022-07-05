@@ -10,6 +10,8 @@ services:
     image: ros_dev
     container_name: ros_dev
     volumes:
+      # TODO: パスに環境変数使用
+      - ./src:/home/mine/catkin_ws/src
       # host.docker.internal:0を使う場合以下は不要
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
     tty: true
@@ -22,6 +24,7 @@ services:
       - ros_dev_external
     # TODO: moveitの実行時のために特権つけてるが限定的な権限に置き換えたい
     privileged: true
+    command: bash -c "catkin build && /bin/bash"
 
 networks:
   ros_dev_external:
