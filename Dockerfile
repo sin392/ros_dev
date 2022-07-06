@@ -18,8 +18,13 @@ RUN apt install -y\
     ros-melodic-gazebo-ros-pkgs ros-melodic-gazebo-ros-control \
     ros-melodic-robot-state-publisher \
     ros-melodic-joint-state-publisher \
-    ros-melodic-image-view \
-    ros-melodic-usb-cam \
+    ros-melodic-image-* \
+    ros-melodic-rqt-image-view \
+    # ros-melodic-usb-cam \
+    ros-melodic-uvc-camera \
+    ros-melodic-librealsense2 \
+    ros-melodic-realsense2-camera \
+    ros-melodic-realsense2-description \
     python-catkin-tools \
     iputils-ping net-tools
 
@@ -49,8 +54,12 @@ RUN echo "${USER}:${PASS}" | chpasswd
 RUN usermod -aG sudo,video ${USER}
 
 RUN mkdir -p ${HOME}/.gazebo/models
-ADD ./models/ ${HOME}/.gazebo/models/
+COPY ./models/ ${HOME}/.gazebo/models/
 RUN chmod 777 ${HOME}/.gazebo
+
+# gazebo起動後に生成される設定ファイルのURLエラー回避
+RUN  mkdir -p ~/.ignition/fuel
+COPY ./configs/ignition_robotics/config.yaml ${HOME}/.ignition/fuel/
 
 USER ${USER}
 WORKDIR ${ROS_WS}
