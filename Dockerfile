@@ -18,6 +18,7 @@ RUN apt install -y\
     ros-melodic-gazebo-ros-pkgs ros-melodic-gazebo-ros-control \
     ros-melodic-robot-state-publisher \
     ros-melodic-joint-state-publisher \
+    ros-melodic-joint-state-publisher-gui \
     ros-melodic-image-* \
     ros-melodic-rqt-image-view \
     # ros-melodic-usb-cam \
