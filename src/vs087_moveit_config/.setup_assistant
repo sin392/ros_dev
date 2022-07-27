@@ -1,7 +1,7 @@
 moveit_setup_assistant_config:
   URDF:
-    package: vs087_description
-    relative_path: vs087.urdf
+    package: denso_robot_descriptions
+    relative_path: vs087_description/vs087.urdf
     xacro_args: ""
   SRDF:
     relative_path: config/vs087.srdf
