@@ -173,7 +173,6 @@ right_arm:
     - SPARS
     - SPARStwo
 left_hand:
-  default_planner_config: RRTConnect
   planner_configs:
     - SBL
     - EST
@@ -199,7 +198,6 @@ left_hand:
     - SPARS
     - SPARStwo
 right_hand:
-  default_planner_config: RRTConnect
   planner_configs:
     - SBL
     - EST

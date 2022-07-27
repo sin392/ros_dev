@@ -16,22 +16,10 @@
         <chain base_link="body" tip_link="right_panda_hand_tip" />
     </group>
     <group name="left_hand">
-        <link name="left_panda_hand" />
-        <link name="left_panda_leftfinger" />
-        <link name="left_panda_rightfinger" />
-        <link name="left_panda_hand_tip" />
         <joint name="left_panda_finger_joint1" />
-        <joint name="left_panda_finger_joint2" />
-        <!-- <passive_joint name="left_panda_finger_joint2" /> -->
     </group>
     <group name="right_hand">
-        <link name="right_panda_hand" />
-        <link name="right_panda_leftfinger" />
-        <link name="right_panda_rightfinger" />
-        <link name="right_panda_hand_tip" />
         <joint name="right_panda_finger_joint1" />
-        <joint name="right_panda_finger_joint2" />
-        <!-- <passive_joint name="right_panda_finger_joint2" /> -->
     </group>
     <group name="arms">
         <group name="left_arm" />
@@ -89,9 +77,6 @@
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
     <end_effector name="left_hand" parent_link="left_panda_hand_tip" group="left_hand" parent_group="left_arm" />
     <end_effector name="right_hand" parent_link="right_panda_hand_tip" group="right_hand" parent_group="right_arm" />
-    <!--PASSIVE JOINT: Purpose: this element is used to mark joints that are not actuated-->
-    <passive_joint name="right_panda_finger_joint2" />
-    <passive_joint name="left_panda_finger_joint2" />
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="back" link2="body" reason="Adjacent" />
     <disable_collisions link1="back" link2="body_camera_link" reason="Never" />

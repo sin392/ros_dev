@@ -8,7 +8,7 @@ generic_hw_control_loop:
   cycle_time_error_threshold: 0.01
 # Settings for ros_control hardware interface
 hardware_interface:
-  joints:
+  joints: &entire_joints
     - joint_back
     - joint_body
     - left_joint_sholder
@@ -29,50 +29,9 @@ hardware_interface:
     - right_joint_6
     - right_panda_finger_joint1
     # - right_panda_finger_joint2
-  sim_control_mode: 1  # 0: position, 1: velocity
-# Publish all joint states
-# Creates the /joint_states topic necessary in ROS
-controller_list:
-  - name: myrobot/left_arm_controller
-    action_ns: follow_joint_trajectory
-    default: True
-    type: FollowJointTrajectory
-    joints:
-      - joint_body
-      - left_joint_sholder
-      - left_joint_1
-      - left_joint_2
-      - left_joint_3
-      - left_joint_4
-      - left_joint_5
-      - left_joint_6
-  - name: myrobot/right_arm_controller
-    action_ns: follow_joint_trajectory
-    default: True
-    type: FollowJointTrajectory
-    joints:
-      - joint_back
-      - right_joint_sholder
-      - right_joint_1
-      - right_joint_2
-      - right_joint_3
-      - right_joint_4
-      - right_joint_5
-      - right_joint_6
-  - name: myrobot/left_hand_controller
-    action_ns: gripper_cmd
-    default: True
-    type: GripperCommand
-    joints:
-      - left_panda_finger_joint1
-      # - left_panda_finger_joint2
-  - name: myrobot/right_hand_controller
-    action_ns: gripper_cmd
-    default: True
-    type: GripperCommand
-    joints:
-      - right_panda_finger_joint1
-      # - right_panda_finger_joint2
+sim_control_mode: 1  # 0: position, 1: velocity
+
+# ////////////////////////////////////////////////////////////////
 myrobot:
   joint_state_controller:
     type: joint_state_controller/JointStateController
@@ -81,7 +40,7 @@ myrobot:
   # ////////////////////////////////////////////////////////////////
   left_arm_controller:
     type: position_controllers/JointTrajectoryController
-    joints:
+    joints: &left_arm_joints
       - joint_body
       - left_joint_sholder
       - left_joint_1
@@ -90,7 +49,8 @@ myrobot:
       - left_joint_4
       - left_joint_5
       - left_joint_6
-    gains:
+    allow_partial_joints_goal: True
+    gains: &left_arm_gains
       joint_body: {p: 100, d: 1, i: 1, i_clamp: 1}
       left_joint_sholder: {p: 100, d: 1, i: 1, i_clamp: 1}
       left_joint_1: {p: 100, d: 1, i: 1, i_clamp: 1}
@@ -98,10 +58,10 @@ myrobot:
       left_joint_3: {p: 100, d: 1, i: 1, i_clamp: 1}
       left_joint_4: {p: 100, d: 1, i: 1, i_clamp: 1}
       left_joint_5: {p: 100, d: 1, i: 1, i_clamp: 1}
-      left_joint_6: {p: 100, d: 1, i: 1, i_clamp: 1}
+      left_joint_6 : {p: 100, d: 1, i: 1, i_clamp: 1}
   right_arm_controller:
     type: position_controllers/JointTrajectoryController
-    joints:
+    joints: &right_arm_joints
       - joint_back
       - right_joint_sholder
       - right_joint_1
@@ -110,7 +70,8 @@ myrobot:
       - right_joint_4
       - right_joint_5
       - right_joint_6
-    gains:
+    allow_partial_joints_goal: True
+    gains: &right_arm_gains 
       joint_back: {p: 100, d: 1, i: 1, i_clamp: 1}
       right_joint_sholder: {p: 100, d: 1, i: 1, i_clamp: 1}
       right_joint_1: {p: 100, d: 1, i: 1, i_clamp: 1}
@@ -118,28 +79,27 @@ myrobot:
       right_joint_3: {p: 100, d: 1, i: 1, i_clamp: 1}
       right_joint_4: {p: 100, d: 1, i: 1, i_clamp: 1}
       right_joint_5: {p: 100, d: 1, i: 1, i_clamp: 1}
-      right_joint_6: {p: 100, d: 1, i: 1, i_clamp: 1}
+      right_joint_6 : {p: 100, d: 1, i: 1, i_clamp: 1}
   left_hand_controller:
-    type: effort_controllers/GripperActionController
-    # joints:
-    #   - left_panda_finger_joint1
-    #   - left_panda_finger_joint2
-    joint: left_panda_finger_joint1
-    gains:
+    type: effort_controllers/JointTrajectoryController
+    # type: effort_controllers/GripperActionController
+    joints: &left_hand_joints
+      - left_panda_finger_joint1
+      # - left_panda_finger_joint2
+    # joint: left_panda_finger_joint1
+    gains: &left_hand_gains 
       left_panda_finger_joint1: {p: 100, d: 1, i: 1, i_clamp: 1}
-      # left_panda_finger_joint2: {p: 100, d: 1, i: 1, i_clamp: 1}
     constraints:
       goal_time: 1.5
-
   right_hand_controller:
-    type: effort_controllers/GripperActionController
-    # joints:
-    #   - right_panda_finger_joint1
-    #   - right_panda_finger_joint2
-    joint: right_panda_finger_joint1
-    gains:
+    type: effort_controllers/JointTrajectoryController
+    # type: effort_controllers/GripperActionController
+    joints: &right_hand_joints
+      - right_panda_finger_joint1
+      # - right_panda_finger_joint2
+    # joint: right_panda_finger_joint1
+    gains: &right_hand_gains 
       right_panda_finger_joint1: {p: 100, d: 1, i: 1, i_clamp: 1}
-      # right_panda_finger_joint2: {p: 100, d: 1, i: 1, i_clamp: 1}
     constraints:
       goal_time: 1.5
 
@@ -164,3 +124,31 @@ myrobot:
   #     right_joint_6: {p: 100, d: 1, i: 1, i_clamp: 1}
   #     left_panda_finger_joint1: {p: 100, d: 1, i: 1, i_clamp: 1}
   #     right_panda_finger_joint1: {p: 100, d: 1, i: 1, i_clamp: 1}
+
+# ////////////////////////////////////////////////////////////////
+# Publish all joint states
+# Creates the /joint_states topic necessary in ROS
+_controller_template: &_controller_template
+  name: myrobot/template_controller
+  action_ns: follow_joint_trajectory
+  type: FollowJointTrajectory
+  default: True
+  allow_partial_joints_goal: True
+  joints: []
+controller_list:
+  - <<: *_controller_template
+    name: myrobot/left_arm_controller
+    joints: *left_arm_joints
+  - <<: *_controller_template
+    name: myrobot/right_arm_controller
+    joints: *right_arm_joints
+  - <<: *_controller_template
+    name: myrobot/left_hand_controller
+    # action_ns: gripper_cmd
+    # type: GripperCommand
+    joints: *left_hand_joints
+  - <<: *_controller_template
+    name: myrobot/right_hand_controller
+    # action_ns: gripper_cmd
+    # type: GripperCommand
+    joints: *right_hand_joints
