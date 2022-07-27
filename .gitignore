@@ -1,1 +1,9 @@
 .devcontainer
+.vscode
+src/**
+
+!src/public
+!src/myrobot_*
+!src/myrobot_*/**
+!src/vs087*
+!src/vs087*/**

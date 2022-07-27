@@ -6,15 +6,20 @@ ENV ROS_WS ${HOME}/catkin_ws
 ENV PASS password
 ENV ROBOT_MODEL_NAME VS060A3-AV6-W4N-ANN
 
-RUN apt update
-RUN apt install -y vim tmux git wget
+# RUN apt-key adv --keyserver keys.gnupg.net --recv-key C8B3A55A6F3EFCDE || apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key C8B3A55A6F3EFCDE
+# RUN add-apt-repository "deb https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main" -u
+
+RUN apt update --fix-missing
+RUN apt install -y vim tmux git wget iputils-ping net-tools
 
 RUN apt install -y\
     ros-melodic-ros-tutorials \
     ros-melodic-rqt ros-melodic-rqt-common-plugins \
     ros-melodic-rviz \
+    ros-melodic-rviz-visual-tools \
     ros-melodic-ros-control ros-melodic-ros-controllers \ 
     ros-melodic-moveit \
+    ros-melodic-moveit-visual-tools \
     ros-melodic-gazebo-ros-pkgs ros-melodic-gazebo-ros-control \
     ros-melodic-robot-state-publisher \
     ros-melodic-joint-state-publisher \
@@ -23,11 +28,17 @@ RUN apt install -y\
     ros-melodic-rqt-image-view \
     # ros-melodic-usb-cam \
     ros-melodic-uvc-camera \
+    # librealsense2-dkms \
+    # librealsense2-utils \
+    # librealsense2-dev \
+    # librealsense2-dbg \
     ros-melodic-librealsense2 \
+    ros-melodic-librealsense2-dbgsym \
     ros-melodic-realsense2-camera \
+    ros-melodic-realsense2-camera-dbgsym \
+    # use extended repogitory for gazebo instead of following
     ros-melodic-realsense2-description \
-    python-catkin-tools \
-    iputils-ping net-tools
+    python-catkin-tools 
 
 RUN mkdir -p ${ROS_WS}/src
 # RUN git clone -b melodic-devel https://github.com/DENSORobot/denso_robot_ros.git ~/catkin_ws/src

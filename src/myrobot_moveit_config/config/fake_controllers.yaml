@@ -1,0 +1,79 @@
+controller_list:
+  - name: fake_left_arm_controller
+    type: $(arg fake_execution_type)
+    joints:
+      - left_joint_sholder
+      - left_joint_1
+      - left_joint_2
+      - left_joint_3
+      - left_joint_4
+      - left_joint_5
+      - left_joint_6
+  - name: fake_right_arm_controller
+    type: $(arg fake_execution_type)
+    joints:
+      - right_joint_sholder
+      - right_joint_1
+      - right_joint_2
+      - right_joint_3
+      - right_joint_4
+      - right_joint_5
+      - right_joint_6
+  - name: fake_left_hand_controller
+    type: $(arg fake_execution_type)
+    joints:
+      - left_panda_finger_joint1
+      - left_panda_finger_joint2
+  - name: fake_right_hand_controller
+    type: $(arg fake_execution_type)
+    joints:
+      - right_panda_finger_joint1
+      - right_panda_finger_joint2
+  - name: fake_arms_controller
+    type: $(arg fake_execution_type)
+    joints:
+      - left_joint_sholder
+      - left_joint_1
+      - left_joint_2
+      - left_joint_3
+      - left_joint_4
+      - left_joint_5
+      - left_joint_6
+      - right_joint_sholder
+      - right_joint_1
+      - right_joint_2
+      - right_joint_3
+      - right_joint_4
+      - right_joint_5
+      - right_joint_6
+  - name: fake_body_controller
+    type: $(arg fake_execution_type)
+    joints:
+      - joint_back
+      - joint_body
+  - name: fake_body_and_arms_controller
+    type: $(arg fake_execution_type)
+    joints:
+      - joint_back
+      - joint_body
+      - left_joint_sholder
+      - left_joint_1
+      - left_joint_2
+      - left_joint_3
+      - left_joint_4
+      - left_joint_5
+      - left_joint_6
+      - right_joint_sholder
+      - right_joint_1
+      - right_joint_2
+      - right_joint_3
+      - right_joint_4
+      - right_joint_5
+      - right_joint_6
+initial:  # Define initial robot poses.
+  - group: left_arm
+    pose: left_arm_default
+  - group: right_arm
+    pose: right_arm_default
+  - group: body
+    pose: body_default

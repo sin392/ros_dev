@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+
+    <xacro:macro name="J" params="prefix num">
+        <link name="${prefix}_J${num}">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="package://vs087_description/J${num}.dae" scale="1 1 1" />
+                </geometry>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="package://vs087_description/J${num}.dae" scale="1 1 1" />
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="1" />
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
+            </inertial>
+        </link>
+    </xacro:macro>
+
+    <xacro:macro name="init_joint" params="prefix num origin_xyz axis_xyz lim_effort lim_lower lim_upper lim_velocity">
+        <joint name="${prefix}_joint_${num}" type="revolute">
+            <parent link="${prefix}_base_link" />
+            <child link="${prefix}_J${num}" />
+            <origin rpy="0 0 0" xyz="${origin_xyz}" />
+            <axis xyz="${axis_xyz}" />
+            <limit effort="${lim_effort}" lower="${lim_lower}" upper="${lim_upper}" velocity="${lim_velocity}" />
+            <dynamics damping="0" friction="0" />
+        </joint>
+    </xacro:macro>
+
+    <xacro:macro name="repeat_joint" params="prefix num origin_xyz axis_xyz lim_effort lim_lower lim_upper lim_velocity">
+        <joint name="${prefix}_joint_${num}" type="revolute">
+            <parent link="${prefix}_J${num-1}" />
+            <child link="${prefix}_J${num}" />
+            <origin rpy="0 0 0" xyz="${origin_xyz}" />
+            <axis xyz="${axis_xyz}" />
+            <limit effort="${lim_effort}" lower="${lim_lower}" upper="${lim_upper}" velocity="${lim_velocity}" />
+            <dynamics damping="0" friction="0" />
+        </joint>
+    </xacro:macro>
+
+    <xacro:macro name="trans" params="prefix num">
+        <transmission name="trans_${num}">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="${prefix}_joint_${num}">
+                <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+            </joint>
+            <actuator name="motor_${num}">
+                <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+                <mechanicalReduction>1</mechanicalReduction>
+            </actuator>
+        </transmission>
+    </xacro:macro>
+
+
+    <!-- <xacro:property name="base_mass" value="1.0" /> -->
+    <!-- <xacro:property name="joint_origin" value="0.000000 0.000000 0.000000" /> -->
+    <xacro:property name="joint_1_xyz" value="0.000000 0.000000 0.197500" />
+    <xacro:property name="joint_2_xyz" value="0.030000 0.000000 0.197500" />
+    <xacro:property name="joint_3_xyz" value="0.000000 0.000000 0.445000" />
+    <xacro:property name="joint_4_xyz" value="-0.020000 0.000000 0.287000" />
+    <xacro:property name="joint_5_xyz" value="0.000000 0.000000 0.143000" />
+    <xacro:property name="joint_6_xyz" value="0.000000 0.000000 0.080000" />
+
+    <xacro:property name="axis1" value="0 0 1" />
+    <xacro:property name="axis2" value="0 1 0" />
+    <xacro:property name="axis3" value="0 1 0" />
+    <xacro:property name="axis4" value="0 0 1" />
+    <xacro:property name="axis5" value="0 1 0" />
+    <xacro:property name="axis6" value="0 0 1" />
+
+
+    <!-- TODO: set right values -->
+    <xacro:property name="eff1" value="100" />
+    <xacro:property name="eff2" value="100" />
+    <xacro:property name="eff3" value="100" />
+    <xacro:property name="eff4" value="100" />
+    <xacro:property name="eff5" value="100" />
+    <xacro:property name="eff6" value="100" />
+
+
+    <xacro:property name="low1" value="-2.96705972839036" />
+    <xacro:property name="low2" value="-1.74532925199433" />
+    <xacro:property name="low3" value="-2.37364778271229" />
+    <xacro:property name="low4" value="-4.71238898038469" />
+    <xacro:property name="low5" value="-2.0943951023932" />
+    <xacro:property name="low6" value="-6.28318530717959" />
+
+    <xacro:property name="up1" value="2.96705972839036" />
+    <xacro:property name="up2" value="2.35619449019234" />
+    <xacro:property name="up3" value="2.67035375555132" />
+    <xacro:property name="up4" value="4.71238898038469" />
+    <xacro:property name="up5" value="2.0943951023932" />
+    <xacro:property name="up6" value="6.28318530717959" />
+
+    <xacro:property name="vel1" value="1" />
+    <xacro:property name="vel2" value="1" />
+    <xacro:property name="vel3" value="1" />
+    <xacro:property name="vel4" value="1" />
+    <xacro:property name="vel5" value="1" />
+    <xacro:property name="vel6" value="1" />
+
+
+    <xacro:macro name="vs087" params="prefix">
+        <link name="${prefix}_base_link">
+            <visual>
+                <origin rpy="0 0 0" xyz="0 0 0" />
+                <geometry>
+                    <mesh filename="package://vs087_description/base_link.dae" scale="1 1 1" />
+                </geometry>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0 0 0" />
+                <geometry>
+                    <mesh filename="package://vs087_description/base_link.dae" scale="1 1 1" />
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="1" />
+                <origin rpy="0 0 0" xyz="0 0 0" />
+                <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
+            </inertial>
+        </link>
+
+        <xacro:J prefix="${prefix}" num="1" />
+        <xacro:init_joint prefix="${prefix}" num="1" origin_xyz="${joint_1_xyz}" axis_xyz="${axis1}" lim_effort="${eff1}" lim_lower="${low1}" lim_upper="${up1}" lim_velocity="${vel1}" />
+        <xacro:trans prefix="${prefix}" num="1" />
+
+        <xacro:J prefix="${prefix}" num="2" />
+        <xacro:repeat_joint prefix="${prefix}" num="2" origin_xyz="${joint_2_xyz}" axis_xyz="${axis2}" lim_effort="${eff2}" lim_lower="${low2}" lim_upper="${up2}" lim_velocity="${vel2}" />
+        <xacro:trans prefix="${prefix}" num="2" />
+
+        <xacro:J prefix="${prefix}" num="3" />
+        <xacro:repeat_joint prefix="${prefix}" num="3" origin_xyz="${joint_3_xyz}" axis_xyz="${axis3}" lim_effort="${eff3}" lim_lower="${low3}" lim_upper="${up3}" lim_velocity="${vel3}" />
+        <xacro:trans prefix="${prefix}" num="3" />
+
+        <xacro:J prefix="${prefix}" num="4" />
+        <xacro:repeat_joint prefix="${prefix}" num="4" origin_xyz="${joint_4_xyz}" axis_xyz="${axis4}" lim_effort="${eff4}" lim_lower="${low4}" lim_upper="${up4}" lim_velocity="${vel4}" />
+        <xacro:trans prefix="${prefix}" num="4" />
+
+        <xacro:J prefix="${prefix}" num="5" />
+        <xacro:repeat_joint prefix="${prefix}" num="5" origin_xyz="${joint_5_xyz}" axis_xyz="${axis5}" lim_effort="${eff5}" lim_lower="${low5}" lim_upper="${up5}" lim_velocity="${vel5}" />
+        <xacro:trans prefix="${prefix}" num="5" />
+
+        <xacro:J prefix="${prefix}" num="6" />
+        <xacro:repeat_joint prefix="${prefix}" num="6" origin_xyz="${joint_6_xyz}" axis_xyz="${axis6}" lim_effort="${eff6}" lim_lower="${low6}" lim_upper="${up6}" lim_velocity="${vel6}" />
+        <xacro:trans prefix="${prefix}" num="6" />
+    </xacro:macro>
+
+</robot>

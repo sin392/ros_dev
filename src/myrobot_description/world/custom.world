@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+    <world name="default">
+        <include>
+            <uri>model://ground_plane</uri>
+        </include>
+        <include>
+            <uri>model://sun</uri>
+        </include>
+        <!-- <include>
+            <uri>model://mytable</uri>
+            <pose>1 0 0 0 0 0</pose>
+        </include>
+        <include>
+            <uri>model://mytable</uri>
+            <pose>0 -1 0 0 0 0</pose>
+        </include> -->
+        <include>
+            <name>container</name>
+            <uri>model://big_container_open</uri>
+            <pose>0 0 0 0 0 0</pose>
+        </include>
+        <!-- cabagges -->
+        <!-- <include>
+            <name>cabbage1</name>
+            <uri>model://cabbage</uri>
+            <pose>0 0.1 0.1 0 0 0</pose>
+        </include>
+        <include>
+            <name>cabbage3</name>
+            <uri>model://cabbage</uri>
+            <pose>0 0.1 0.2 0 0 0</pose>
+        </include>
+        <include>
+            <name>cabbage4</name>
+            <uri>model://cabbage</uri>
+            <pose>0 0.1 0.3 0 0 0</pose>
+        </include>
+        <include>
+            <name>cabbage2</name>
+            <uri>model://cabbage</uri>
+            <pose>0 -0.1 0.1 0 0 0</pose>
+        </include> -->
+    </world>
+</sdf>

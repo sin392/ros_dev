@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot name="myrobot" xmlns:xacro="http://wiki.ros.org/xacro">
+    <gazebo>
+        <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control">
+            <robotNamespace>/myrobot</robotNamespace>
+        </plugin>
+    </gazebo>
+
+    <xacro:include filename="$(find vs087_description)/vs087.urdf.xacro" />
+    <!-- <xacro:include filename="$(find franka_description)/robots/hand.xacro" /> -->
+    <xacro:include filename="$(find franka_description)/robots/panda_gazebo.xacro" />
+    <!-- <xacro:include filename="$(find franka_description)/robots/utils.xacro" /> -->
+    <xacro:include filename="$(find realsense2_description)/urdf/_d435.urdf.xacro" />
+
+    <!-- colors definition -->
+    <material name="red">
+        <!-- for revolute -->
+        <color rgba="1.0 0.5 0.5 2.0" />
+    </material>
+    <material name="green">
+        <!-- for prismatic -->
+        <color rgba="0.5 1.0 0.5 2.0" />
+    </material>
+    <material name="blue">
+        <color rgba="0.5 0.5 1.0 2.0" />
+    </material>
+    <material name="white">
+        <color rgba="1.0 1.0 1.0 2.0" />
+    </material>
+
+    <!-- name=joint is alreadey used in other files? -->
+    <xacro:macro name="f_joint" params="name parent child xyz:='0 0 0' rpy:='0 0 0'">
+        <joint name="${name}" type="fixed">
+            <origin xyz="${xyz}" rpy="${rpy}" />
+            <parent link="${parent}" />
+            <child link="${child}" />
+        </joint>
+    </xacro:macro>
+
+    <xacro:macro name="_gazebo_joint" params="joint trans reduction:=1">
+        <transmission name="${joint}_trans">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="${joint}">
+                <hardwareInterface>hardware_interface/${trans}</hardwareInterface>
+            </joint>
+            <actuator name="${joint}_motor">
+                <hardwareInterface>hardware_interface/${trans}</hardwareInterface>
+                <mechanicalReduction>${reduction}</mechanicalReduction>
+            </actuator>
+        </transmission>
+    </xacro:macro>
+
+    <xacro:macro name="a_joint" params="name parent child type axis xyz:='0 0 0' rpy:='0 0 0' eff:=500 low:=-2.967 up:=2.967 vel:=1 damp:=0 fric:=0 trans:=PositionJointInterface">
+        <joint name="${name}" type="${type}">
+            <origin xyz="${xyz}" rpy="${rpy}" />
+            <parent link="${parent}" />
+            <child link="${child}" />
+            <axis xyz="${axis}" />
+            <limit effort="${eff}" lower="${low}" upper="${up}" velocity="${vel}" />
+            <dynamics damping="${damp}" friction="${fric}" />
+        </joint>
+
+        <xacro:_gazebo_joint joint="${name}" trans="${trans}" />
+
+    </xacro:macro>
+
+    <xacro:macro name="_box" params="xyz:='0 0 0' rpy:='0 0 0' size:='0.1 0.1 0.1' mass:=1 color=white">
+        <visual>
+            <origin rpy="${rpy}" xyz="${xyz}" />
+            <geometry>
+                <box size="${size}" />
+            </geometry>
+            <material name="${color}" />
+        </visual>
+        <collision>
+            <origin rpy="${rpy}" xyz="${xyz}" />
+            <geometry>
+                <box size="${size}" />
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="${mass}" />
+            <origin rpy="${rpy}" xyz="${xyz}" />
+            <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
+        </inertial>
+    </xacro:macro>
+
+    <xacro:macro name="_cylinder" params="xyz:='0 0 0' rpy:='0 0 0' radius:=0.1 length=0.1  mass:=1 color=white">
+        <visual>
+            <origin rpy="${rpy}" xyz="${xyz}" />
+            <geometry>
+                <cylinder radius="${radius}" length="${length}" />
+            </geometry>
+            <material name="${color}" />
+        </visual>
+        <collision>
+            <origin rpy="${rpy}" xyz="${xyz}" />
+            <geometry>
+                <cylinder radius="${radius}" length="${length}" />
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="${mass}" />
+            <origin rpy="${rpy}" xyz="${xyz}" />
+            <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
+        </inertial>
+    </xacro:macro>
+
+    <xacro:macro name="box_link" params="name xyz:='0 0 0' rpy:='0 0 0' size:='0.1 0.1 0.1' mass:=1 color=white">
+        <link name="${name}">
+            <xacro:_box xyz="${xyz}" rpy="${rpy}" size="${size}" mass="${mass}" color="${color}" />
+        </link>
+    </xacro:macro>
+
+    <xacro:macro name="cylinder_link" params="name xyz:='0 0 0' rpy:='0 0 0' radius:=0.1 length:=0.1 mass:=1 color=white">
+        <link name="${name}">
+            <xacro:_box xyz="${xyz}" rpy="${rpy}" radius="${radius}" length="${length}" mass="${mass}" color="${color}" />
+        </link>
+    </xacro:macro>
+
+    <xacro:macro name="sholder" params="prefix parent xyz l_xyz rpy size up low">
+        <xacro:a_joint name="${prefix}_joint_sholder" type="revolute" axis="0 1 0" parent="${parent}" child="${prefix}_sholder" xyz="${xyz}" rpy="${rpy}" up="${up}" low="${low}" />
+        <xacro:box_link name="${prefix}_sholder" xyz="${l_xyz}" size="${size}" color="red" />
+    </xacro:macro>
+
+    <xacro:macro name="arm_with_hand" params="prefix parent xyz rpy">
+        <gazebo>
+            <!-- loading plugin: mimic joints works in gazebo now -->
+            <plugin name="gazebo_gripper_ros_control" filename="libroboticsgroup_gazebo_mimic_joint_plugin.so">
+                <joint>${prefix}_panda_finger_joint1</joint>
+                <mimicJoint>${prefix}_panda_finger_joint2</mimicJoint>
+                <multiplier>1.0</multiplier>
+                <offset>0.0</offset>
+            </plugin>
+        </gazebo>
+
+        <xacro:f_joint name="${prefix}_joint_body" xyz="${xyz}" rpy="${rpy}" parent="${parent}" child="${prefix}_base_link" />
+        <xacro:vs087 prefix="${prefix}" />
+        <xacro:hand arm_id="${prefix}_panda" connected_to="${prefix}_J6" />
+        <!-- to add transmission to hand | TODO: unuse gazebo-joint-->
+        <!-- <xacro:gazebo-joint joint="${prefix}_panda_finger_joint1" transmission="hardware_interface/EffortJointInterface" />
+        <xacro:gazebo-joint joint="${prefix}_panda_finger_joint2" transmission="hardware_interface/EffortJointInterface" /> -->
+        <xacro:_gazebo_joint joint="${prefix}_panda_finger_joint1" trans="EffortJointInterface" />
+        <xacro:_gazebo_joint joint="${prefix}_panda_finger_joint2" trans="EffortJointInterface" />
+        <!-- to add virtual link at center of fingers | ref: https://github.com/ros-planning/moveit_tutorials/issues/74 -->
+        <!-- J6 to the palm of the eef the distance is 0.058 & eef parm to the palm of the eef the distance is about 0.047 -->
+        <xacro:f_joint name="${prefix}_joint_tip" xyz="0 0 0.105" parent="${prefix}_panda_hand" child="${prefix}_panda_hand_tip" />
+        <link name="${prefix}_panda_hand_tip" />
+    </xacro:macro>
+
+    <xacro:macro name="d435" params="prefix parent xyz:='0 0 0' rpy='0 0 0' publish_pointcloud:=true">
+        <!-- <xacro:f_joint name="${prefix}_camera_base_joint" xyz="${xyz}" parent="${prefix}_J6" child="${prefix}_camera_base" />
+        <link name="${prefix}_camera_base" /> -->
+        <xacro:sensor_d435 name="${prefix}_camera" topics_ns="${prefix}_camera" parent="${parent}" publish_pointcloud="${publish_pointcloud}">
+            <origin xyz="${xyz}" rpy="${rpy}" />
+        </xacro:sensor_d435>
+    </xacro:macro>
+
+    <!-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+    <!-- constant values -->
+    <xacro:property name="prefix_1" value="right" />
+    <xacro:property name="prefix_2" value="left" />
+
+    <xacro:property name="cart_sx" value="1.0" />
+    <xacro:property name="cart_sy" value="1.0" />
+    <xacro:property name="cart_sz" value="0.3" />
+
+    <xacro:property name="body_sx" value="0.24" />
+    <xacro:property name="body_sy" value="0.24" />
+    <xacro:property name="body_sz" value="0.48" />
+    <xacro:property name="body_spacer_length" value="0.05" />
+    <xacro:property name="body_spacer_radius" value="${body_sx / 2}" />
+    <xacro:property name="body_side_spacer_length" value="0.05" />
+    <xacro:property name="body_side_spacer_radius" value="${sholder_sx / 2}" />
+
+    <xacro:property name="back_base_sx" value="${body_sx + body_spacer_length}" />
+    <xacro:property name="back_base_sy" value="${body_sy}" />
+    <xacro:property name="back_base_sz" value="0.1" />
+    <xacro:property name="back_sx" value="0.1" />
+    <xacro:property name="back_sy" value="0.24" />
+    <xacro:property name="back_sz" value="1.0" />
+
+    <xacro:property name="sholder_sx" value="0.24" />
+    <xacro:property name="sholder_sy" value="0.24" />
+    <xacro:property name="sholder_sz" value="0.24" />
+
+    <!-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+    <link name="world" />
+    <!-- cart -->
+    <xacro:box_link name="cart" size="${cart_sx} ${cart_sy} ${cart_sz}" />
+    <xacro:f_joint name="joint_cart" xyz="0 0 ${cart_sz / 2}" parent="world" child="cart" />
+
+    <!-- joint_back_base is right_J8 -->
+    <xacro:a_joint name="joint_back" type="revolute" xyz="${(cart_sx - back_base_sx) / 2} 0 ${cart_sz / 2}" parent="cart" child="back" axis="0 0 1" low="-1.58824" up="1.58824" />
+    <!-- <xacro:box_link name="back_base" xyz="0 0 ${back_base_sz / 2}" size="${back_base_sx} ${back_base_sy} ${back_base_sz}" color="red" /> -->
+    <!-- <xacro:f_joint name="joint_back" xyz="-${(back_base_sx + back_sx) / 2} 0 ${back_sz / 2}" parent="back_base" child="back" /> -->
+    <!-- <xacro:box_link name="back" size="${back_sx} ${back_sy} ${back_sz}" /> -->
+    <link name="back">
+        <xacro:_box xyz="0 0 ${back_base_sz / 2}" size="${back_base_sx} ${back_base_sy} ${back_base_sz}" color="red" />
+        <xacro:_box xyz="-${(back_base_sx + back_sx) / 2} 0 ${back_sz / 2}" size="${back_sx} ${back_sy} ${back_sz}" color="red" />
+    </link>
+
+    <!-- body -->
+    <xacro:a_joint name="joint_body" type="prismatic" xyz="-${back_base_sx / 2} 0 ${body_sz}" parent="back" child="body" axis="0 0 1" low="-0.01" up="${back_sz / 2 - body_spacer_radius}" />
+    <!-- <xacro:a_joint name="joint_body" type="prismatic" xyz="-${body_sx / 2} 0 ${back_sz - (body_sz / 2)}" parent="back" child="body" axis="0 0 1" low="0.01745" up="8.63937" /> -->
+    <!-- <xacro:box_link name="body" size="${body_sx} ${body_sy} ${body_sz}" color="green" /> -->
+    <link name="body">
+        <xacro:_cylinder xyz="${body_spacer_length / 2} 0 0" rpy="0 ${radians(90)} 0" radius="${body_spacer_radius}" length="${body_spacer_length}" color="green" />
+        <xacro:_box xyz="${body_sx / 2 + body_spacer_length} 0 -${body_sz / 2 - body_spacer_radius}" size="${body_sx} ${body_sy} ${body_sz}" color="green" />
+        <xacro:_cylinder xyz="${body_sx / 2 + body_spacer_length} -${(body_sy + body_side_spacer_length) / 2} 0" rpy="${radians(90)} 0 0" radius="${body_side_spacer_radius}" length="${body_side_spacer_length}" color="green" />
+        <xacro:_cylinder xyz="${body_sx / 2 + body_spacer_length} ${(body_sy + body_side_spacer_length) /2} 0" rpy="${radians(90)} 0 0" radius="${body_side_spacer_radius}" length="${body_side_spacer_length}" color="green" />
+        <!-- <xacro:_box xyz="${body_sx / 2} 0 0" size="${body_sx} ${body_sy} ${body_sz}" color="green" /> -->
+    </link>
+    <xacro:d435 prefix="body" parent="body" xyz="${body_sx + 0.1} 0 0.1" rpy="0 ${radians(45)} 0" publish_pointcloud="1" />
+
+    <!-- right arm -->
+    <xacro:sholder prefix="${prefix_1}" parent="body" xyz="${body_sx / 2 + body_spacer_length} -${body_sy / 2 + body_side_spacer_length} 0" l_xyz="0 -${sholder_sy / 2} 0" rpy="0 -${radians(90)} 0" size="${sholder_sx} ${sholder_sy} ${sholder_sz}" low="-0.01745" up="1.58824" />
+    <xacro:arm_with_hand prefix="${prefix_1}" parent="${prefix_1}_sholder" xyz="${sholder_sx / 2} -${sholder_sy / 2} 0" rpy="0 ${radians(90)} 0" />
+    <!-- right camera -->
+    <xacro:d435 prefix="${prefix_1}" parent="${prefix_1}_J6" xyz="-0.1 0 0" rpy="0 ${radians(-90)} 0" publish_pointcloud="true" />
+
+    <!-- left arm -->
+    <xacro:sholder prefix="${prefix_2}" parent="body" xyz="${body_sx / 2 + body_spacer_length} ${body_sy / 2 + body_side_spacer_length} 0" l_xyz="0 ${sholder_sy / 2} 0" rpy="0 -${radians(90)} 0" size="${sholder_sx} ${sholder_sy} ${sholder_sz}" low="-0.01745" up="1.58824" />
+    <xacro:arm_with_hand prefix="${prefix_2}" parent="${prefix_2}_sholder" xyz="${sholder_sx / 2} ${sholder_sy / 2} 0" rpy="0 ${radians(90)} 0" />
+    <!-- left camera -->
+    <xacro:d435 prefix="${prefix_2}" parent="${prefix_2}_J6" xyz="-0.1 0 0" rpy="0 ${radians(-90)} 0" publish_pointcloud="true" />
+
+</robot>

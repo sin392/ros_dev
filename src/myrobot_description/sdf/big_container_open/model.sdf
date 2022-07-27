@@ -1,0 +1,49 @@
+<?xml version='1.0'?>
+<sdf version="1.4">
+    <model name="big_container_open">
+        <static>1</static>
+        <link name="link">
+            <inertial>
+                <mass>1</mass>
+                <inertia>
+                    <ixx>1.0</ixx>
+                    <ixy>0.0</ixy>
+                    <ixz>0.0</ixz>
+                    <iyy>1.0</iyy>
+                    <iyz>0.0</iyz>
+                    <izz>1.0</izz>
+                </inertia>
+            </inertial>
+            <collision name="collision">
+                <geometry>
+                    <mesh>
+                        <scale>0.001 0.001 0.001</scale>
+                        <uri>model://big_container_open/big_container_open_meshlab.dae</uri>
+                    </mesh>
+                </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>0.6</mu>
+                            <mu2>0.6</mu2>
+                        </ode>
+                    </friction>
+                    <contact>
+                        <ode>
+                            <max_vel>0.1</max_vel>
+                            <min_depth>0.0001</min_depth>
+                        </ode>
+                    </contact>
+                </surface>
+            </collision>
+            <visual name="visual">
+                <geometry>
+                    <mesh>
+                        <scale>0.001 0.001 0.001</scale>
+                        <uri>model://big_container_open/big_container_open_meshlab.dae</uri>
+                    </mesh>
+                </geometry>
+            </visual>
+        </link>
+    </model>
+</sdf>
