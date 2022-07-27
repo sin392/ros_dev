@@ -70,8 +70,8 @@ controller_list:
       - right_joint_6
 initial:  # Define initial robot poses.
   - group: left_arm
-    pose: left_arm_default
+    pose: left_arm_start
   - group: right_arm
-    pose: right_arm_default
-  - group: body
-    pose: body_default
+    pose: right_arm_start
+  - group: base
+    pose: base_start

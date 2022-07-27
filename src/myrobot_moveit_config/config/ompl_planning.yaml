@@ -120,185 +120,70 @@ planner_configs:
     sparse_delta_fraction: 0.25  # delta fraction for connection distance. This value represents the visibility range of sparse samples. default: 0.25
     dense_delta_fraction: 0.001  # delta fraction for interface detection. default: 0.001
     max_failures: 5000  # maximum consecutive failure limit. default: 5000
+
+_default_planner_configs_sequence: &_default_planner_configs_sequence
+  - SBL
+  - EST
+  - LBKPIECE
+  - BKPIECE
+  - KPIECE
+  - RRT
+  - RRTConnect
+  - RRTstar
+  - TRRT
+  - PRM
+  - PRMstar
+  - FMT
+  - BFMT
+  - PDST
+  - STRIDE
+  - BiTRRT
+  - LBTRRT
+  - BiEST
+  - ProjEST
+  - LazyPRM
+  - LazyPRMstar
+  - SPARS
+  - SPARStwo
+
 left_arm:
   default_planner_config: RRTConnect
-  planner_configs:
-    - SBL
-    - EST
-    - LBKPIECE
-    - BKPIECE
-    - KPIECE
-    - RRT
-    - RRTConnect
-    - RRTstar
-    - TRRT
-    - PRM
-    - PRMstar
-    - FMT
-    - BFMT
-    - PDST
-    - STRIDE
-    - BiTRRT
-    - LBTRRT
-    - BiEST
-    - ProjEST
-    - LazyPRM
-    - LazyPRMstar
-    - SPARS
-    - SPARStwo
+  planner_configs: *_default_planner_configs_sequence
+
 right_arm:
   default_planner_config: RRTConnect
-  planner_configs:
-    - SBL
-    - EST
-    - LBKPIECE
-    - BKPIECE
-    - KPIECE
-    - RRT
-    - RRTConnect
-    - RRTstar
-    - TRRT
-    - PRM
-    - PRMstar
-    - FMT
-    - BFMT
-    - PDST
-    - STRIDE
-    - BiTRRT
-    - LBTRRT
-    - BiEST
-    - ProjEST
-    - LazyPRM
-    - LazyPRMstar
-    - SPARS
-    - SPARStwo
+  planner_configs: *_default_planner_configs_sequence
+
 left_hand:
-  planner_configs:
-    - SBL
-    - EST
-    - LBKPIECE
-    - BKPIECE
-    - KPIECE
-    - RRT
-    - RRTConnect
-    - RRTstar
-    - TRRT
-    - PRM
-    - PRMstar
-    - FMT
-    - BFMT
-    - PDST
-    - STRIDE
-    - BiTRRT
-    - LBTRRT
-    - BiEST
-    - ProjEST
-    - LazyPRM
-    - LazyPRMstar
-    - SPARS
-    - SPARStwo
+  planner_configs: *_default_planner_configs_sequence
+
 right_hand:
-  planner_configs:
-    - SBL
-    - EST
-    - LBKPIECE
-    - BKPIECE
-    - KPIECE
-    - RRT
-    - RRTConnect
-    - RRTstar
-    - TRRT
-    - PRM
-    - PRMstar
-    - FMT
-    - BFMT
-    - PDST
-    - STRIDE
-    - BiTRRT
-    - LBTRRT
-    - BiEST
-    - ProjEST
-    - LazyPRM
-    - LazyPRMstar
-    - SPARS
-    - SPARStwo
+  planner_configs: *_default_planner_configs_sequence
+
 arms:
-  planner_configs:
-    - SBL
-    - EST
-    - LBKPIECE
-    - BKPIECE
-    - KPIECE
-    - RRT
-    - RRTConnect
-    - RRTstar
-    - TRRT
-    - PRM
-    - PRMstar
-    - FMT
-    - BFMT
-    - PDST
-    - STRIDE
-    - BiTRRT
-    - LBTRRT
-    - BiEST
-    - ProjEST
-    - LazyPRM
-    - LazyPRMstar
-    - SPARS
-    - SPARStwo
-body:
+  planner_configs: *_default_planner_configs_sequence
+
+base:
   default_planner_config: RRTConnect
-  planner_configs:
-    - SBL
-    - EST
-    - LBKPIECE
-    - BKPIECE
-    - KPIECE
-    - RRT
-    - RRTConnect
-    - RRTstar
-    - TRRT
-    - PRM
-    - PRMstar
-    - FMT
-    - BFMT
-    - PDST
-    - STRIDE
-    - BiTRRT
-    - LBTRRT
-    - BiEST
-    - ProjEST
-    - LazyPRM
-    - LazyPRMstar
-    - SPARS
-    - SPARStwo
+  planner_configs: *_default_planner_configs_sequence
   projection_evaluator: joints(joint_back,joint_body)
   longest_valid_segment_fraction: 0.005
-body_and_arms:
-  planner_configs:
-    - SBL
-    - EST
-    - LBKPIECE
-    - BKPIECE
-    - KPIECE
-    - RRT
-    - RRTConnect
-    - RRTstar
-    - TRRT
-    - PRM
-    - PRMstar
-    - FMT
-    - BFMT
-    - PDST
-    - STRIDE
-    - BiTRRT
-    - LBTRRT
-    - BiEST
-    - ProjEST
-    - LazyPRM
-    - LazyPRMstar
-    - SPARS
-    - SPARStwo
-  projection_evaluator: joints(joint_back,joint_body)
-  longest_valid_segment_fraction: 0.005
+
+body_and_left_arm:
+  default_planner_config: RRTConnect
+  planner_configs: *_default_planner_configs_sequence
+
+body_and_right_arm:
+  default_planner_config: RRTConnect
+  planner_configs: *_default_planner_configs_sequence
+
+base_and_left_arm:
+  default_planner_config: RRTConnect
+  planner_configs: *_default_planner_configs_sequence
+
+base_and_right_arm:
+  default_planner_config: RRTConnect
+  planner_configs: *_default_planner_configs_sequence
+
+base_and_arms:
+  planner_configs: *_default_planner_configs_sequence
