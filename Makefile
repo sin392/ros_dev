@@ -1,6 +1,6 @@
 init:
-	git clone -b melodic-devel https://github.com/DENSORobot/denso_robot_ros.git ./src/public/denso_robot_ros
-	# git clone -b melodic-devel-vs087 git@github.com:sin392/denso_robot_ros.git ./src/public/denso_robot_ros
+	# git clone -b melodic-devel https://github.com/DENSORobot/denso_robot_ros.git ./src/public/denso_robot_ros
+	git clone -b melodic-devel-vs087 https://github.com/sin392/denso_robot_ros.git ./src/public/denso_robot_ros
 	# git clone https://github.com/IntelRealSense/realsense-ros.git ./src/public/realsense_ros
 	git clone https://github.com/ros/urdf_tutorial.git ./src/public/urdf_tutorial
 	git clone https://github.com/issaiass/realsense2_description.git ./src/public/realsense2_description

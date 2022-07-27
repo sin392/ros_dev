@@ -6,7 +6,7 @@
         </plugin>
     </gazebo>
 
-    <xacro:include filename="$(find vs087_description)/vs087.urdf.xacro" />
+    <xacro:include filename="$(find denso_robot_descriptions)/vs087_description/vs087.urdf.xacro" />
     <!-- <xacro:include filename="$(find franka_description)/robots/hand.xacro" /> -->
     <xacro:include filename="$(find franka_description)/robots/panda_gazebo.xacro" />
     <xacro:include filename="$(find franka_description)/robots/utils.xacro" />
