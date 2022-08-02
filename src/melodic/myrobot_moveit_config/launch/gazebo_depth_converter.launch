@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!-- ref: https://github.com/pal-robotics/realsense_gazebo_plugin/issues/31 -->
+<launch>
+    <arg name="ns" default="camera" />
+    <group ns="$(arg ns)">
+        <node pkg="nodelet" type="nodelet" name="nodelet_manager" args="manager" />
+        <!-- for raw depth -->
+        <node pkg="nodelet" type="nodelet" name="nodelet_raw" args="load depth_image_proc/register nodelet_manager">
+            <remap from="rgb/camera_info" to="color/camera_info" />
+            <remap from="depth/camera_info" to="depth/camera_info" />
+            <remap from="depth/image_rect" to="depth/image_raw" />
+            <remap from="depth_registered/camera_info" to="aligned_depth_to_color/camera_info" />
+            <remap from="depth_registered/image_rect" to="aligned_depth_to_color/image_raw" />
+        </node>
+        <!-- for points -->
+        <node pkg="nodelet" type="nodelet" name="nodelet_pcl" args="load depth_image_proc/point_cloud_xyzrgb nodelet_manager">
+            <remap from="rgb/image_rect_color" to="color/image_raw" />
+            <remap from="rgb/camera_info" to="color/camera_info" />
+            <remap from="depth_registered/camera_info" to="aligned_depth_to_color/camera_info" />
+            <remap from="depth_registered/image_rect" to="aligned_depth_to_color/image_raw" />
+            <remap from="depth_registered/points" to="depth/color/points" />
+        </node>
+    </group>
+</launch>
