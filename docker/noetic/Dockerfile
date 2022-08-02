@@ -16,7 +16,9 @@ RUN apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="
     ros-noetic-rviz-visual-tools \
     ros-noetic-robot-state-publisher \
     ros-noetic-joint-state-publisher \
-    ros-noetic-joint-state-publisher-gui
+    ros-noetic-joint-state-publisher-gui \
+    ros-noetic-image-* \
+    ros-noetic-rqt-image-view 
 
 RUN mkdir -p ${ROS_WS}/src
 

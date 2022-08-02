@@ -5,7 +5,7 @@ init:
 	git clone https://github.com/ros/urdf_tutorial.git ./src/melodic/public/urdf_tutorial
 	git clone https://github.com/issaiass/realsense2_description.git ./src/melodic/public/realsense2_description
 	git clone https://github.com/issaiass/realsense_gazebo_plugin.git ./src/melodic/public/realsense_gazebo_plugin
-	git clone -b melodic-devel https://github.com/introlab/find-object.git ./src/melodic/public/find-object
+	# git clone -b melodic-devel https://github.com/introlab/find-object.git ./src/melodic/public/find-object
 	sed -i s/VS060A3-AV6-NNN-NNN/${ROBOT_MODEL_NAME}/ ./src/melodic/public/denso_robot_ros/denso_robot_descriptions/vs060_description/vs060.launch.xml
 
 	docker network create ros_dev_external
