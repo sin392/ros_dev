@@ -13,7 +13,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update
 RUN apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
-    vim tmux git wget iputils-ping net-tools \
+    vim tmux git wget iputils-ping net-tools python-catkin-tools \
     ros-melodic-ros-tutorials \
     ros-melodic-rqt ros-melodic-rqt-common-plugins \
     ros-melodic-rviz \
@@ -39,7 +39,7 @@ RUN apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="
     ros-melodic-realsense2-camera-dbgsym \
     # use extended repogitory for gazebo instead of following
     ros-melodic-realsense2-description \
-    python-catkin-tools
+    ros-melodic-franka-description
 
 RUN mkdir -p ${ROS_WS}/src
 # RUN git clone -b melodic-devel https://github.com/DENSORobot/denso_robot_ros.git ~/catkin_ws/src
