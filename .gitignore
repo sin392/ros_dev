@@ -2,8 +2,11 @@
 .vscode
 src/**
 
-!src/public
-!src/myrobot_*
-!src/myrobot_*/**
-!src/vs087*
-!src/vs087*/**
+!src/melodic
+!src/noetic
+!src/melodic/public
+!src/noetic/public
+!src/melodic/myrobot_*
+!src/melodic/myrobot_*/**
+!src/melodic/vs087*
+!src/melodic/vs087*/**

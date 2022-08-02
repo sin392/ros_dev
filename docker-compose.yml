@@ -1,30 +1,56 @@
-version: "3"
+version: "3.4"
+
+x-melodic-port: &melodic-port 10055
+x-noetic-port: &noetic-port 10056
+x-melodic-src-mapping: &melodic-src-mapping ./src/noetic/:/home/${USER}/catkin_ws/src
+x-noetic-src-mapping: &noetic-src-mapping ./src/noetic/:/home/${USER}/catkin_ws/src
+# host.docker.internal:0を使う場合以下は不要
+x-x11-mapping: &x11-mapping /tmp/.X11-unix:/tmp/.X11-unix:rw
+
+x-common-setting:
+  &common-setting
+  tty: true
+  environment:
+    - DISPLAY=${DISPLAY} #host.docker.internal:0
+  # devices:
+  #   - /dev/dri/card0:/dev/dri/card0
+  #   - /dev/video0:/dev/video0
+  networks:
+    - ros_dev_external
+  # TODO: moveitの実行時のために特権つけてるが限定的な権限に置き換えたい
+  privileged: true
+  command: bash -c "catkin build && /bin/bash"
 
 services:
-  ros_dev:
+  ros_melodic:
+    <<: *common-setting
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./docker/melodic/Dockerfile
       args:
         - USER=${USER}
-    image: ros_dev
-    container_name: ros_dev
+    image: ros_melodic
+    container_name: ros_melodic
     volumes:
-      # TODO: パスに環境変数使用
-      - ./src:/home/mine/catkin_ws/src
-      # host.docker.internal:0を使う場合以下は不要
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
-    tty: true
-    environment:
-      - DISPLAY=${DISPLAY} #host.docker.internal:0
-    # devices:
-    #   - /dev/dri/card0:/dev/dri/card0
-    #   - /dev/video0:/dev/video0
-    networks:
-      - ros_dev_external
-    # TODO: moveitの実行時のために特権つけてるが限定的な権限に置き換えたい
-    privileged: true
-    command: bash -c "catkin build && /bin/bash"
+      - *melodic-src-mapping
+      - *x11-mapping
+    ports:
+      - *melodic-port
+
+  ros_noetic:
+    <<: *common-setting
+    build:
+      context: .
+      dockerfile: ./docker/noetic/Dockerfile
+      args:
+        - USER=${USER}
+    image: ros_noetic
+    container_name: ros_noetic
+    volumes:
+      - *noetic-src-mapping
+      - *x11-mapping
+    ports:
+      - *noetic-port
 
 networks:
   ros_dev_external:

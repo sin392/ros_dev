@@ -6,25 +6,32 @@ import math
 # import copy
 import rospy
 import moveit_commander
-import moveit_msgs.msg
-import geometry_msgs.msg
-import trajectory_msgs.msg
+from moveit_msgs.msg import Grasp
+from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import Vector3, Quaternion
+from trajectory_msgs.msg import JointTrajectoryPoint
 from tf.transformations import quaternion_from_euler
 
 moveit_commander.roscpp_initialize(sys.argv)
 rospy.init_node("pick_and_place")
 
 robot = moveit_commander.RobotCommander()
-print(robot.get_planning_frame())
+print("planinng frame :", robot.get_planning_frame())
+print("group names :", robot.get_group_names())
 
 scene = moveit_commander.PlanningSceneInterface(synchronous=True)
 
-group_name = "right_arm"
-move_group = moveit_commander.MoveGroupCommander(group_name)
+move_group = moveit_commander.MoveGroupCommander("right_arm")
+move_group_2 = moveit_commander.MoveGroupCommander("body_and_right_arm")
+move_group_3 = moveit_commander.MoveGroupCommander("base_and_right_arm")
+# sub group 複数含んでるとsetできないぽい
+# move_group.set_end_effector_link("right_panda_hand_tip")
+print("eef :", move_group.get_end_effector_link())
 
 # clean the scene
 scene.remove_world_object()
-rospy.sleep(1)
+scene.remove_attached_object()
+rospy.sleep(0.1)
 
 # create table1
 # table1_name = "table1"
@@ -50,67 +57,70 @@ rospy.sleep(1)
 # scene.add_box(table2_name, table2_pose, size=(0.4, 0.2, 0.4))
 # rospy.sleep(0.1)
 
-
-# create object
-box_pose = geometry_msgs.msg.PoseStamped()
-box_pose.header.frame_id = "world"
-# box_pose.pose.orientation.w = 1.0
-# box_pose.pose.position.z = 0.07 # slightly above the end effector
-# box_pose.pose.position.z = 0.3 # slightly above the end effector
-
-box_pose.pose.position.x = 1
-box_pose.pose.position.y = 0
-box_pose.pose.position.z = 0.2
-box_name = "object"
-scene.add_box(box_name, box_pose, size=(0.02, 0.02, 0.2))
-rospy.sleep(0.1)
-
 # create grasp msg
-grasp = moveit_msgs.msg.Grasp()
+grasp = Grasp()
 # setting grasp pose
 grasp.grasp_pose.header.frame_id = "world"
-# RPY convert (ロール・ピッチ・ヨーなことに注意)
-# orientation = quaternion_from_euler(-math.pi / 2, -math.pi / 4, -math.pi / 2)
-orientation = quaternion_from_euler(-math.pi / 2,  math.pi / 2, 0)
-# orientationの展開忘れないように注意！！
-grasp.grasp_pose.pose.orientation.x = orientation[0]
-grasp.grasp_pose.pose.orientation.y = orientation[1]
-grasp.grasp_pose.pose.orientation.z = orientation[2]
-grasp.grasp_pose.pose.orientation.w = orientation[3]
-# dinstance_to_object - half_width_of_object - distance_from_arm_head_to_palm - padding
-# grasp.grasp_pose.pose.position.x = 0.915
-grasp.grasp_pose.pose.position.x = 1
-grasp.grasp_pose.pose.position.y = -(0.058 + 0.03)
-grasp.grasp_pose.pose.position.z = 0.3
+q = quaternion_from_euler(0, math.pi, 0)
+grasp.grasp_pose.pose.orientation = Quaternion(x=q[0], y=q[1], z=q[2], w=q[3])
+grasp.grasp_pose.pose.position = Vector3(1.5, 0, 0.2)
 # setting pre-grasp approach
 grasp.pre_grasp_approach.direction.header.frame_id = "world"
-grasp.pre_grasp_approach.direction.vector.y = 1.0
-grasp.pre_grasp_approach.min_distance = 0.095
-grasp.pre_grasp_approach.desired_distance = 0.115
+grasp.pre_grasp_approach.direction.vector.z = -1.0
+grasp.pre_grasp_approach.min_distance = 0
+grasp.pre_grasp_approach.desired_distance = 0.1
 # setting post-grasp retreat
 grasp.post_grasp_retreat.direction.header.frame_id = "world"
 grasp.post_grasp_retreat.direction.vector.z = 1.0
-grasp.post_grasp_retreat.min_distance = 0.1
-grasp.post_grasp_retreat.desired_distance = 0.25
+grasp.post_grasp_retreat.min_distance = 0
+grasp.post_grasp_retreat.desired_distance = 0.1
 # setting posture of eef before grasp
-grasp.pre_grasp_posture.joint_names = ["right_panda_finger_joint1", "right_panda_finger_joint2"]
-grasp.pre_grasp_posture.points = [trajectory_msgs.msg.JointTrajectoryPoint()]
-grasp.pre_grasp_posture.points[0].positions = [0.04, 0.04]
+grasp.pre_grasp_posture.joint_names = ["right_panda_finger_joint1"]
+grasp.pre_grasp_posture.points = [JointTrajectoryPoint()]
+grasp.pre_grasp_posture.points[0].positions = [0.04]
 grasp.pre_grasp_posture.points[0].time_from_start = rospy.Duration(0.5)
 # setting posture of eef during grasp
-grasp.grasp_posture.joint_names = ["right_panda_finger_joint1", "right_panda_finger_joint2"]
-grasp.grasp_posture.points = [trajectory_msgs.msg.JointTrajectoryPoint()]
-grasp.grasp_posture.points[0].positions = [0.00, 0.00]
+grasp.grasp_posture.joint_names = ["right_panda_finger_joint1"]
+grasp.grasp_posture.points = [JointTrajectoryPoint()]
+grasp.grasp_posture.points[0].positions = [0.00]
 grasp.grasp_posture.points[0].time_from_start = rospy.Duration(0.5)
 
 
 # move_group.set_support_surface_name("table1")
 
+# create object
+box_pose = PoseStamped()
+box_pose.header.frame_id = "world"
+box_name = "object"
+box_pose.pose.position = Vector3(1.5, 0, 0.1)
+# scene.add_box(box_name, box_pose, size=(0.02, 0.02, 0.2))
 
-print(robot)
-move_group.pick("object", [grasp])
+# 把持ポーズの候補を与える
+is_grasp_succeeded = move_group.pick("", [grasp])
+print(is_grasp_succeeded, bool(is_grasp_succeeded))
+if is_grasp_succeeded == -1:
+    print("replanning with body")
+    is_grasp_succeeded = move_group_2.pick("", [grasp])
+if is_grasp_succeeded == -1:
+    print("replanning with body and back")
+    is_grasp_succeeded = move_group_3.pick("", [grasp])
+move_group.clear_pose_targets()
+move_group_2.clear_pose_targets()
+move_group_3.clear_pose_targets()
+# move_group.forget_joint_values()
+# move_group_2.forget_joint_values()
+# move_group_3.forget_joint_values()
+current_joint_values = move_group_3.get_current_joint_values()
+# move_group_3.set_joint_value_target(current_joint_values.update({"joint_back": 0, "joint_body": 0}))
+# move_group_3.go()
+active_joints = move_group_3.get_active_joints()
+current_joint_values_dict = dict(zip(active_joints, current_joint_values))
+update_dict = current_joint_values_dict
+update_dict.update({"joint_back": 0, "joint_body": 0.378})
+
+move_group_2.set_joint_value_target(update_dict)
+move_group_2.go()
 # move_group.pick("object")
-
 
 # # setting place location pose
 # place_location = [moveit_msgs.msg.PlaceLocation()]
