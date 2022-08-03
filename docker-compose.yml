@@ -2,7 +2,7 @@ version: "3.4"
 
 x-melodic-port: &melodic-port 11311
 # x-noetic-port: &noetic-port 11311
-x-ros-master-uri-env: &ros-master-uri-env ROS_MASTER_URI=http://ros_melodic:11311
+x-ros-master-uri-env: &ros-master-uri-env ROS_MASTER_URI=http://${ROS_MASTER_DOMAIN}:11311
 x-melodic-src-mapping: &melodic-src-mapping ./src/melodic/:/home/${USER}/catkin_ws/src
 x-noetic-src-mapping: &noetic-src-mapping ./src/noetic/:/home/${USER}/catkin_ws/src
 # host.docker.internal:0を使う場合以下は不要
@@ -38,6 +38,7 @@ services:
     environment:
       - DISPLAY=${DISPLAY}
       - ROS_IP=ros_melodic
+      - *ros-master-uri-env
 
   ros_noetic:
     <<: *common-setting
@@ -57,6 +58,7 @@ services:
       - DISPLAY=${DISPLAY}
       - ROS_IP=ros_noetic
       - *ros-master-uri-env
+
 networks:
   ros_dev_external:
     external: true

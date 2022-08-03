@@ -1,3 +1,5 @@
+ip_address=
+
 init:
 	# git clone -b melodic-devel https://github.com/DENSORobot/denso_robot_ros.git ./src/melodic/public/denso_robot_ros
 	git clone -b melodic-devel-vs087 https://github.com/sin392/denso_robot_ros.git ./src/melodic/public/denso_robot_ros
@@ -13,7 +15,18 @@ init:
 
 start:
 	xhost + localhost
-	docker-compose up -d
+ifdef $(ip_address)
+	ROS_MASTER_DOMAIN=$(ip_address) docker-compose up -d --force-recreate
+	roscore
+else
+	ROS_MASTER_DOMAIN=ros_melodic docker-compose up -d --force-recreate
+endif
+
+start-host:
+	xhost + localhost
+	# localhostなどでは失敗する | ref: https://www.finnrietz.dev/linux/ros-docker/
+	ROS_MASTER_DOMAIN=$$(hostname -I | cut -f1 -d " ") docker-compose up -d --force-recreate
+	roscore
 
 stop:
 	xhost - localhost
