@@ -11,7 +11,8 @@ init:
 	sed -i s/VS060A3-AV6-NNN-NNN/${ROBOT_MODEL_NAME}/ ./src/melodic/public/denso_robot_ros/denso_robot_descriptions/vs060_description/vs060.launch.xml
 
 	docker network create ros_dev_external
-	docker-compose build
+	docker pull sin392/ros_melodic:latest
+	docker pull sin392/ros_noetic:latest
 
 start:
 	xhost + localhost
