@@ -28,7 +28,7 @@ services:
       dockerfile: ./docker/melodic/Dockerfile
       args:
         - USER=${USER}
-    image: ros_melodic
+    image: sin392/ros_melodic:latest
     container_name: ros_melodic
     volumes:
       - *melodic-src-mapping
@@ -46,7 +46,7 @@ services:
       dockerfile: ./docker/noetic/Dockerfile
       args:
         - USER=${USER}
-    image: ros_noetic
+    image: sin392/ros_noetic:latest
     container_name: ros_noetic
     volumes:
       - *noetic-src-mapping
