@@ -57,7 +57,7 @@ RUN cd ${ROS_WS} && /bin/bash -c "source /opt/ros/melodic/setup.bash; catkin bui
 RUN echo "source ${ROS_WS}/devel/setup.bash" >> ~/.bashrc
 RUN echo "export ROS_PACKAGE_PATH=\${ROS_PACKAGE_PATH}:${ROS_WS}" >> ~/.bashrc
 RUN echo "export ROS_IP=\$(hostname -i)" >> ~/.bashrc
-RUN echo "export ROS_WORKSPACE=${ROS_WS}}" >> ~/.bashrc
+RUN echo "export ROS_WORKSPACE=${ROS_WS}" >> ~/.bashrc
 
 RUN useradd -s /bin/bash ${USER}
 RUN usermod -d ${HOME} ${USER}

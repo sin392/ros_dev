@@ -27,8 +27,8 @@ RUN echo "source /ros_entrypoint.sh" >> ~/.bashrc
 RUN echo "set +e" >> ~/.bashrc
 
 RUN cd ${ROS_WS} && /bin/bash -c "source /opt/ros/noetic/setup.bash; catkin build"
-RUN echo "source ${ROS_WS}}/devel/setup.bash" >> ~/.bashrc
-RUN echo "export ROS_PACKAGE_PATH=\${ROS_PACKAGE_PATH}:${ROS_WS}}" >> ~/.bashrc
+RUN echo "source ${ROS_WS}/devel/setup.bash" >> ~/.bashrc
+RUN echo "export ROS_PACKAGE_PATH=\${ROS_PACKAGE_PATH}:${ROS_WS}" >> ~/.bashrc
 RUN echo "export ROS_IP=\$(hostname -i)" >> ~/.bashrc
 RUN echo "export ROS_WORKSPACE=${ROS_WS}" >> ~/.bashrc
 
