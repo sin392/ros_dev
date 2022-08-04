@@ -37,7 +37,6 @@ services:
       - *melodic-port
     environment:
       - DISPLAY=${DISPLAY}
-      - ROS_IP=ros_melodic
       - *ros-master-uri-env
 
   ros_noetic:
@@ -56,7 +55,6 @@ services:
     #   - *noetic-port
     environment:
       - DISPLAY=${DISPLAY}
-      - ROS_IP=ros_noetic
       - *ros-master-uri-env
 
 networks:
