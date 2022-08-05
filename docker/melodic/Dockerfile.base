@@ -1,4 +1,4 @@
-FROM ros:melodic
+FROM nvidia/cudagl:11.1.1-devel-ubuntu18.04
 # ARG USER
 # ENV USER ${USER}
 ENV USER appuser
@@ -9,15 +9,32 @@ ENV PASS password
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update
-RUN apt-get install -y software-properties-common
+# ref: https://tech-blog.optim.co.jp/entry/2022/05/18/100000
+RUN rm -f /etc/apt/sources.list.d/cuda.list \
+    && apt-get update && apt-get install -y --no-install-recommends \
+        wget \
+    && wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-keyring_1.0-1_all.deb \
+    && dpkg -i cuda-keyring_1.0-1_all.deb \
+    && rm -f cuda-keyring_1.0-1_all.deb
+
+RUN apt-get install -y \
+    ca-certificates git wget sudo ninja-build software-properties-common \
+	iputils-ping net-tools netcat lsb-release vim tmux v4l-utils
+
+RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
 
 RUN apt-key adv --keyserver keys.gnupg.net --recv-key C8B3A55A6F3EFCDE || apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key C8B3A55A6F3EFCDE
 RUN add-apt-repository "deb https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main" -u
 
-RUN apt-get update
+RUN apt update
+RUN apt-get install -y --allow-downgrades --allow-remove-essential --allow-change-held-packages \
+	libpcap-dev libopenblas-dev \
+	gstreamer1.0-tools libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-good1.0-dev \
+	ros-melodic-desktop-full python-rosdep python-rosinstall-generator python-vcstool build-essential \
+	python-catkin-tools
+
 RUN apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
-    vim tmux git wget iputils-ping net-tools python-catkin-tools v4l-utils \
     ros-melodic-ros-tutorials \
     ros-melodic-rqt ros-melodic-rqt-common-plugins \
     ros-melodic-rviz \
@@ -54,11 +71,14 @@ RUN mkdir -p ${ROS_WORKSPACE}/src
 # RUN sed -i s/fuel/robotics/ ${HOME}/.ignition/fuel/config.yaml
 
 RUN touch ${HOME}/.bashrc
-RUN echo "source /ros_entrypoint.sh" >> ${HOME}/.bashrc
+# Configure ROS
+RUN echo "source /opt/ros/melodic/setup.bash" >> ${HOME}/.bashrc
+RUN echo "export ROSLAUNCH_SSH_UNKNOWN=1" >> ${HOME}/.bashrc
 RUN echo "set +e" >> ${HOME}/.bashrc
 
 WORKDIR ${ROS_WORKSPACE}
 RUN /bin/bash -c "source /opt/ros/melodic/setup.bash; catkin build"
+
 RUN echo "export ROS_PACKAGE_PATH=\${ROS_PACKAGE_PATH}:${ROS_WORKSPACE}" >> ${HOME}/.bashrc
 RUN echo "export ROS_IP=\$(hostname -i)" >> ${HOME}/.bashrc
 RUN echo "source \${ROS_WORKSPACE}/devel/setup.bash" >> ${HOME}/.bashrc
