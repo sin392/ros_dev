@@ -15,6 +15,8 @@ RUN rm -R -f /home/appuser
 
 USER ${USER}
 WORKDIR ${ROS_WORKSPACE}
+# WARN: ユーザを切り替えるとdetectron2消えちゃってるかもしれないので再インストール
+RUN pip install --user -e detectron2_repo
 # RUN /bin/bash -c "source /opt/ros/noetic/setup.bash; catkin build"
 
 # エイリアス

@@ -5,8 +5,8 @@ x-melodic-port: &melodic-port 11311
 x-ros-master-uri-env: &ros-master-uri-env ROS_MASTER_URI=http://${ROS_MASTER_DOMAIN}:11311
 x-melodic-src-mapping: &melodic-src-mapping ./src/melodic/:/home/${USER}/catkin_ws/src
 x-noetic-src-mapping: &noetic-src-mapping ./src/noetic/:/home/${USER}/catkin_ws/src
-x-melodic-output-mapping: &melodic-ouput-mapping ./output/melodic/:/home/${USER}/catkin_ws/output
-x-noetic-output-mapping: &noetic-ouput-mapping ./output/noetic/:/home/${USER}/catkin_ws/ouput
+x-melodic-output-mapping: &melodic-ouput-mapping ./outputs/melodic/:/home/${USER}/catkin_ws/outputs
+x-noetic-output-mapping: &noetic-ouput-mapping ./outputs/noetic/:/home/${USER}/catkin_ws/ouputs
 # host.docker.internal:0を使う場合以下は不要
 x-x11-mapping: &x11-mapping /tmp/.X11-unix:/tmp/.X11-unix:rw
 

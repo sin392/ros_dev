@@ -2,6 +2,7 @@ ip_address=
 force_build=false
 
 init:
+	# melodic
 	# git clone -b melodic-devel https://github.com/DENSORobot/denso_robot_ros.git ./src/melodic/public/denso_robot_ros
 	git clone -b melodic-devel-vs087 https://github.com/sin392/denso_robot_ros.git ./src/melodic/public/denso_robot_ros
 	# git clone https://github.com/IntelRealSense/realsense-ros.git ./src/melodic/public/realsense_ros
@@ -10,6 +11,8 @@ init:
 	git clone https://github.com/issaiass/realsense_gazebo_plugin.git ./src/melodic/public/realsense_gazebo_plugin
 	# git clone -b melodic-devel https://github.com/introlab/find-object.git ./src/melodic/public/find-object
 	sed -i s/VS060A3-AV6-NNN-NNN/${ROBOT_MODEL_NAME}/ ./src/melodic/public/denso_robot_ros/denso_robot_descriptions/vs060_description/vs060.launch.xml
+	# noetic
+	git clone https://github.com/sin392/detect.git ./src/noetic/detect
 
 	docker network create ros_dev_external
 
