@@ -8,8 +8,7 @@ x-noetic-src-mapping: &noetic-src-mapping ./src/noetic/:/home/${USER}/catkin_ws/
 # host.docker.internal:0を使う場合以下は不要
 x-x11-mapping: &x11-mapping /tmp/.X11-unix:/tmp/.X11-unix:rw
 
-x-common-setting:
-  &common-setting
+x-common-setting: &common-setting
   tty: true
   # devices:
   #   - /dev/dri/card0:/dev/dri/card0
@@ -18,7 +17,7 @@ x-common-setting:
     - ros_dev_external
   # TODO: moveitの実行時のために特権つけてるが限定的な権限に置き換えたい
   privileged: true
-  command: bash -c "catkin clean -b && catkin build && /bin/bash"
+  command: bash -c "catkin clean -by && catkin build && /bin/bash"
 
 services:
   ros_melodic:
