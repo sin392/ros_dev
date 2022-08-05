@@ -18,7 +18,7 @@ x-common-setting:
     - ros_dev_external
   # TODO: moveitの実行時のために特権つけてるが限定的な権限に置き換えたい
   privileged: true
-  command: bash -c "catkin build && /bin/bash"
+  command: bash -c "catkin clean -b && catkin build && /bin/bash"
 
 services:
   ros_melodic:
@@ -27,7 +27,7 @@ services:
       context: .
       dockerfile: ./docker/melodic/Dockerfile
       args:
-        - USER=${USER}
+        BUILD_USER: ${USER}
     image: sin392/ros_melodic:latest
     container_name: ros_melodic
     volumes:
@@ -45,7 +45,7 @@ services:
       context: .
       dockerfile: ./docker/noetic/Dockerfile
       args:
-        - USER=${USER}
+        BUILD_USER: ${USER}
     image: sin392/ros_noetic:latest
     container_name: ros_noetic
     volumes:

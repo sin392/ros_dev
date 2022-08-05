@@ -1,4 +1,5 @@
 ip_address= 
+force_build=false
 
 init:
 	# git clone -b melodic-devel https://github.com/DENSORobot/denso_robot_ros.git ./src/melodic/public/denso_robot_ros
@@ -11,8 +12,14 @@ init:
 	sed -i s/VS060A3-AV6-NNN-NNN/${ROBOT_MODEL_NAME}/ ./src/melodic/public/denso_robot_ros/denso_robot_descriptions/vs060_description/vs060.launch.xml
 
 	docker network create ros_dev_external
-	docker pull sin392/ros_melodic:latest
-	docker pull sin392/ros_noetic:latest
+
+ifeq ($(force_build), true)
+	docker build -f docker/melodic/Dockerfile.base -t sin392/ros_melodic_base:latest .
+	docker build -f docker/noetic/Dockerfile.base -t sin392/ros_noetic_base:latest .
+else
+	docker pull sin392/ros_melodic_base:latest
+	docker pull sin392/ros_noetic_base:latest
+endif
 
 start:
 	xhost + localhost
