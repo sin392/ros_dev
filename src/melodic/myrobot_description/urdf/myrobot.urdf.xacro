@@ -136,7 +136,7 @@
             </plugin>
         </gazebo>
 
-        <xacro:f_joint name="${prefix}_joint_body" xyz="${xyz}" rpy="${rpy}" parent="${parent}" child="${prefix}_base_link" />
+        <xacro:f_joint name="${prefix}_joint_arm_base" xyz="${xyz}" rpy="${rpy}" parent="${parent}" child="${prefix}_base_link" />
         <xacro:vs087 prefix="${prefix}" />
         <xacro:hand arm_id="${prefix}_panda" connected_to="${prefix}_J6" />
         <!-- to add transmission to hand | TODO: unuse gazebo-joint-->
