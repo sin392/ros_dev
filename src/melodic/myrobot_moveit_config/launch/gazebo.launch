@@ -9,7 +9,7 @@
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <!-- <arg name="world_name" value="$(arg world_path)" /> -->
     <!-- <arg name="world_name" value="$(find myrobot_description)/world/custom.world" /> -->
-    <arg name="world_name" value="$(find myrobot_description)/world/container_cabbage_1.world" />
+    <arg name="world_name" value="$(find myrobot_description)/world/container_cabbage_20.world" />
     <arg name="paused" value="$(arg paused)" />
     <arg name="gui" value="$(arg gazebo_gui)" />
   </include>
@@ -30,10 +30,10 @@
   <!-- push robot_description to factory and spawn robot in gazebo at the origin, change x,y,z arguments to spawn in a different position -->
   <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -unpause -param robot_description -model robot -x 0 -y 0 -z 0 
     -J joint_body 0.378
-    -J left_joint_sholder -0.8726 -J right_joint_sholder -0.8726  
-    -J left_joint_2 0.5235 -J right_joint_2 0.5235 
-    -J left_joint_3 0.3490 -J right_joint_3 0.3490 
-    -J left_joint_5 1.7453 -J right_joint_5 1.7453 
+    -J left_joint_sholder 0 -J right_joint_sholder 0 
+    -J left_joint_2 -0.5235 -J right_joint_2 -0.5235 
+    -J left_joint_3 -0.3490 -J right_joint_3 -0.3490 
+    -J left_joint_5 -0.6981 -J right_joint_5 -0.6981 
     " respawn="false" output="screen" />
 
   <include file="$(find myrobot_moveit_config)/launch/ros_controllers.launch" />
