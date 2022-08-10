@@ -1,17 +1,28 @@
 <launch>
     <arg name="robot_name" default="myrobot" />
+    <arg name="urdf_path" value="$(find myrobot_description)/urdf/$(arg robot_name).urdf.xacro" />
 
     <arg name="sim" default="true" />
-    <arg name="ip_address" default="192.168.0.1" />
+    <arg name="ip_address_cart" default="192.168.11.100" />
+    <arg name="ip_address_right" default="192.168.11.101" />
+    <arg name="ip_address_left" default="192.168.11.102" />
 
     <arg name="send_format" default="288" />
     <arg name="recv_format" default="292" />
 
     <arg name="bcap_slave_control_cycle_msec" default="8" />
 
+    <arg name="gazebo_gui" default="true" />
+    <arg name="paused" default="true" />
+    <arg name="debug" default="false" />
+      <arg name="load_robot_description" default="true" />
+
+    <!-- remap -->
+    <remap from="/joint_states" to="/myrobot/joint_states" />
+
     <include file="$(find myrobot_moveit_config)/launch/planning_context.launch">
-        <arg name="load_robot_description" value="true" />
-        <arg name="robot_name" value="$(arg robot_name)" />
+        <arg name="load_robot_description" value="$(arg load_robot_description)" />
+        <!-- <arg name="robot_name" value="$(arg robot_name)" /> -->
     </include>
 
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
@@ -21,16 +32,23 @@
         <rosparam param="source_list" subst_value="true">[/$(arg robot_name)/joint_states]</rosparam>
     </node>
 
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen"/>
+
     <group if="$(arg sim)">
-        <include file="$(find myrobot_moveit_config)/launch/demo_gazebo.launch">
+        <include file="$(find myrobot_moveit_config)/launch/gazebo.launch">
+            <arg name="paused" value="$(arg paused)" />
+            <arg name="gazebo_gui" value="$(arg gazebo_gui)" />
+            <arg name="urdf_path" value="$(arg urdf_path)" />
             <arg name="robot_name" value="$(arg robot_name)" />
         </include>
     </group>
 
     <group unless="$(arg sim)">
-        <include file="$(find myrobot_moveit)/launch/denso_robot_control.launch">
+        <include file="$(find myrobot_moveit)/launch/custom_denso_robot_control.launch">
             <arg name="robot_name" value="$(arg robot_name)" />
-            <arg name="ip_address" value="$(arg ip_address)" />
+            <arg name="ip_address_cart" value="$(arg ip_address_cart)" />
+            <arg name="ip_address_right" value="$(arg ip_address_right)" />
+            <arg name="ip_address_left" value="$(arg ip_address_left)" />
             <arg name="send_format" value="$(arg send_format)" />
             <arg name="recv_format" value="$(arg recv_format)" />
             <arg name="bcap_slave_control_cycle_msec" value="$(arg bcap_slave_control_cycle_msec)" />
@@ -38,13 +56,16 @@
     </group>
 
 
-    <include file="$(find denso_robot_moveit_config)/launch/move_group.launch">
+    <include file="$(find myrobot_moveit_config)/launch/move_group.launch">
         <arg name="publish_monitored_planning_scene" value="true" />
-        <arg name="robot_name" value="$(arg robot_name)" />
+        <arg name="allow_trajectory_execution" value="true" />
+        <arg name="fake_execution" value="false" />
+        <arg name="info" value="true" />
+        <arg name="debug" value="$(arg debug)" />
     </include>
 
-    <include file="$(find denso_robot_moveit_config)/launch/moveit_rviz.launch">
-        <arg name="config" value="true" />
+    <include file="$(find myrobot_moveit_config)/launch/moveit_rviz.launch">
+        <arg name="rviz_config" value="$(find myrobot_moveit_config)/launch/moveit.rviz" />
     </include>
 
     <!-- <include file="$(find denso_robot_moveit_config)/launch/default_warehouse_db.launch" /> -->

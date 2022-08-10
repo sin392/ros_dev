@@ -1,11 +1,10 @@
 <launch>
     <!-- Override ip_address argument -->
-    <arg name="ip_address" default="192.168.0.1" />
+    <arg name="ip_address_cart" default="192.168.11.100" />
+    <arg name="ip_address_right" default="192.168.11.101" />
+    <arg name="ip_address_left" default="192.168.11.102" />
     <!-- Override robot_name argument -->
     <arg name="robot_name" default="myrobot" />
-    <!-- Robot description argument -->
-    <!-- <arg name="robot_description" value="$(arg robot_name)_description" /> -->
-    <arg name="model" value="$(find myrobot_description)/urdf/$(arg robot_name).urdf.xacro" />
     <!-- Send format -->
     <arg name="send_format" default="288" />
     <!-- Recieve format -->
@@ -13,33 +12,26 @@
     <!-- b-CAP Slave motion control cycle [millisecond] -->
     <arg name="bcap_slave_control_cycle_msec" default="8" />
 
-    <include ns="/$(arg robot_name)" file="$(find bcap_service)/launch/bcap_service.launch.xml">
-        <arg name="ip_address" value="$(arg ip_address)" />
-    </include>
-
-    <include ns="/$(arg robot_name)" file="$(find denso_robot_core)/launch/denso_robot_core.launch.xml">
-        <arg name="bcap_slave_control_cycle_msec" value="$(arg bcap_slave_control_cycle_msec)" />
-    </include>
-
-    <include ns="/$(arg robot_name)" file="$(find denso_robot_control)/launch/denso_robot_control.launch.xml">
-        <arg name="send_format" value="$(arg send_format)" />
-        <arg name="recv_format" value="$(arg recv_format)" />
-    </include>
-
-    <!-- Load the URDF, SRDF and other .yaml configuration files on the param server -->
-    <param name="robot_description" type="str" command="$(find xacro)/xacro $(arg model)" />
-
+    <!-- following params to be wanted to be placed under the each node -->
     <!-- Controller -->
-    <include ns="/$(arg robot_name)" file="$(find myrobot_description)/$(arg robot_name).launch.xml" />
     <!-- <rosparam ns="/$(arg robot_name)" file="$(find myrobot_description)/$(arg robot_name).yaml" /> -->
-    <node name="denso_robot_control" pkg="denso_robot_control" type="denso_robot_control" output="screen" ns="/$(arg robot_name)" />
+    <group ns="/$(arg robot_name)/right_arm">
+        <include file="$(find myrobot_moveit)/config/right_arm_config.launch.xml" >
+            <arg name="ip_address" value="$(arg ip_address_right)" />
+        </include>
+        <node name="denso_robot_control" pkg="denso_robot_control" type="denso_robot_control" output="screen" />
+    </group>
+    <group ns="/$(arg robot_name)/left_arm">
+        <include file="$(find myrobot_moveit)/config/left_arm_config.launch.xml" >
+            <arg name="ip_address" value="$(arg ip_address_left)" />
+        </include>
+        <node name="denso_robot_control" pkg="denso_robot_control" type="denso_robot_control" output="screen" />
+    </group>
     <!-- <node name="denso_robot_control" pkg="denso_robot_control" type="denso_robot_control" output="screen" ns="/$(arg robot_name)" /> -->
     <!-- <node name="denso_robot_control" pkg="denso_robot_control" type="denso_robot_control" output="screen" ns="/$(arg robot_name)" /> -->
 
-    <rosparam file="$(find denso_robot_descriptions)/$(arg robot_description)/denso_robot_control.yaml" command="load" />
-    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/$(arg robot_name)" args="joint_state_controller arm_controller" />
-
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
-        <remap from="/joint_states" to="/$(arg robot_name)/joint_states" />
-    </node>
+    <rosparam file="$(find myrobot_moveit_config)/config/ros_controllers.yaml" command="load" />
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/myrobot" args="--namespace=/myrobot 
+        joint_state_controller right_arm_controller left_arm_controller
+    " />
 </launch>

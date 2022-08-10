@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Override ip_address argument -->
+    <arg name="ip_address" default="192.168.11.102" />
+    <!-- Send format -->
+    <arg name="send_format" default="288" />
+    <!-- Recieve format -->
+    <arg name="recv_format" default="292" />
+    <!-- b-CAP Slave motion control cycle [millisecond] -->
+    <arg name="bcap_slave_control_cycle_msec" default="8" />
+
+    <include file="$(find bcap_service)/launch/bcap_service.launch.xml">
+        <arg name="ip_address" value="$(arg ip_address)" />
+    </include>
+
+    <include file="$(find denso_robot_core)/launch/denso_robot_core.launch.xml">
+        <arg name="bcap_slave_control_cycle_msec" value="$(arg bcap_slave_control_cycle_msec)" />
+    </include>
+
+    <include file="$(find denso_robot_control)/launch/denso_robot_control.launch.xml">
+        <arg name="send_format" value="$(arg send_format)" />
+        <arg name="recv_format" value="$(arg recv_format)" />
+    </include>
+
+    <param name="controller_type" value="8" />
+    <param name="robot_name" value="VS087A4-AV6-W4N-ANN" />
+    <param name="robot_joints" value="8" />
+    <param name="joint_1" value="1" />
+    <param name="joint_2" value="1" />
+    <param name="joint_3" value="1" />
+    <param name="joint_4" value="1" />
+    <param name="joint_5" value="1" />
+    <param name="joint_6" value="1" />
+    <param name="joint_7" value="1" />
+    <param name="joint_8" value="1" />
+    <param name="joint_1_name" value="left_joint_1" />
+    <param name="joint_2_name" value="left_joint_2" />
+    <param name="joint_3_name" value="left_joint_3" />
+    <param name="joint_4_name" value="left_joint_4" />
+    <param name="joint_5_name" value="left_joint_5" />
+    <param name="joint_6_name" value="left_joint_6" />
+    <param name="joint_7_name" value="left_joint_sholder" />
+    <param name="joint_8_name" value="joint_body" />
+    <param name="arm_group" value="0" />
+</launch> 
