@@ -7,6 +7,10 @@
     <arg name="ip_address_right" default="192.168.11.101" />
     <arg name="ip_address_left" default="192.168.11.102" />
 
+    <arg name="camera_serial_no_1" default="032622073208" />
+    <arg name="camera_serial_no_2" default="" />
+    <arg name="camera_serial_no_3" default="" />
+
     <arg name="send_format" default="288" />
     <arg name="recv_format" default="292" />
 
@@ -39,6 +43,7 @@
             <arg name="paused" value="$(arg paused)" />
             <arg name="gazebo_gui" value="$(arg gazebo_gui)" />
             <arg name="urdf_path" value="$(arg urdf_path)" />
+            <arg name="robot_name" value="$(arg robot_name)" />
         </include>
     </group>
 
@@ -51,6 +56,12 @@
             <arg name="send_format" value="$(arg send_format)" />
             <arg name="recv_format" value="$(arg recv_format)" />
             <arg name="bcap_slave_control_cycle_msec" value="$(arg bcap_slave_control_cycle_msec)" />
+        </include>
+        <include file="$(find myrobot_moveit)/launch/multiple_rs_camera.launch">
+            <arg name="robot_name" value="$(arg robot_name)" />
+            <arg name="camera_serial_no_1" default="$(arg camera_serial_no_1)" />
+            <arg name="camera_serial_no_2" default="$(arg camera_serial_no_2)" />
+            <arg name="camera_serial_no_3" default="$(arg camera_serial_no_3)" />
         </include>
     </group>
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <robot name="myrobot" xmlns:xacro="http://wiki.ros.org/xacro">
+    <xacro:property name="robot_name" value="myrobot" />
     <gazebo>
         <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control">
             <robotNamespace>/myrobot</robotNamespace>
@@ -153,10 +154,10 @@
     <xacro:macro name="d435" params="prefix parent xyz:='0 0 0' rpy='0 0 0' publish_pointcloud:=true">
         <!-- <xacro:f_joint name="${prefix}_camera_base_joint" xyz="${xyz}" parent="${prefix}_J6" child="${prefix}_camera_base" />
         <link name="${prefix}_camera_base" /> -->
-        <xacro:sensor_d435 name="${prefix}_camera" topics_ns="${prefix}_camera" parent="${parent}" publish_pointcloud="0">
+        <xacro:sensor_d435 name="${prefix}_camera" topics_ns="/${robot_name}/${prefix}_camera" parent="${parent}" publish_pointcloud="0">
             <origin xyz="${xyz}" rpy="${rpy}" />
         </xacro:sensor_d435>
-        <xacro:gazebo_d435_override name="${prefix}_camera" topics_ns="${prefix}_camera" publish_pointcloud="1" />
+        <xacro:gazebo_d435_override name="${prefix}_camera" topics_ns="/${robot_name}/${prefix}_camera" publish_pointcloud="1" />
     </xacro:macro>
 
     <!-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->

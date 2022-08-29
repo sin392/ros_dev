@@ -1,0 +1,28 @@
+<launch>
+    <arg name="robot_name" default="myrobot" />
+    <arg name="camera_serial_no_1" default="032622073208" />
+    <arg name="camera_serial_no_2" default="" />
+    <arg name="camera_serial_no_3" default="" />
+
+
+    <group ns="/$(arg robot_name)">
+        <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+            <arg name="serial_no" value="$(arg camera_serial_no_1)" />
+            <arg name="camera" value="right_camera" />
+            <arg name="align_depth" value="true" />
+            <arg name="filters" value="pointcloud" />
+        </include>
+        <!-- <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+            <arg name="serial_no" value="$(arg camera_serial_no_2)" />
+            <arg name="camera" value="right_camera" />
+            <arg name="align_depth" value="true" />
+            <arg name="filters" value="pointcloud" />
+        </include>
+        <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+            <arg name="serial_no" value="$(arg camera_serial_no_3)" />
+            <arg name="camera" value="right_camera" />
+            <arg name="align_depth" value="true" />
+            <arg name="filters" value="pointcloud" />
+        </include> -->
+    </group>
+</launch>

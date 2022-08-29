@@ -4,6 +4,7 @@
   <arg name="gazebo_gui" default="true" />
   <arg name="urdf_path" default="$(find myrobot_description)/urdf/myrobot.urdf.xacro" />
   <!-- <arg name="world_path" default="$(find myrobot_description)/world/custom_world.wolrd" /> -->
+  <arg name="robot_name" default="myrobot" />
 
   <!-- startup simulated world -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -18,13 +19,13 @@
   <param name="robot_description" command="xacro $(arg urdf_path)" />
 
   <include file="$(find myrobot_moveit_config)/launch/gazebo_depth_converter.launch">
-    <arg name="ns" value="body_camera" />
+    <arg name="ns" value="/$(arg robot_name)/body_camera" />
   </include>
   <include file="$(find myrobot_moveit_config)/launch/gazebo_depth_converter.launch">
-    <arg name="ns" value="right_camera" />
+    <arg name="ns" value="/$(arg robot_name)/right_camera" />
   </include>
   <include file="$(find myrobot_moveit_config)/launch/gazebo_depth_converter.launch">
-    <arg name="ns" value="left_camera" />
+    <arg name="ns" value="/$(arg robot_name)/left_camera" />
   </include>
 
   <!-- push robot_description to factory and spawn robot in gazebo at the origin, change x,y,z arguments to spawn in a different position -->
