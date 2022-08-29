@@ -15,7 +15,7 @@
     <arg name="gazebo_gui" default="true" />
     <arg name="paused" default="true" />
     <arg name="debug" default="false" />
-      <arg name="load_robot_description" default="true" />
+    <arg name="load_robot_description" default="true" />
 
     <!-- remap -->
     <remap from="/joint_states" to="/myrobot/joint_states" />
@@ -32,14 +32,13 @@
         <rosparam param="source_list" subst_value="true">[/$(arg robot_name)/joint_states]</rosparam>
     </node>
 
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen" />
 
     <group if="$(arg sim)">
         <include file="$(find myrobot_moveit_config)/launch/gazebo.launch">
             <arg name="paused" value="$(arg paused)" />
             <arg name="gazebo_gui" value="$(arg gazebo_gui)" />
             <arg name="urdf_path" value="$(arg urdf_path)" />
-            <arg name="robot_name" value="$(arg robot_name)" />
         </include>
     </group>
 
