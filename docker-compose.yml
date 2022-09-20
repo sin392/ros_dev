@@ -2,7 +2,7 @@ version: "3.4"
 
 x-melodic-port: &melodic-port 11311
 # x-noetic-port: &noetic-port 11311
-x-ros-master-uri-env: &ros-master-uri-env ROS_MASTER_URI=http://${ROS_MASTER_DOMAIN}:11311
+x-ros-master-uri-env: &ros-master-uri-env ROS_MASTER_URI=http://${ROS_MASTER_DOMAIN:-ros_melodic}:11311
 x-melodic-src-mapping: &melodic-src-mapping ./src/melodic/:/home/${USER}/catkin_ws/src
 x-noetic-src-mapping: &noetic-src-mapping ./src/noetic/:/home/${USER}/catkin_ws/src
 x-melodic-output-mapping: &melodic-ouput-mapping ./outputs/melodic/:/home/${USER}/catkin_ws/outputs
@@ -19,13 +19,13 @@ x-common-setting: &common-setting
     - ros_dev_external
   # TODO: moveitの実行時のために特権つけてるが限定的な権限に置き換えたい
   privileged: true
-  deploy:
-    resources:
-      reservations:
-        devices:
-          - driver: nvidia
-            count: all
-            capabilities: [gpu]
+  # deploy:
+  #   resources:
+  #     reservations:
+  #       devices:
+  #         - driver: nvidia
+  #           count: all
+  #           capabilities: [gpu]
   command: bash -c "catkin clean -by && catkin build && /bin/bash"
 
 services:
