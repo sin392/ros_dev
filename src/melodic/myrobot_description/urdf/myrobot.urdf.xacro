@@ -85,10 +85,10 @@
 
     <!-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
 
-    <link name="world" />
+    <link name="base_link" />
     <!-- cart -->
     <xacro:box_link name="cart" size="${cart_sx} ${cart_sy} ${cart_sz}" />
-    <xacro:f_joint name="joint_cart" xyz="0 0 ${cart_sz / 2}" parent="world" child="cart" />
+    <xacro:f_joint name="joint_cart" xyz="0 0 ${cart_sz / 2}" parent="base_link" child="cart" />
 
     <!-- joint_back_base is right_J8 -->
     <xacro:a_joint name="joint_back" type="revolute" xyz="${(cart_sx - back_base_sx) / 2} 0 ${cart_sz / 2}" parent="cart" child="back" axis="0 0 1" low="-1.58824" up="1.58824" />
