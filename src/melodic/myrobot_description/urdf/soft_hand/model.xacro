@@ -1,0 +1,30 @@
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:macro name="soft_hand" params="prefix connected_to xyz rpy">
+        <joint name="${prefix}_soft_hand_base_joint" type="fixed">
+            <origin xyz="${xyz}" rpy="${rpy}" />
+            <parent link="${connected_to}" />
+            <child link="${prefix}_soft_hand_base_link" />
+        </joint>
+        <link name="${prefix}_soft_hand_base_link">
+            <visual>
+                <geometry>
+                    <mesh filename="package://myrobot_description/urdf/soft_hand/0F_top_asm_soft_gripper_v1.stl" scale="0.001 0.001 0.001" />
+                </geometry>
+                <origin xyz="0.0 0.0 0.138" rpy="${radians(90)} 0.0 0.0" />
+                <material name="gray">
+                    <color rgba="0.8 0.8 0.8 2.0" />
+                </material>
+            </visual>
+            <collision>
+                <geometry>
+                    <mesh filename="package://myrobot_description/urdf/soft_hand/0F_top_asm_soft_gripper_v1.stl" scale="0.001 0.001 0.001" />
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="4.0" />
+                <!-- TODO: compute by property of fusion360 -->
+                <inertia ixx="0.1" iyy="0.1" izz="0.1" ixy="0.1" ixz="0.1" iyz="0.1" />
+            </inertial>
+        </link>
+    </xacro:macro>
+</robot>

@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="test_soft_hand">
+    <xacro:include filename="$(find myrobot_description)/urdf/soft_hand/model.xacro" />
+    <link name="base_link" />
+    <xacro:soft_hand prefix="test" connected_to="base_link" xyz="0 0 0" rpy="0 0 0" />
+</robot>

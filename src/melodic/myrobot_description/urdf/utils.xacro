@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <!-- colors definition -->
+    <material name="red">
+        <!-- for revolute -->
+        <color rgba="1.0 0.5 0.5 2.0" />
+    </material>
+    <material name="green">
+        <!-- for prismatic -->
+        <color rgba="0.5 1.0 0.5 2.0" />
+    </material>
+    <material name="blue">
+        <color rgba="0.5 0.5 1.0 2.0" />
+    </material>
+    <material name="white">
+        <color rgba="1.0 1.0 1.0 2.0" />
+    </material>
+
+    <!-- name=joint is alreadey used in other files? -->
+    <xacro:macro name="f_joint" params="name parent child xyz:='0 0 0' rpy:='0 0 0'">
+        <joint name="${name}" type="fixed">
+            <origin xyz="${xyz}" rpy="${rpy}" />
+            <parent link="${parent}" />
+            <child link="${child}" />
+        </joint>
+    </xacro:macro>
+
+    <xacro:macro name="_gazebo_joint" params="joint trans reduction:=1">
+        <transmission name="${joint}_trans">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="${joint}">
+                <hardwareInterface>hardware_interface/${trans}</hardwareInterface>
+            </joint>
+            <actuator name="${joint}_motor">
+                <hardwareInterface>hardware_interface/${trans}</hardwareInterface>
+                <mechanicalReduction>${reduction}</mechanicalReduction>
+            </actuator>
+        </transmission>
+    </xacro:macro>
+
+    <xacro:macro name="a_joint" params="name parent child type axis xyz:='0 0 0' rpy:='0 0 0' eff:=500 low:=-2.967 up:=2.967 vel:=1 damp:=0 fric:=0 trans:=PositionJointInterface">
+        <joint name="${name}" type="${type}">
+            <origin xyz="${xyz}" rpy="${rpy}" />
+            <parent link="${parent}" />
+            <child link="${child}" />
+            <axis xyz="${axis}" />
+            <limit effort="${eff}" lower="${low}" upper="${up}" velocity="${vel}" />
+            <dynamics damping="${damp}" friction="${fric}" />
+        </joint>
+
+        <xacro:_gazebo_joint joint="${name}" trans="${trans}" />
+
+    </xacro:macro>
+
+    <xacro:macro name="_box" params="xyz:='0 0 0' rpy:='0 0 0' size:='0.1 0.1 0.1' mass:=1 color=white">
+        <visual>
+            <origin rpy="${rpy}" xyz="${xyz}" />
+            <geometry>
+                <box size="${size}" />
+            </geometry>
+            <material name="${color}" />
+        </visual>
+        <collision>
+            <origin rpy="${rpy}" xyz="${xyz}" />
+            <geometry>
+                <box size="${size}" />
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="${mass}" />
+            <origin rpy="${rpy}" xyz="${xyz}" />
+            <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
+        </inertial>
+    </xacro:macro>
+
+    <xacro:macro name="_cylinder" params="xyz:='0 0 0' rpy:='0 0 0' radius:=0.1 length=0.1  mass:=1 color=white">
+        <visual>
+            <origin rpy="${rpy}" xyz="${xyz}" />
+            <geometry>
+                <cylinder radius="${radius}" length="${length}" />
+            </geometry>
+            <material name="${color}" />
+        </visual>
+        <collision>
+            <origin rpy="${rpy}" xyz="${xyz}" />
+            <geometry>
+                <cylinder radius="${radius}" length="${length}" />
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="${mass}" />
+            <origin rpy="${rpy}" xyz="${xyz}" />
+            <inertia ixx="1" ixy="0" ixz="0" iyy="1" iyz="0" izz="1" />
+        </inertial>
+    </xacro:macro>
+
+    <xacro:macro name="box_link" params="name xyz:='0 0 0' rpy:='0 0 0' size:='0.1 0.1 0.1' mass:=1 color=white">
+        <link name="${name}">
+            <xacro:_box xyz="${xyz}" rpy="${rpy}" size="${size}" mass="${mass}" color="${color}" />
+        </link>
+    </xacro:macro>
+
+    <xacro:macro name="cylinder_link" params="name xyz:='0 0 0' rpy:='0 0 0' radius:=0.1 length:=0.1 mass:=1 color=white">
+        <link name="${name}">
+            <xacro:_box xyz="${xyz}" rpy="${rpy}" radius="${radius}" length="${length}" mass="${mass}" color="${color}" />
+        </link>
+    </xacro:macro>
+</robot>
