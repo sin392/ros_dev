@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="paused" default="true" />
-  <arg name="gazebo_gui" default="true" />
+  <arg name="paused" />
+  <arg name="gazebo_gui" />
   <arg name="urdf_path" />
   <arg name="world_path" />
   <arg name="robot_name" />
@@ -26,6 +26,7 @@
     <arg name="ns" value="/$(arg robot_name)/left_camera" />
   </include>
 
+
   <!-- push robot_description to factory and spawn robot in gazebo at the origin, change x,y,z arguments to spawn in a different position -->
   <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -unpause -param robot_description -model robot -x 0 -y 0 -z 0 
     -J joint_body 0.378
@@ -35,6 +36,6 @@
     -J left_joint_5 -0.6981 -J right_joint_5 -0.6981 
     " respawn="false" output="screen" />
 
-  <include file="$(find myrobot_moveit_config)/launch/ros_controllers.launch" />
+  <include file="$(find myrobot_v2_moveit_config)/launch/ros_controllers.launch" />
 
 </launch>
