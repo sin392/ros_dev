@@ -125,6 +125,6 @@
     <xacro:arm_with_soft_hand prefix="${prefix_2}" parent="${prefix_2}_sholder" xyz="${sholder_sx / 2} 0 ${sholder_sz / 2}" rpy="-${radians(90)} 0 -${radians(90)}" />
     <!-- left camera -->
     <!-- <xacro:d435 prefix="${prefix_2}" parent="${prefix_2}_J6" xyz="0.07 -0.07 0.15" rpy="${radians(-45)} ${radians(-90)} 0" publish_pointcloud="true" /> -->
-    <xacro:d435 prefix="${prefix_2}" parent="${prefix_2}_J6" xyz="0.07 -0.07 0.15" rpy="${radians(-45)} ${radians(-90)} 0" publish_pointcloud="true" />
+    <!-- <xacro:d435 prefix="${prefix_2}" parent="${prefix_2}_J6" xyz="0.07 -0.07 0.15" rpy="${radians(-45)} ${radians(-90)} 0" publish_pointcloud="true" /> -->
     <xacro:d435 prefix="${prefix_2}" parent="${prefix_2}_soft_hand_base_link" xyz="0 0 0.17" rpy="0 ${radians(-90)} 0" publish_pointcloud="true" />
 </robot>
