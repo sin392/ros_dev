@@ -75,8 +75,11 @@
     <xacro:property name="back_sy" value="0.144" />
     <xacro:property name="back_sz" value="0.86" />
 
+    <xacro:property name="sholder_base_sx" value="0.215" />
+    <xacro:property name="sholder_base_sy" value="0.02" />
+    <xacro:property name="sholder_base_sz" value="0.215" />
     <xacro:property name="sholder_sx" value="0.215" />
-    <xacro:property name="sholder_sy" value="0.215" />
+    <xacro:property name="sholder_sy" value="${0.215 + sholder_base_sy}" />
     <xacro:property name="sholder_sz" value="0.215" />
 
     <!-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
@@ -112,14 +115,14 @@
     <xacro:d435 prefix="body" parent="body" xyz="${body_sx + 0.1} 0 0.1" rpy="0 ${radians(45)} 0" publish_pointcloud="1" />
 
     <!-- right arm -->
-    <xacro:sholder prefix="${prefix_1}" parent="body" xyz="${body_sx / 2 + body_spacer_length} -${body_sy / 2 + body_side_spacer_length} 0" l_xyz="0 0 -${sholder_sz / 2}" rpy="-${radians(90)} 0 0" size="${sholder_sx} ${sholder_sy} ${sholder_sz}" low="-0.01745" up="1.58824" />
-    <xacro:arm_with_soft_hand prefix="${prefix_1}" parent="${prefix_1}_sholder" xyz="${sholder_sx / 2} 0 -${sholder_sz / 2}" rpy="-${radians(90)} 0 -${radians(90)}" />
+    <xacro:sholder prefix="${prefix_1}" parent="body" xyz="${body_sx / 2 + body_spacer_length} -${body_sy / 2 + body_side_spacer_length} 0" l_xyz="0 0 -${sholder_sz / 2}" rpy="-${radians(90)} 0 0" size="${sholder_sx} ${sholder_sy} ${sholder_sz + 0.02}" low="-0.01745" up="1.58824" />
+    <xacro:arm_with_soft_hand prefix="${prefix_1}" parent="${prefix_1}_sholder" xyz="${sholder_sx / 2} 0 -${sholder_sz / 2 + 0.02}" rpy="-${radians(90)} 0 -${radians(90)}" />
     <!-- right camera -->
     <xacro:d435 prefix="${prefix_1}" parent="${prefix_1}_J6" xyz="0.1 0 0" rpy="0 ${radians(-90)} 0" publish_pointcloud="true" />
 
     <!-- left arm -->
-    <xacro:sholder prefix="${prefix_2}" parent="body" xyz="${body_sx / 2 + body_spacer_length} ${body_sy / 2 + body_side_spacer_length} 0" l_xyz="0 0 ${sholder_sy / 2}" rpy="-${radians(90)} 0 0" size="${sholder_sx} ${sholder_sy} ${sholder_sz}" low="-0.01745" up="1.58824" />
-    <xacro:arm_with_soft_hand prefix="${prefix_2}" parent="${prefix_2}_sholder" xyz="${sholder_sx / 2} 0 ${sholder_sz / 2}" rpy="-${radians(90)} 0 -${radians(90)}" />
+    <xacro:sholder prefix="${prefix_2}" parent="body" xyz="${body_sx / 2 + body_spacer_length} ${body_sy / 2 + body_side_spacer_length} 0" l_xyz="0 0 ${sholder_sy / 2}" rpy="-${radians(90)} 0 0" size="${sholder_sx} ${sholder_sy} ${sholder_sz + 0.02}" low="-0.01745" up="1.58824" />
+    <xacro:arm_with_soft_hand prefix="${prefix_2}" parent="${prefix_2}_sholder" xyz="${sholder_sx / 2} 0 ${sholder_sz / 2 + 0.02}" rpy="-${radians(90)} 0 -${radians(90)}" />
     <!-- left camera -->
     <xacro:d435 prefix="${prefix_2}" parent="${prefix_2}_J6" xyz="0.1 0 0" rpy="0 ${radians(-90)} 0" publish_pointcloud="true" />
 </robot>
