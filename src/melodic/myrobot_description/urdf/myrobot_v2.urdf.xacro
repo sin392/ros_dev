@@ -70,11 +70,8 @@
     <xacro:property name="back_sy" value="0.144" />
     <xacro:property name="back_sz" value="0.86" />
 
-    <xacro:property name="sholder_base_sx" value="0.215" />
-    <xacro:property name="sholder_base_sy" value="0.02" />
-    <xacro:property name="sholder_base_sz" value="0.215" />
     <xacro:property name="sholder_sx" value="0.215" />
-    <xacro:property name="sholder_sy" value="${0.215 + sholder_base_sy}" />
+    <xacro:property name="sholder_sy" value="0.215" />
     <xacro:property name="sholder_sz" value="0.215" />
 
     <!-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
@@ -82,7 +79,7 @@
     <link name="base_link" />
     <!-- cart -->
     <link name="cart">
-        <xacro:_box size="${cart_sx} ${cart_sy} ${cart_sz}" />
+        <xacro:_box size="${cart_sx} ${cart_sy} ${cart_sz}" mass="100" />
         <xacro:_box size="${cart_box_sx} ${cart_box_sy} ${cart_box_sz}" xyz="-${(cart_sx - cart_box_sx) / 2} 0 ${(cart_sz + cart_box_sz) / 2}" />
     </link>
     <xacro:f_joint name="joint_cart" xyz="0 0 ${cart_sz / 2}" parent="base_link" child="cart" />
@@ -104,13 +101,13 @@
     <link name="body">
         <xacro:_cylinder xyz="${body_spacer_length / 2} 0 0" rpy="0 ${radians(90)} 0" radius="${body_spacer_radius}" length="${body_spacer_length}" color="green" />
         <xacro:_box xyz="${body_sx / 2 + body_spacer_length} 0 -${(body_sz) / 2 - body_spacer_radius}" size="${body_sx} ${body_sy} ${body_sz}" color="green" />
-        <xacro:_cylinder xyz="${body_sx / 2 + body_spacer_length} -${(body_sy + body_side_spacer_length) / 2} 0" rpy="${radians(90)} 0 0" radius="${body_side_spacer_radius}" length="${body_side_spacer_length}" color="green" />
-        <xacro:_cylinder xyz="${body_sx / 2 + body_spacer_length} ${(body_sy + body_side_spacer_length) /2} 0" rpy="${radians(90)} 0 0" radius="${body_side_spacer_radius}" length="${body_side_spacer_length}" color="green" />
+        <xacro:_cylinder xyz="${body_sx / 2 + body_spacer_length} -${(body_sy + body_side_spacer_length) / 2} -${(sholder_sz / 2) - body_side_spacer_radius}" rpy="${radians(90)} 0 0" radius="${body_side_spacer_radius}" length="${body_side_spacer_length}" color="green" />
+        <xacro:_cylinder xyz="${body_sx / 2 + body_spacer_length} ${(body_sy + body_side_spacer_length) /2} -${(sholder_sz / 2) - body_side_spacer_radius}" rpy="${radians(90)} 0 0" radius="${body_side_spacer_radius}" length="${body_side_spacer_length}" color="green" />
     </link>
     <xacro:d435 prefix="body" parent="body" xyz="${body_sx + 0.1} 0 0.1" rpy="0 ${radians(45)} 0" publish_pointcloud="1" />
 
     <!-- right arm -->
-    <xacro:a_joint name="${prefix_1}_joint_sholder" type="revolute" axis="0 0 1" parent="body" child="${prefix_1}_sholder" xyz="${body_sx / 2 + body_spacer_length} -${body_sy / 2 + body_side_spacer_length} 0" rpy="-${radians(90)} 0 0" low="-0.01745" up="1.58824" />
+    <xacro:a_joint name="${prefix_1}_joint_sholder" type="revolute" axis="0 0 1" parent="body" child="${prefix_1}_sholder" xyz="${body_sx / 2 + body_spacer_length} -${body_sy / 2 + body_side_spacer_length} -${(sholder_sz / 2) - body_side_spacer_radius}" rpy="-${radians(90)} 0 0" low="-0.01745" up="1.58824" />
     <link name="${prefix_1}_sholder">
         <xacro:_box xyz="0 0 0" size="${sholder_sx} ${sholder_sy} 0.02" color="red" />
         <xacro:_box xyz="${sholder_sx / 2 - 0.01} 0 -${sholder_sz / 2 + 0.01}" size="0.02 ${sholder_sy} ${sholder_sz}" color="red" />
@@ -120,7 +117,7 @@
     <xacro:d435 prefix="${prefix_1}" parent="${prefix_1}_J6" xyz="0.1 0 0" rpy="0 ${radians(-90)} 0" publish_pointcloud="true" />
 
     <!-- left arm -->
-    <xacro:a_joint name="${prefix_2}_joint_sholder" type="revolute" axis="0 0 1" parent="body" child="${prefix_2}_sholder" xyz="${body_sx / 2 + body_spacer_length} ${body_sy / 2 + body_side_spacer_length} 0" rpy="-${radians(90)} 0 0" low="-0.01745" up="1.58824" />
+    <xacro:a_joint name="${prefix_2}_joint_sholder" type="revolute" axis="0 0 1" parent="body" child="${prefix_2}_sholder" xyz="${body_sx / 2 + body_spacer_length} ${body_sy / 2 + body_side_spacer_length} -${(sholder_sz / 2) - body_side_spacer_radius}" rpy="-${radians(90)} 0 0" low="-0.01745" up="1.58824" />
     <link name="${prefix_2}_sholder">
         <xacro:_box xyz="0 0 0" size="${sholder_sx} ${sholder_sy} 0.02" color="red" />
         <xacro:_box xyz="${sholder_sx / 2 - 0.01} 0 ${sholder_sz / 2 + 0.01}" size="0.02 ${sholder_sy} ${sholder_sz}" color="red" />
