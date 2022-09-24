@@ -87,7 +87,7 @@
 
     <link name="base_link" />
     <!-- cart -->
-    <xacro:box_link name="cart" size="${cart_sx} ${cart_sy} ${cart_sz}" />
+    <xacro:box_link name="cart" size="${cart_sx} ${cart_sy} ${cart_sz}" mass="100" />
     <xacro:f_joint name="joint_cart" xyz="0 0 ${cart_sz / 2}" parent="base_link" child="cart" />
 
     <!-- joint_back_base is right_J8 -->
