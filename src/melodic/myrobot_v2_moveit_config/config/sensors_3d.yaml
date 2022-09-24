@@ -4,6 +4,6 @@ sensors:
     point_cloud_topic: /myrobot/body_camera/depth/color/points
     max_update_rate: 1.0
     max_range: 5.0
-    padding_offset: 0.1
-    padding_scale: 1.0
+    padding_offset: 0.2
+    padding_scale: 1
     point_subsample: 1
