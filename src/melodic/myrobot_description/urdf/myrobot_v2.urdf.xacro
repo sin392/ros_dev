@@ -29,13 +29,7 @@
         <xacro:vs087 prefix="${prefix}" />
         <xacro:soft_hand prefix="${prefix}" connected_to="${prefix}_J6" xyz="0 0 0" rpy="0 0 0" />
         <xacro:f_joint name="${prefix}_joint_tip" xyz="0 0 0.3425" parent="${prefix}_soft_hand_base_link" child="${prefix}_soft_hand_tip" />
-        <link name="${prefix}_soft_hand_tip">
-            <visual>
-                <geometry>
-                    <box size="0.01 0.01 0.01" />
-                </geometry>
-            </visual>
-        </link>
+        <link name="${prefix}_soft_hand_tip" />
     </xacro:macro>
 
     <xacro:macro name="d435" params="prefix parent xyz:='0 0 0' rpy='0 0 0' publish_pointcloud:=true">
