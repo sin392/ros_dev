@@ -19,13 +19,13 @@ x-common-setting: &common-setting
     - ros_dev_external
   # TODO: moveitの実行時のために特権つけてるが限定的な権限に置き換えたい
   privileged: true
-  # deploy:
-  #   resources:
-  #     reservations:
-  #       devices:
-  #         - driver: nvidia
-  #           count: all
-  #           capabilities: [gpu]
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
   command: bash -c "catkin clean -by && catkin build && /bin/bash"
 
 services:
