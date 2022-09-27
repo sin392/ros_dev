@@ -16,7 +16,8 @@
   <!-- send robot urdf to param server -->
   <param name="robot_description" command="xacro $(arg urdf_path)" />
 
-  <include file="$(find myrobot_moveit)/launch/gazebo_depth_converter.launch">
+
+  <!-- <include file="$(find myrobot_moveit)/launch/gazebo_depth_converter.launch">
     <arg name="ns" value="/$(arg robot_name)/body_camera" />
   </include>
   <include file="$(find myrobot_moveit)/launch/gazebo_depth_converter.launch">
@@ -24,7 +25,7 @@
   </include>
   <include file="$(find myrobot_moveit)/launch/gazebo_depth_converter.launch">
     <arg name="ns" value="/$(arg robot_name)/left_camera" />
-  </include>
+  </include> -->
 
 
   <!-- push robot_description to factory and spawn robot in gazebo at the origin, change x,y,z arguments to spawn in a different position -->

@@ -11,8 +11,11 @@ Panels:
         - /MotionPlanning1/Planned Path1
         - /Right1
         - /Left1
+        - /Left2
+        - /Body1
+        - /Right2
       Splitter Ratio: 0.7425600290298462
-    Tree Height: 528
+    Tree Height: 417
   - Class: rviz/Help
     Name: Help
   - Class: rviz/Views
@@ -609,7 +612,7 @@ Visualization Manager:
       Value: true
       Velocity_Scaling_Factor: 1
     - Class: rviz/Image
-      Enabled: true
+      Enabled: false
       Image Topic: /myrobot/right_camera/color/image_raw
       Max Value: 1
       Median window: 5
@@ -619,7 +622,7 @@ Visualization Manager:
       Queue Size: 2
       Transport Hint: compressed
       Unreliable: false
-      Value: true
+      Value: false
     - Class: rviz/Image
       Enabled: true
       Image Topic: /myrobot/left_camera/color/image_raw
@@ -632,6 +635,54 @@ Visualization Manager:
       Transport Hint: compressed
       Unreliable: false
       Value: true
+    - Class: rviz/Image
+      Enabled: true
+      Image Topic: /myrobot/left_camera/aligned_depth_to_color/image_raw
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: Left
+      Normalize Range: true
+      Queue Size: 2
+      Transport Hint: compressedDepth
+      Unreliable: false
+      Value: true
+    - Class: rviz/Image
+      Enabled: false
+      Image Topic: /myrobot/body_camera/aligned_depth_to_color/image_raw
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: Body
+      Normalize Range: true
+      Queue Size: 2
+      Transport Hint: compressedDepth
+      Unreliable: false
+      Value: false
+    - Class: rviz/Image
+      Enabled: false
+      Image Topic: /myrobot/right_camera/aligned_depth_to_color/image_raw
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: Right
+      Normalize Range: true
+      Queue Size: 2
+      Transport Hint: compressedDepth
+      Unreliable: false
+      Value: false
+    - Class: rviz/Image
+      Enabled: false
+      Image Topic: /myrobot/body_camera/color/image_raw
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: Body
+      Normalize Range: true
+      Queue Size: 2
+      Transport Hint: compressed
+      Unreliable: false
+      Value: false
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -648,30 +699,32 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 2.996500015258789
+      Distance: 2.6369199752807617
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.42058396339416504
-        Y: 0.9618666172027588
+        X: 1.740752100944519
+        Y: 0.7670466899871826
         Z: -4.91737750962784e-7
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.8097965717315674
+      Pitch: 0.28979647159576416
       Target Frame: base_link
       Value: XYOrbit (rviz)
-      Yaw: 2.4967639446258545
+      Yaw: 0.8867638111114502
     Saved: ~
 Window Geometry:
+  Body:
+    collapsed: false
   Displays:
     collapsed: false
-  Height: 1855
+  Height: 1920
   Help:
     collapsed: false
   Hide Left Dock: false
@@ -682,11 +735,11 @@ Window Geometry:
     collapsed: false
   MotionPlanning - Trajectory Slider:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd00000001000000000000036a000006adfc0200000008fb000000100044006900730070006c0061007900730100000069000002740000017800fffffffb0000000800480065006c00700000000342000000bb000000cf00fffffffb0000000a0056006900650077007300000003b0000000b00000012300fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e00670100000374000001890000000000000000fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000002100000021fb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e006701000002e9000003370000028b00fffffffc0000062c000000ea0000005601000034fa000000000100000002fb0000000a0052006900670068007401000000000000036a0000008000fffffffb00000008004c0065006600740100000000ffffffff0000006e00ffffff00000741000006ad00000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000001000000000000036a000006eefc0200000009fb000000100044006900730070006c0061007900730100000069000002050000017800fffffffb0000000800480065006c00700000000342000000bb000000cf00fffffffb0000000a0056006900650077007300000003b0000000b00000012300fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e00670100000374000001890000000000000000fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000002100000021fb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e0067010000027a000003240000028b00fffffffc000005aa000000c00000005601000034fa000000000100000003fb00000008004c0065006600740100000000ffffffff0000006e00fffffffb0000000a0052006900670068007401000000000000036a0000008000fffffffb000000080042006f006400790100000000ffffffff0000007d00fffffffc00000676000000e10000005601000034fa000000000100000003fb00000008004c00650066007401000000000000036a0000006e00fffffffb0000000a005200690067006800740100000000ffffffff0000008000fffffffb000000080042006f006400790100000000ffffffff0000007d00ffffff00000812000006ee00000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Right:
     collapsed: false
   Views:
     collapsed: false
-  Width: 2743
-  X: 459
-  Y: 54
+  Width: 2952
+  X: 645
+  Y: 297

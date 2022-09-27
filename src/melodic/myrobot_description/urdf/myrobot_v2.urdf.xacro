@@ -9,8 +9,7 @@
 
     <xacro:include filename="$(find denso_robot_descriptions)/vs087_description/vs087.urdf.xacro" />
     <xacro:include filename="$(find franka_description)/robots/panda_gazebo.xacro" />
-    <xacro:include filename="$(find realsense2_description)/urdf/_d435.urdf.xacro" />
-    <xacro:include filename="$(find myrobot_description)/urdf/gazebo_d435_override.xacro" />
+    <xacro:include filename="$(find myrobot_description)/urdf/camera/_d435.urdf.xacro" />
     <xacro:include filename="$(find myrobot_description)/urdf/soft_hand/model.xacro" />
     <xacro:include filename="$(find myrobot_description)/urdf/utils.xacro" />
 
@@ -33,10 +32,9 @@
     </xacro:macro>
 
     <xacro:macro name="d435" params="prefix parent xyz:='0 0 0' rpy='0 0 0' publish_pointcloud:=true">
-        <xacro:sensor_d435 name="${prefix}_camera" topics_ns="/${robot_name}/${prefix}_camera" parent="${parent}" publish_pointcloud="0">
+        <xacro:sensor_d435 name="${prefix}_camera" topics_ns="/${robot_name}/${prefix}_camera" parent="${parent}" publish_pointcloud="1">
             <origin xyz="${xyz}" rpy="${rpy}" />
         </xacro:sensor_d435>
-        <xacro:gazebo_d435_override name="${prefix}_camera" topics_ns="/${robot_name}/${prefix}_camera" publish_pointcloud="1" />
     </xacro:macro>
 
     <!-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
