@@ -61,12 +61,12 @@ private:
 private:
   hardware_interface::JointStateInterface m_JntStInterface;
   hardware_interface::PositionJointInterface m_PosJntInterface;
-  double m_cmd[JOINT_MAX];
-  double m_pos[JOINT_MAX];
+  double m_cmd[JOINT_MAX]; 
+  double m_pos[JOINT_MAX]; // 現在のジョイント値(処理後)
   double m_vel[JOINT_MAX];
   double m_eff[JOINT_MAX];
-  int m_type[JOINT_MAX];
-  std::vector<double> m_joint;
+  int m_type[JOINT_MAX]; // ジョイントタイプ, 0->スライド, 1->回転
+  std::vector<double> m_joint; // 現在のジョイント値(処理前)
 
   DensoRobotCore_Ptr m_eng;
   DensoController_Ptr m_ctrl;
