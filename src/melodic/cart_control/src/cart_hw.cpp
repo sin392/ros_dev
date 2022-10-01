@@ -156,7 +156,7 @@ HRESULT CartHW::Initialize()
         m_pos[i] = 0.0;
         break;
     }
-    m_cmd[i] = m_pos[i];
+    // m_cmd[i] = m_pos[i];
   }
   registerInterface(&m_JntStInterface);
   registerInterface(&m_PosJntInterface);
@@ -322,27 +322,44 @@ void CartHW::write(ros::Time time, ros::Duration period)
 
   if (m_eng->get_Mode() != DensoRobot::SLVMODE_NONE)
   {
-    std::vector<double> pose;
-    pose.resize(JOINT_MAX);
+    std::vector<double> pose(m_joint);
+    // pose.resize(JOINT_MAX);
     int bits = 0x0000;
     for (int i = 0; i < m_robJoints; i++)
     {
-      switch (m_type[i])
-      {
-        case 0:  // prismatic
-          pose[i] = M2MM(m_cmd[i]);
-          break;
-        case 1:  // revolute
-          pose[i] = RAD2DEG(m_cmd[i]);
-          break;
-        case -1:  // fixed
-        default:
-          pose[i] = 0.0;
-          break;
-      }
+      // TODO: m_cmd[i]の初期値によって最初のロボットの動作が不安定になる問題。
+      // コンストラクタではm_cmd[i]は0になるようにしてあるが、
+      // controllerが立ち上がるとなぜか別の値に初期化される。
+      // 現時点ではコントローラーが立ち上がったのを確認してから
+      // rostopic pub -1 /cart/left_left_wheel_controller/command std_msgs/Float64 "data: 0"
+      // みたいな感じにコントローラに指令値0をパブリッシュするノードを作るくらいしか思いつかない
+
+      pose[i] += m_cmd[i];
+      // switch (m_type[i])
+      // {
+      //   case 0:  // prismatic
+      //     pose[i] = M2MM(m_cmd[i]);
+      //     break;
+      //   case 1:  // revolute
+      //     pose[i] = RAD2DEG(m_cmd[i]);
+      //     break;
+      //   case -1:  // fixed
+      //   default:
+      //     pose[i] = 0.0;
+      //     break;
+      // }
       bits |= (1 << i);
     }
     pose.push_back(0x400000 | bits);
+
+    // std::cout << "#####" << std::endl;
+    // for(auto i : m_cmd) std::cout << i << " ";
+    // std::cout << std::endl;
+    // for(auto i : pose) std::cout << i << " ";
+    // std::cout << std::endl;
+    // for(auto i : m_joint) std::cout << i << " ";
+    // std::cout << std::endl;
+    // std::cout << "#####" << std::endl;
 
     HRESULT hr = m_rob->ExecSlaveMove(pose, m_joint);
 
