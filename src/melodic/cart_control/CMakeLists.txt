@@ -128,11 +128,15 @@ add_executable(${PROJECT_NAME}
   src/${PROJECT_NAME}.cpp
   src/cart_hw.cpp
 )
+add_executable(joy_twist_publisher src/joy_twist_publisher.cpp)
+add_executable(twist_to_controller_command src/twist_to_controller_command.cpp)
 
 target_link_libraries(${PROJECT_NAME}
   ${denso_robot_core_LIBRARIES}
   ${catkin_LIBRARIES}
 )
+target_link_libraries(joy_twist_publisher ${catkin_LIBRARIES})
+target_link_libraries(twist_to_controller_command ${catkin_LIBRARIES})
 
 #############
 ## Install ##

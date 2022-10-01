@@ -42,6 +42,7 @@ services:
       - *melodic-src-mapping
       - *x11-mapping
       - *melodic-ouput-mapping
+      - /dev/input/js0:/dev/input/js0
     ports:
       - *melodic-port
     environment:
