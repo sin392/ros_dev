@@ -1,6 +1,5 @@
-geometry_msgs/PointStamped p1
-geometry_msgs/PointStamped p2
-geometry_msgs/PoseStamped center
-float32 radius
-float32 width
-float32 height
+geometry_msgs/Point p1
+geometry_msgs/Point p2
+geometry_msgs/Pose center_pose
+float32 short_radius
+float32 long_radius
