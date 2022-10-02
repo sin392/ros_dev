@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Override ip_address argument -->
+    <arg name="ip_address" default="192.168.11.103" />
+    <!-- b-CAP Slave motion control cycle [millisecond] -->
+    <arg name="bcap_slave_control_cycle_msec" default="8" />
+    <!-- hard coded as Send format == 0, Recieve format == 2 in cart_hw.cpp -->
+
+    <include file="$(find bcap_service)/launch/bcap_service.launch.xml">
+        <arg name="ip_address" value="$(arg ip_address)" />
+    </include>
+
+    <include file="$(find denso_robot_core)/launch/denso_robot_core.launch.xml">
+        <arg name="bcap_slave_control_cycle_msec" value="$(arg bcap_slave_control_cycle_msec)" />
+    </include>
+
+
+    <param name="controller_type" value="8" />
+    <param name="robot_name" value="MC8" />
+    <param name="robot_joints" value="4" />
+    <param name="joint_1" value="1" />
+    <param name="joint_2" value="1" />
+    <param name="joint_3" value="1" />
+    <param name="joint_4" value="1" />
+    <param name="joint_1_name" value="right_left_wheel" />
+    <param name="joint_2_name" value="right_right_wheel" />
+    <param name="joint_3_name" value="left_right_wheel" />
+    <param name="joint_4_name" value="left_left_wheel" />
+    <!-- 台車に関してarm_group == 0 はJ1だけの設定になっていて変更不可 -->
+    <!-- arm_group == 1 でJ1~J4とした -->
+    <!-- ペンダントで「基本画面 - [F2 アーム] - [F12 保守] - [F10 軸設定] - [F1 アームグループ]」から確認 -->
+    <param name="arm_group" value="1" />
+</launch> 

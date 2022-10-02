@@ -1,0 +1,25 @@
+<launch>
+    <!-- Override ip_address argument -->
+    <arg name="ip_address_cart" default="192.168.11.103" />
+    <!-- Override robot_name argument -->
+    <arg name="robot_name" default="myrobot" />
+
+    <!-- following params to be wanted to be placed under the each node -->
+    <!-- Controller -->
+    <!-- <rosparam ns="/$(arg robot_name)" file="$(find myrobot_description)/$(arg robot_name).yaml" /> -->
+    <group ns="/$(arg robot_name)/cart">
+        <include file="$(find cart_control)/config/cart_config.launch.xml">
+            <arg name="ip_address" value="$(arg ip_address_cart)" />
+        </include>
+        <node name="cart_control" pkg="cart_control" type="cart_control" output="screen" />
+    </group>
+
+    <rosparam file="$(find cart_control)/config/cart_control.yaml" command="load" />
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/myrobot/cart" args="
+        /cart/right_left_wheel_controller
+        /cart/right_right_wheel_controller
+        /cart/left_right_wheel_controller
+        /cart/left_left_wheel_controller
+    " />
+
+</launch>
