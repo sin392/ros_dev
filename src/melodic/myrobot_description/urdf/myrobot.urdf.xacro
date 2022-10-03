@@ -11,7 +11,7 @@
     <!-- <xacro:include filename="$(find franka_description)/robots/hand.xacro" /> -->
     <xacro:include filename="$(find franka_description)/robots/panda_gazebo.xacro" />
     <!-- <xacro:include filename="$(find franka_description)/robots/utils.xacro" /> -->
-    <xacro:include filename="$(find realsense2_description)/urdf/camera/_d435.urdf.xacro" />
+    <xacro:include filename="$(find myrobot_description)/urdf/camera/_d435.urdf.xacro" />
     <xacro:include filename="$(find myrobot_description)/urdf/utils.xacro" />
 
     <xacro:macro name="sholder" params="prefix parent xyz l_xyz rpy size up low">
