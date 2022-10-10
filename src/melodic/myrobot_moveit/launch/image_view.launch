@@ -1,0 +1,10 @@
+<launch>
+    <arg name="robot_name" default="myrobot" />
+    <arg name="body_topic" default="/$(arg robot_name)/body_camera/color/image_raw" />
+    <arg name="right_topic" default="/$(arg robot_name)/right_camera/color/image_raw" />
+    <arg name="left_topic" default="/$(arg robot_name)/left_camera/color/image_raw" />
+
+    <node name="body_view" pkg="rqt_image_view" type="rqt_image_view" args="$(arg body_topic)" />
+    <node name="right_view" pkg="rqt_image_view" type="rqt_image_view" args="$(arg right_topic)" />
+    <node name="left_view" pkg="rqt_image_view" type="rqt_image_view" args="$(arg left_topic)" />
+</launch>
