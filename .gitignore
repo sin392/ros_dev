@@ -1,5 +1,6 @@
 .vscode
 src/**
+outputs/*/**
 
 !outputs/melodic
 !outputs/noetic
