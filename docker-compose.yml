@@ -67,6 +67,7 @@ services:
     environment:
       - DISPLAY=${DISPLAY}
       - *ros-master-uri-env
+      - PYTHONPATH=/home/${USER}/catkin_ws/src/detect/scripts:${PYTHONPATH}
 
 networks:
   ros_dev_external:
