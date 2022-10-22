@@ -43,6 +43,11 @@ services:
       - *x11-mapping
       - *melodic-ouput-mapping
       - /dev/input/js0:/dev/input/js0
+      - ./src/noetic/detect/action:/home/${USER}/catkin_ws/src/detect/action
+      - ./src/noetic/detect/msg:/home/${USER}/catkin_ws/src/detect/msg
+      - ./src/noetic/detect/srv:/home/${USER}/catkin_ws/src/detect/srv
+      - ./src/noetic/detect/package.xml:/home/${USER}/catkin_ws/src/detect/package.xml
+      - ./src/noetic/detect/CMakeLists.txt:/home/${USER}/catkin_ws/src/detect/CMakeLists.txt
     ports:
       - *melodic-port
     environment:
