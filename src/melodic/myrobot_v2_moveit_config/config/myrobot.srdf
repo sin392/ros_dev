@@ -58,7 +58,7 @@
     </group_state>
     <group_state name="base_start" group="base">
         <joint name="joint_back" value="0" />
-        <joint name="joint_body" value="0.378" />
+        <joint name="joint_body" value="0.358" />
     </group_state>
     <group_state name="left_arm_default" group="left_arm">
         <joint name="left_joint_1" value="0" />
@@ -116,7 +116,7 @@
     </group_state>
     <group_state name="base_and_arms_start" group="base_and_arms">
         <joint name="joint_back" value="0" />
-        <joint name="joint_body" value="0.378" />
+        <joint name="joint_body" value="0.358" />
         <joint name="left_joint_1" value="0" />
         <joint name="left_joint_2" value="-0.5235" />
         <joint name="left_joint_3" value="-0.349" />
