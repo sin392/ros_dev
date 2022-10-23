@@ -19,6 +19,7 @@
                 <geometry>
                     <mesh filename="package://myrobot_description/urdf/soft_hand/0F_top_asm_soft_gripper_v1_reduced.stl" scale="0.001 0.001 0.001" />
                 </geometry>
+                <origin xyz="0.0 0.0 0.138" rpy="${radians(90)} 0.0 0.0" />
             </collision>
             <inertial>
                 <mass value="4.0" />
