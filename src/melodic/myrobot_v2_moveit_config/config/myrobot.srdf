@@ -107,12 +107,12 @@
         <joint name="left_joint_6" value="0" />
         <joint name="left_joint_sholder" value="1.5707" />
         <joint name="right_joint_1" value="0" />
-        <joint name="right_joint_2" value="-1.5707" />
-        <joint name="right_joint_3" value="-1.5707" />
+        <joint name="right_joint_2" value="1.5707" />
+        <joint name="right_joint_3" value="1.5707" />
         <joint name="right_joint_4" value="0" />
         <joint name="right_joint_5" value="0" />
         <joint name="right_joint_6" value="0" />
-        <joint name="right_joint_sholder" value="-1.5707" />
+        <joint name="right_joint_sholder" value="1.5707" />
     </group_state>
     <group_state name="base_and_arms_start" group="base_and_arms">
         <joint name="joint_back" value="0" />
