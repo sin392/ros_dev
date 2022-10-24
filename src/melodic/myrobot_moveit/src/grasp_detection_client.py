@@ -6,14 +6,14 @@ from sensor_msgs.msg import Image
 from actionlib import SimpleActionClient
 from detect.msg import GraspDetectionAction, GraspDetectionGoal
 
-class GraspDetectionClient:
-    def __init__(self, name, fps, image_topic, depth_topic):
+# ref: https://qiita.com/ynott/items/8acd03434569e23612f1
+class GraspDetectionClient(SimpleActionClient, object):
+    def __init__(self, fps, image_topic, depth_topic, ns="grasp_detection_server", ActionSpec=GraspDetectionAction):
+        super(GraspDetectionClient, self).__init__(ns, ActionSpec)
         delay = 1 / fps * 0.5
 
         # Subscribers
         subscribers = [mf.Subscriber(topic, Image) for topic in (image_topic, depth_topic)]
-        # Action Client
-        self.cli = SimpleActionClient(name, GraspDetectionAction)
         # Others
         self.bridge = CvBridge()
         self.request = None
@@ -21,8 +21,8 @@ class GraspDetectionClient:
         self.ts = mf.ApproximateTimeSynchronizer(subscribers, 10, delay)
         self.ts.registerCallback(self.callback)
 
-        self.cli.wait_for_server()
-        
+        self.wait_for_server()
+
     def callback(self, img_msg, depth_msg):
         try:
             self.request = GraspDetectionGoal(img_msg, depth_msg)
@@ -34,8 +34,8 @@ class GraspDetectionClient:
         # wait for getting new images
         while self.request is None or self.ts.last_added <= last_added:
             pass
-        self.cli.send_goal_and_wait(self.request)
-        res = self.cli.get_result().objects
+        self.send_goal_and_wait(self.request)
+        res = self.get_result().objects
         return res
 
 
@@ -47,7 +47,6 @@ if __name__ == "__main__":
     depth_topic = rospy.get_param("depth_topic")
 
     cli = GraspDetectionClient(
-        "grasp_detection_server",
         fps=fps,
         image_topic=image_topic,
         depth_topic=depth_topic,

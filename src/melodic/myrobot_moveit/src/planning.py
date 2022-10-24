@@ -77,7 +77,7 @@ class Myrobot:
 
         self.mv_handler = MoveGroupHandler(mv_left_arm, mv_base_to_arms)
         
-        self.gd_cli = GraspDetectionClient("grasp_detection_client", 
+        self.gd_cli = GraspDetectionClient( 
             fps=1, 
             image_topic="/myrobot/body_camera/color/image_raw", 
             depth_topic="/myrobot/body_camera/aligned_depth_to_color/image_raw"
@@ -113,9 +113,9 @@ if __name__ == "__main__":
 
     myrobot.info()
 
-    rate = rospy.Rate(0.1)
-    if not rospy.is_shutdown():
-        res = myrobot.detect()
-        print(res)
-        
+    rate = rospy.Rate(0.5)
+    while not rospy.is_shutdown():
+        objects = myrobot.detect()
+        print("objects: {}".format(len(objects)))
+
         rate.sleep()
