@@ -133,8 +133,8 @@
         <joint name="right_joint_sholder" value="0" />
     </group_state>
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
-    <end_effector name="left_eef" parent_link="left_soft_hand_tip" group="left_arm" parent_group="left_hand" />
-    <end_effector name="right_eef" parent_link="right_soft_hand_tip" group="right_arm" parent_group="right_hand" />
+    <end_effector name="left_eef" parent_link="left_soft_hand_tip" group="left_hand" parent_group="left_arm"/>
+    <end_effector name="right_eef" parent_link="right_soft_hand_tip" group="right_hand" parent_group="right_arm"/>
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="back" link2="body" reason="Adjacent" />
     <disable_collisions link1="back" link2="body_camera_link" reason="Never" />
