@@ -58,7 +58,7 @@ Visualization Manager:
       MoveIt_Allow_Sensor_Positioning: false
       MoveIt_Planning_Attempts: 10
       MoveIt_Planning_Time: 5
-      MoveIt_Use_Cartesian_Path: false
+      MoveIt_Use_Cartesian_Path: true
       MoveIt_Use_Constraint_Aware_IK: true
       MoveIt_Warehouse_Host: 127.0.0.1
       MoveIt_Warehouse_Port: 33829
@@ -742,4 +742,4 @@ Window Geometry:
     collapsed: false
   Width: 2952
   X: 645
-  Y: 297
+  Y: 405
