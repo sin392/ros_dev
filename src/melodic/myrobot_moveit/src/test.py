@@ -126,7 +126,7 @@ current_joint_values = move_group_3.get_current_joint_values()
 # active_joints = move_group_3.get_active_joints()
 # current_joint_values_dict = dict(zip(active_joints, current_joint_values))
 # update_dict = current_joint_values_dict
-# update_dict.update({"joint_back": 0, "joint_body": 0.378})
+# update_dict.update({"joint_back": 0, "joint_body": 0.358})
 
 # move_group_2.set_joint_value_target(update_dict)
 # move_group_2.go()
