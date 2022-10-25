@@ -67,8 +67,8 @@
 
     <link name="base_link" />
     <!-- cart -->
-    <link name="cart" mass="${cart_mass}">
-        <xacro:_box size="${cart_sx} ${cart_sy} ${cart_sz}" mass="100" />
+    <link name="cart">
+        <xacro:_box size="${cart_sx} ${cart_sy} ${cart_sz}" mass="${cart_mass}"/>
         <xacro:_box size="${cart_box_sx} ${cart_box_sy} ${cart_box_sz}" xyz="-${(cart_sx - cart_box_sx) / 2} 0 ${(cart_sz + cart_box_sz) / 2}" />
     </link>
     <gazebo reference="cart">
