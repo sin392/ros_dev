@@ -46,6 +46,7 @@
     <xacro:property name="cart_sx" value="1.088" />
     <xacro:property name="cart_sy" value="0.663" />
     <xacro:property name="cart_sz" value="0.294" />
+    <xacro:property name="cart_mass" value="100" />
 
     <xacro:property name="cart_box_sx" value="0.618" />
     <xacro:property name="cart_box_sy" value="0.663" />
@@ -76,10 +77,14 @@
 
     <link name="base_link" />
     <!-- cart -->
-    <link name="cart">
+    <link name="cart" mass="${cart_mass}">
         <xacro:_box size="${cart_sx} ${cart_sy} ${cart_sz}" mass="100" />
         <xacro:_box size="${cart_box_sx} ${cart_box_sy} ${cart_box_sz}" xyz="-${(cart_sx - cart_box_sx) / 2} 0 ${(cart_sz + cart_box_sz) / 2}" />
     </link>
+    <gazebo reference="cart">
+        <mu1>100.0</mu1>
+        <mu2>100.0</mu2>
+    </gazebo>
     <xacro:f_joint name="joint_cart" xyz="0 0 ${cart_sz / 2}" parent="base_link" child="cart" />
 
     <!-- joint_back_base is right_J8 -->

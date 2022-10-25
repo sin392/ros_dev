@@ -17,10 +17,30 @@
     </group>
     <group name="left_hand">
         <link name="left_soft_hand_base_link" />
+        <link name="left_camera_bottom_screw_frame" />
+        <link name="left_camera_link" />
+        <link name="left_camera_depth_frame" />
+        <link name="left_camera_color_frame" />
+        <link name="left_camera_color_optical_frame" />
+        <link name="left_camera_depth_optical_frame" />
+        <link name="left_camera_left_ir_frame" />
+        <link name="left_camera_left_ir_optical_frame" />
+        <link name="left_camera_right_ir_frame" />
+        <link name="left_camera_right_ir_optical_frame" />
         <link name="left_soft_hand_tip" />
     </group>
     <group name="right_hand">
         <link name="right_soft_hand_base_link" />
+        <link name="right_camera_bottom_screw_frame" />
+        <link name="right_camera_link" />
+        <link name="right_camera_depth_frame" />
+        <link name="right_camera_color_frame" />
+        <link name="right_camera_color_optical_frame" />
+        <link name="right_camera_depth_optical_frame" />
+        <link name="right_camera_left_ir_frame" />
+        <link name="right_camera_left_ir_optical_frame" />
+        <link name="right_camera_right_ir_frame" />
+        <link name="right_camera_right_ir_optical_frame" />
         <link name="right_soft_hand_tip" />
     </group>
     <group name="arms">
