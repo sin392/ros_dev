@@ -13,6 +13,13 @@ from tf.transformations import quaternion_from_euler
 
 from octomap_handler import OctomapHandler
 
+class Angle:
+    deg_to_rad_ratio = math.pi / 180
+
+    @classmethod
+    def deg_to_rad(cls, degree):
+        return cls.deg_to_rad_ratio * degree
+
 class MoveGroup(mc.MoveGroupCommander):
     def __init__(self, name, parent=None):
         super(MoveGroup, self).__init__(name)
@@ -20,7 +27,7 @@ class MoveGroup(mc.MoveGroupCommander):
         # self.next = mc.MoveGroupCommander(next_name)
 
     def get_current_joint_dict(self):
-        return dict(zip(self.get_active_joints, self.get_current_joint_values))
+        return dict(zip(self.get_active_joints(), self.get_current_joint_values()))
 
 class MoveGroupHandler:
     def __init__(self, start_move_group, whole_move_group):
@@ -38,16 +45,23 @@ class MoveGroupHandler:
         self.whole_move_group.execute(plan)
 
 
-    def plan(self, joints={}, **kwargs):
+    def plan(self, joints={}, is_degree=False, **kwargs):
         # if plan failed, switch move_group & plan again
-        merged_joints = self.whole_move_group.get_current_joint_dict()
-        merged_joints.update(joints)
-        merged_joints.update(kwargs)
-        
-        return self.current_move_group.plan(merged_joints)
+        new_joints = joints
+        new_joints.update(kwargs)
+        if is_degree:
+            new_joints = { k:Angle.deg_to_rad(v)  for k,v in new_joints.items()}
 
-    def execute(self, plan):
-        self.current_move_group.execute(plan)
+        merged_joints = self.whole_move_group.get_current_joint_dict()
+        merged_joints.update(new_joints)
+        
+        return self.whole_move_group.plan(merged_joints)
+
+    def execute(self, plan, wait):
+        return self.whole_move_group.execute(plan, wait=wait)
+
+    def pick(self, object_name, grasps):
+        self.current_move_group.pick(object_name, grasps)
 
     def get_current_name(self):
         return self.current_move_group.get_name()
@@ -63,6 +77,7 @@ class PlanningSceneHandler(mc.PlanningSceneInterface):
 
     def update_octomap(self):
         self.oh.update()
+
 class Grasp(BaseGrasp):
     def __init__(self, position=None, orientation=None,  xyz=(0, 0, 0), rpy=(0, 0, 0), frame_id="base_link"):
         super(Grasp, self).__init__()
@@ -89,12 +104,11 @@ class Grasp(BaseGrasp):
 
 
 class Myrobot:
-    def __init__(self, raw_point_topics, wait = True):
+    def __init__(self, fps, image_topic, depth_topic, raw_point_topics, wait = True):
         mc.roscpp_initialize(sys.argv)
 
         self.robot = mc.RobotCommander()
         self.scene_handler = PlanningSceneHandler(raw_point_topics)
-        self.scene_handler.update_octomap()
 
         mv_base_to_left_arm = MoveGroup("base_and_left_arm")
         # mv_base_to_right_arm = MoveGroup("base_and_right_arm")
@@ -108,9 +122,9 @@ class Myrobot:
         self.mv_handler = MoveGroupHandler(mv_left_arm, mv_base_to_arms)
         
         self.gd_cli = GraspDetectionClient( 
-            fps=1, 
-            image_topic="/myrobot/body_camera/color/image_raw", 
-            depth_topic="/myrobot/body_camera/aligned_depth_to_color/image_raw",
+            fps=fps, 
+            image_topic=image_topic, 
+            depth_topic=depth_topic,
             wait=wait
         )
 
@@ -118,16 +132,29 @@ class Myrobot:
     def initialize_whole_pose(self):
         self.mv_handler.initialize_whole_pose("base_and_arms_start")
 
-    def plan(self, joints={}, **kwargs):
-        return self.mv_handler.plan(joints, **kwargs)
+    def get_around_octomap(self, values=[-30, 30, 0], is_degree=False, should_reset=True):
+        if should_reset:
+            self.scene_handler.clear_octomap()
+        for value in values:
+            plan = self.plan(joint_back=value, is_degree=is_degree)
+            self.execute(plan, wait=True)
+            rospy.sleep(1)
+            self.scene_handler.update_octomap()
 
-    def execute(self, plan):
-        return self.mv_handler.execute(plan)
+    def plan(self, joints={}, is_degree=False, **kwargs):
+        return self.mv_handler.plan(joints, is_degree, **kwargs)
+
+    def execute(self, plan, wait=False):
+        return self.mv_handler.execute(plan, wait)
+
+    def pick(self, object_name, grasps):
+        return self.mv_handler.pick(object_name, grasps)
 
     def detect(self):
         return self.gd_cli.detect()
 
     def info(self):
+        print("-" * 30)
         print("/// robot commander ///")
         print("planinng frame: {}".format(self.robot.get_planning_frame()))
         print("group names: {}".format(self.robot.get_group_names()))
@@ -136,6 +163,7 @@ class Myrobot:
         print("/// move_group commander ///")
         print("current group: {}".format(self.mv_handler.get_current_name()))
         print("end effector: {}".format(self.mv_handler.current_move_group.get_end_effector_link()))
+        print("-" * 30)
 
 
 if __name__ == "__main__":
@@ -143,17 +171,24 @@ if __name__ == "__main__":
 
     # ref: http://zumashi.blogspot.com/2016/10/rosrun.html
     ns = rospy.get_param("robot_name", default="myrobot")
+    fps = rospy.get_param("fps", default=1)
+    image_topic = rospy.get_param("image_topic", default="/myrobot/body_camera/color/image_raw")
+    depth_topic = rospy.get_param("depth_topic", default="/myrobot/body_camera/aligned_depth_to_color/image_raw")
     sensors = rospy.get_param("~sensors", default=("body_camera", "left_camera", "right_camera"))
     raw_point_topics = ["/{}/{}/depth/color/points".format(ns, sensor_name) for sensor_name in sensors]
 
     wait = rospy.get_param("~wait_server", default=True)
 
-    myrobot = Myrobot(raw_point_topics, wait=wait)
-
+    print("initializing instances...")
+    myrobot = Myrobot(fps=fps, image_topic=image_topic, depth_topic=depth_topic, raw_point_topics=raw_point_topics, wait=wait)
     myrobot.info()
+
+    print("getting around octomap...")
+    myrobot.get_around_octomap(values=[-30, 30, 0], is_degree=True, should_reset=True)
 
     # grasp = Grasp(xyz=(1.5, 0, 0.2), rpy=(0, math.pi, 0))
 
+    print("stating detect flow...")
     rate = rospy.Rate(0.5)
     while not rospy.is_shutdown():
         objects = myrobot.detect()
@@ -171,11 +206,11 @@ if __name__ == "__main__":
 
         # myrobot.scene_handler.add_sphere("object", obj.center_pose, radius=obj.short_radius)
         myrobot.mv_handler.current_move_group.pick("", [grasp])
-        myrobot.scene_handler.clear_octomap()
+        myrobot.scene_handler.update_octomap()
 
         print("will initialize")
         myrobot.initialize_whole_pose()
-        myrobot.scene_handler.clear_octomap()
+        myrobot.scene_handler.update_octomap()
 
         break
 

@@ -55,6 +55,9 @@ myrobot:
       left_joint_4: { p: 100, d: 1, i: 1, i_clamp: 1 }
       left_joint_5: { p: 100, d: 1, i: 1, i_clamp: 1 }
       left_joint_6: { p: 100, d: 1, i: 1, i_clamp: 1 }
+    constraints:
+      goal_time: 1
+      stopped_velocity_tolerance: 0
   right_arm_controller:
     type: position_controllers/JointTrajectoryController
     joints: &right_arm_joints
@@ -76,6 +79,9 @@ myrobot:
       right_joint_4: { p: 100, d: 1, i: 1, i_clamp: 1 }
       right_joint_5: { p: 100, d: 1, i: 1, i_clamp: 1 }
       right_joint_6: { p: 100, d: 1, i: 1, i_clamp: 1 }
+    constraints:
+      goal_time: 1
+      stopped_velocity_tolerance: 0
 
 # ////////////////////////////////////////////////////////////////
 # Publish all joint states
