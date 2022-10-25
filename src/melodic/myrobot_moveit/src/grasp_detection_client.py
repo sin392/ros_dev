@@ -8,7 +8,7 @@ from detect.msg import GraspDetectionAction, GraspDetectionGoal
 
 # ref: https://qiita.com/ynott/items/8acd03434569e23612f1
 class GraspDetectionClient(SimpleActionClient, object):
-    def __init__(self, fps, image_topic, depth_topic, ns="grasp_detection_server", ActionSpec=GraspDetectionAction):
+    def __init__(self, fps, image_topic, depth_topic, ns="grasp_detection_server", ActionSpec=GraspDetectionAction, wait=True):
         super(GraspDetectionClient, self).__init__(ns, ActionSpec)
         delay = 1 / fps * 0.5
 
@@ -21,7 +21,8 @@ class GraspDetectionClient(SimpleActionClient, object):
         self.ts = mf.ApproximateTimeSynchronizer(subscribers, 10, delay)
         self.ts.registerCallback(self.callback)
 
-        self.wait_for_server()
+        if wait:
+            self.wait_for_server()
 
     def callback(self, img_msg, depth_msg):
         try:
