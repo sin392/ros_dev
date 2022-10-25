@@ -1,9 +1,23 @@
 # The name of this file shouldn't be changed, or else the Setup Assistant won't detect it
 sensors:
   - sensor_plugin: occupancy_map_monitor/PointCloudOctomapUpdater
-    point_cloud_topic: /myrobot/body_camera/depth/color/points
-    max_update_rate: 1.0
+    point_cloud_topic: /myrobot/body_camera/depth/color/republished_points
+    max_update_rate: 1
     max_range: 5.0
     padding_offset: 0.2
     padding_scale: 1
-    point_subsample: 1
+    point_subsample: 5
+  - sensor_plugin: occupancy_map_monitor/PointCloudOctomapUpdater
+    point_cloud_topic: /myrobot/left_camera/depth/color/republished_points
+    max_update_rate: 1
+    max_range: 5.0
+    padding_offset: 0.2
+    padding_scale: 1
+    point_subsample: 5
+  - sensor_plugin: occupancy_map_monitor/PointCloudOctomapUpdater
+    point_cloud_topic: /myrobot/right_camera/depth/color/republished_points
+    max_update_rate: 1
+    max_range: 5.0
+    padding_offset: 0.2
+    padding_scale: 1
+    point_subsample: 5

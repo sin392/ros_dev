@@ -22,7 +22,15 @@
     <arg name="debug" default="false" />
     <arg name="load_robot_description" default="true" />
 
+    <arg name="fps" default="1"/>
+    <arg name="sensors" default="[body_camera, left_camera, right_camera]"/>
+
     <arg name="enable_detect" default="true" />
+    <arg name="enable_frequently_octomap_update" default="false" />
+
+    <param name="fps" value="$(arg fps)"/>
+    <param name="sensors" value="$(arg sensors)"/>
+    
 
     <!-- remap -->
     <remap from="/joint_states" to="/myrobot/joint_states" />
@@ -85,10 +93,13 @@
     <!-- <include file="$(find denso_robot_moveit_config)/launch/default_warehouse_db.launch" /> -->
 
     <group if="$(arg enable_detect)">
-        <param name="fps" value="1" />
         <param name="image_topic" value="/$(arg robot_name)/body_camera/color/image_raw" />
         <param name="depth_topic" value="/$(arg robot_name)/body_camera/aligned_depth_to_color/image_raw" />
         <node name="grasp_detection_client" pkg="myrobot_moveit" type="grasp_detection_client.py" />
+    </group>
+
+    <group if="$(arg enable_frequently_octomap_update)">
+        <node name="frequently_octomap_updater" pkg="myrobot_moveit" type="octomap_handler.py"/>
     </group>
 
 </launch>
