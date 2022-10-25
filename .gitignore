@@ -14,3 +14,5 @@ outputs/*/**
 !src/melodic/vs087*/**
 !src/melodic/cart*
 !src/melodic/cart*/**
+
+*.pyc
