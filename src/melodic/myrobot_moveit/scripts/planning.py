@@ -183,7 +183,7 @@ if __name__ == "__main__":
     print("initializing instances...")
     myrobot = Myrobot(fps=fps, image_topic=image_topic, depth_topic=depth_topic, raw_point_topics=raw_point_topics, wait=wait)
     myrobot.info()
-    rospy.sleep(5)
+    rospy.sleep(3)
 
     print("getting around octomap...")
     myrobot.get_around_octomap(values=[-30, 30, 0], is_degree=True, should_reset=True)
@@ -206,9 +206,20 @@ if __name__ == "__main__":
         print(obj_orientation)
         grasp = Grasp(position=obj_position_vector, rpy=(0, math.pi, 0))
 
-        myrobot.scene_handler.add_sphere("object", obj.center_pose, radius=obj.short_radius)
-        myrobot.mv_handler.current_move_group.pick("object", [grasp])
+        obj_pose = obj.center_pose
+        obj_pose.pose.orientation = Quaternion()
+        # myrobot.scene_handler.add_sphere("object", obj.center_pose, radius=obj.length_to_center)
+        # myrobot.scene_handler.add_cylinder("tmp_object", obj_pose, height=obj.length_to_center*2, radius=obj.long_radius*2)
+        # rospy.sleep(1)
+        # myrobot.scene_handler.update_octomap()
+        # rospy.sleep(1)
+        # myrobot.scene_handler.remove_world_object("tmp_object")
+        # rospy.sleep(1)
+        myrobot.scene_handler.add_cylinder("object", obj_pose, height=obj.length_to_center, radius=obj.long_radius)
+        # myrobot.scene_handler.clear_octomap()
         myrobot.scene_handler.update_octomap()
+        myrobot.mv_handler.current_move_group.pick("object", [grasp])
+        # myrobot.scene_handler.update_octomap()
 
         print("will initialize")
         myrobot.initialize_whole_pose()
@@ -217,3 +228,4 @@ if __name__ == "__main__":
         break
 
         rate.sleep()
+    rospy.spin()

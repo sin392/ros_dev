@@ -29,7 +29,7 @@
     <arg name="enable_auto_planning" default="true" />
 
     <param name="fps" value="$(arg fps)"/>
-    <param name="~sensors" value="$(arg sensors)"/>
+    <rosparam param="~sensors" subst_value="true">$(arg sensors)</rosparam>
     <param name="~wait_server" value="$(arg wait_server)"/>
 
     <param name="image_topic" value="/$(arg robot_name)/body_camera/color/image_raw" />
