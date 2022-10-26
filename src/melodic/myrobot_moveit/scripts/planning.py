@@ -8,7 +8,7 @@ import moveit_commander as mc
 from moveit_msgs.msg import Grasp as BaseGrasp
 from grasp_detection_client import GraspDetectionClient
 from geometry_msgs.msg import Vector3, Quaternion
-from trajectory_msgs.msg import JointTrajectoryPoint
+# from trajectory_msgs.msg import JointTrajectoryPoint
 from tf.transformations import quaternion_from_euler
 
 from octomap_handler import OctomapHandler
@@ -94,7 +94,7 @@ class PlanningSceneHandler(mc.PlanningSceneInterface):
         self.oh.update()
 
 class Grasp(BaseGrasp):
-    def __init__(self, position=None, orientation=None,  xyz=(0, 0, 0), rpy=(0, 0, 0), frame_id="base_link", allowed_touch_objects=[]):
+    def __init__(self, position=None, orientation=None, xyz=(0, 0, 0), rpy=(0, 0, 0), min_distance=0.05, desired_distance=0.15, frame_id="base_link", allowed_touch_objects=[]):
         super(Grasp, self).__init__()
         # setting grasp-pose: this is for parent_link
         self.grasp_pose.header.frame_id = frame_id
@@ -109,13 +109,13 @@ class Grasp(BaseGrasp):
         # setting pre-grasp approach
         self.pre_grasp_approach.direction.header.frame_id = frame_id
         self.pre_grasp_approach.direction.vector.z = -1
-        self.pre_grasp_approach.min_distance = 1e-6
-        self.pre_grasp_approach.desired_distance = 0.100000
+        self.pre_grasp_approach.min_distance = min_distance
+        self.pre_grasp_approach.desired_distance = desired_distance
         # setting post-grasp retreat
         self.post_grasp_retreat.direction.header.frame_id = frame_id
         self.post_grasp_retreat.direction.vector.z = 1
-        self.post_grasp_retreat.min_distance = 1e-6
-        self.post_grasp_retreat.desired_distance = 0.100000
+        self.post_grasp_retreat.min_distance = min_distance
+        self.post_grasp_retreat.desired_distance = desired_distance
         # setting posture of eef before grasp
         self.pre_grasp_posture.joint_names = ["left_finger_1_joint"]
         # self.pre_grasp_posture.points = [JointTrajectoryPoint()]
@@ -177,10 +177,10 @@ class Myrobot:
 
     def pick(self, object_name, object_msg):
         obj_position_point = object_msg.center_pose.pose.position
-        obj_position_vector = Vector3(obj_position_point.x, obj_position_point.y, obj_position_point.z - object_msg.length_to_center / 2)
+        obj_position_vector = Vector3(obj_position_point.x, obj_position_point.y, obj_position_point.z - object_msg.length_to_center / 2 + 0.05)
         radian = Angle.deg_to_rad(object_msg.angle)
         # TODO: change grsp frame_id from "base_link" to each hand frame
-        grasp = Grasp(position=obj_position_vector, rpy=(math.pi, 0, radian), allowed_touch_objects=[object_name])
+        grasp = Grasp(position=obj_position_vector, rpy=(math.pi, 0, radian), desired_distance=0.15, allowed_touch_objects=[object_name])
 
         self.select_arm(obj_position_vector.y)
         return self.mv_handler.pick(object_name, [grasp])

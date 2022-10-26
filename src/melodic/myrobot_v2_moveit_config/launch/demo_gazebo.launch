@@ -26,7 +26,7 @@
   <arg name="paused" default="true" />
   <!-- By default, use the urdf location provided from the package -->
   <arg name="urdf_path" default="$(find myrobot_description)/urdf/myrobot_v2.urdf.xacro" />
-  <arg name="world_path" default="$(find myrobot_description)/world/container_cabbage_20.world" />
+  <arg name="world_path" default="$(find myrobot_description)/world/container_big_cabbage_20.world" />
   <arg name="robot_name" default="myrobot" />
 
   <!-- remap -->
