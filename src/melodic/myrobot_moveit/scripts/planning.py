@@ -36,7 +36,11 @@ class MoveGroupHandler:
         self.start_move_group = start_move_group
         self.whole_move_group = whole_move_group
         self.whole_name = whole_move_group.get_name()
-        self.current_move_group = self.start_move_group
+        self.set_current_move_group(self.start_move_group)
+
+    def set_current_move_group(self, move_group):
+        self.current_move_group = move_group
+        rospy.loginfo("current move group is changed to '{}'".format(self.get_current_name()))
 
     def reset_move_group(self):
         # TODO: also reset joint values
@@ -174,13 +178,19 @@ class Myrobot:
     def pick(self, object_name, object_msg):
         obj_position_point = object_msg.center_pose.pose.position
         obj_position_vector = Vector3(obj_position_point.x, obj_position_point.y, obj_position_point.z - object_msg.length_to_center / 2)
-        # TODO: change grsp frame_id from "base_link" to each hand frame
         radian = Angle.deg_to_rad(object_msg.angle)
+        # TODO: change grsp frame_id from "base_link" to each hand frame
         grasp = Grasp(position=obj_position_vector, rpy=(math.pi, 0, radian), allowed_touch_objects=[object_name])
+
+        self.select_arm(obj_position_vector.z)
         return self.mv_handler.pick(object_name, [grasp])
 
     def detect(self):
         return self.gd_cli.detect()
+
+    def select_arm(self, y):
+        new_move_group = self.mv_handler.left_start_move_group if y < 0 else self.mv_handler.right_start_move_group
+        self.mv_handler.set_current_move_group(new_move_group)
 
     def info(self):
         print("-" * 30)
@@ -216,8 +226,6 @@ if __name__ == "__main__":
 
     print("getting around octomap...")
     myrobot.get_around_octomap(values=[-30, 30, 0], is_degree=True, should_reset=True)
-
-    # grasp = Grasp(xyz=(1.5, 0, 0.2), rpy=(0, math.pi, 0))
 
     print("stating detect flow...")
     registered_objects = []
