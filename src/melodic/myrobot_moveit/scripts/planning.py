@@ -182,14 +182,14 @@ class Myrobot:
         # TODO: change grsp frame_id from "base_link" to each hand frame
         grasp = Grasp(position=obj_position_vector, rpy=(math.pi, 0, radian), allowed_touch_objects=[object_name])
 
-        self.select_arm(obj_position_vector.z)
+        self.select_arm(obj_position_vector.y)
         return self.mv_handler.pick(object_name, [grasp])
 
     def detect(self):
         return self.gd_cli.detect()
 
     def select_arm(self, y):
-        new_move_group = self.mv_handler.left_start_move_group if y < 0 else self.mv_handler.right_start_move_group
+        new_move_group = self.mv_handler.left_start_move_group if y > 0 else self.mv_handler.right_start_move_group
         self.mv_handler.set_current_move_group(new_move_group)
 
     def info(self):
