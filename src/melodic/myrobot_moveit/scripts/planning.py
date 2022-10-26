@@ -30,7 +30,9 @@ class MoveGroup(mc.MoveGroupCommander):
         return dict(zip(self.get_active_joints(), self.get_current_joint_values()))
 
 class MoveGroupHandler:
-    def __init__(self, start_move_group, whole_move_group):
+    def __init__(self, left_start_move_group, right_start_move_group, start_move_group, whole_move_group):
+        self.left_start_move_group = left_start_move_group
+        self.right_start_move_group = right_start_move_group
         self.start_move_group = start_move_group
         self.whole_move_group = whole_move_group
         self.whole_name = whole_move_group.get_name()
@@ -129,17 +131,18 @@ class Myrobot:
         self.robot = mc.RobotCommander()
         self.scene_handler = PlanningSceneHandler(raw_point_topics)
 
+        # left groups
         mv_base_to_left_arm = MoveGroup("base_and_left_arm")
-        # mv_base_to_right_arm = MoveGroup("base_and_right_arm")
         mv_body_to_left_arm = MoveGroup("body_and_left_arm", parent=mv_base_to_left_arm)
-        # mv_body_to_right_arm = MoveGroup("body_and_right_arm", parent=mv_base_to_right_arm)
-        mv_left_arm = MoveGroup("left_arm", parent=mv_body_to_left_arm)
+        # mv_left_arm = MoveGroup("left_arm", parent=mv_body_to_left_arm)
+        # right groups
+        mv_base_to_right_arm = MoveGroup("base_and_right_arm")
+        mv_body_to_right_arm = MoveGroup("body_and_right_arm", parent=mv_base_to_right_arm)
         # mv_right_arm = MoveGroup("right_arm", parent=mv_body_to_right_arm)
-
+        # whole group
         mv_base_to_arms = MoveGroup("base_and_arms")
 
-        # self.mv_handler = MoveGroupHandler(mv_left_arm, mv_base_to_arms)
-        self.mv_handler = MoveGroupHandler(mv_body_to_left_arm, mv_base_to_arms)
+        self.mv_handler = MoveGroupHandler(mv_body_to_left_arm, mv_body_to_right_arm, mv_body_to_left_arm, mv_base_to_arms)
         
         self.gd_cli = GraspDetectionClient( 
             fps=fps, 
@@ -168,8 +171,13 @@ class Myrobot:
     def execute(self, plan, wait=False):
         return self.mv_handler.execute(plan, wait)
 
-    def pick(self, object_name, grasps):
-        return self.mv_handler.pick(object_name, grasps)
+    def pick(self, object_name, object_msg):
+        obj_position_point = object_msg.center_pose.pose.position
+        obj_position_vector = Vector3(obj_position_point.x, obj_position_point.y, obj_position_point.z - object_msg.length_to_center / 2)
+        # TODO: change grsp frame_id from "base_link" to each hand frame
+        radian = Angle.deg_to_rad(object_msg.angle)
+        grasp = Grasp(position=obj_position_vector, rpy=(math.pi, 0, radian), allowed_touch_objects=[object_name])
+        return self.mv_handler.pick(object_name, [grasp])
 
     def detect(self):
         return self.gd_cli.detect()
@@ -221,8 +229,6 @@ if __name__ == "__main__":
 
         obj = objects[0]
         obj_name = "object_{}".format(len(registered_objects))
-        obj_position_point = obj.center_pose.pose.position
-        obj_position_vector = Vector3(obj_position_point.x, obj_position_point.y, obj_position_point.z - obj.length_to_center / 2)
 
         # add object
         obj_pose = obj.center_pose
@@ -232,10 +238,7 @@ if __name__ == "__main__":
         
         # pick
         print("start pick")
-        # TODO: change grsp frame_id from "base_link" to each hand frame
-        radian = Angle.deg_to_rad(obj.angle)
-        grasp = Grasp(position=obj_position_vector, rpy=(math.pi, 0, radian), allowed_touch_objects=[obj_name, "all"])
-        myrobot.pick(obj_name, [grasp])
+        myrobot.pick(obj_name, obj)
 
         print("will initialize")
         myrobot.initialize_current_pose()
