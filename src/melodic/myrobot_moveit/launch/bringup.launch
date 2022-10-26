@@ -24,13 +24,16 @@
 
     <arg name="fps" default="1"/>
     <arg name="sensors" default="[body_camera, left_camera, right_camera]"/>
+    <arg name="wait_server" default="true" />
 
-    <arg name="enable_detect" default="true" />
-    <arg name="enable_frequently_octomap_update" default="false" />
+    <arg name="enable_auto_planning" default="true" />
 
     <param name="fps" value="$(arg fps)"/>
-    <param name="sensors" value="$(arg sensors)"/>
-    
+    <param name="~sensors" value="$(arg sensors)"/>
+    <param name="~wait_server" value="$(arg wait_server)"/>
+
+    <param name="image_topic" value="/$(arg robot_name)/body_camera/color/image_raw" />
+    <param name="depth_topic" value="/$(arg robot_name)/body_camera/aligned_depth_to_color/image_raw" />
 
     <!-- remap -->
     <remap from="/joint_states" to="/myrobot/joint_states" />
@@ -91,14 +94,12 @@
     </include>
 
     <!-- <include file="$(find denso_robot_moveit_config)/launch/default_warehouse_db.launch" /> -->
-
-    <group if="$(arg enable_detect)">
-        <param name="image_topic" value="/$(arg robot_name)/body_camera/color/image_raw" />
-        <param name="depth_topic" value="/$(arg robot_name)/body_camera/aligned_depth_to_color/image_raw" />
-        <node name="grasp_detection_client" pkg="myrobot_moveit" type="grasp_detection_client.py" />
+    
+    <group if="$(arg enable_auto_planning)">
+        <node name="auto_planner" pkg="myrobot_moveit" type="planning.py" output="screen"/>
     </group>
-
-    <group if="$(arg enable_frequently_octomap_update)">
+    <group unless="$(arg enable_auto_planning)">
+        <node name="grasp_detection_client" pkg="myrobot_moveit" type="grasp_detection_client.py" />
         <node name="frequently_octomap_updater" pkg="myrobot_moveit" type="octomap_handler.py"/>
     </group>
 

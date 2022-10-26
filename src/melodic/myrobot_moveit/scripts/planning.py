@@ -172,16 +172,18 @@ if __name__ == "__main__":
     # ref: http://zumashi.blogspot.com/2016/10/rosrun.html
     ns = rospy.get_param("robot_name", default="myrobot")
     fps = rospy.get_param("fps", default=1)
-    image_topic = rospy.get_param("image_topic", default="/myrobot/body_camera/color/image_raw")
-    depth_topic = rospy.get_param("depth_topic", default="/myrobot/body_camera/aligned_depth_to_color/image_raw")
+    image_topic = rospy.get_param("image_topic")
+    depth_topic = rospy.get_param("depth_topic")
     sensors = rospy.get_param("~sensors", default=("body_camera", "left_camera", "right_camera"))
     raw_point_topics = ["/{}/{}/depth/color/points".format(ns, sensor_name) for sensor_name in sensors]
 
     wait = rospy.get_param("~wait_server", default=True)
+    rospy.loginfo("################################################")
 
     print("initializing instances...")
     myrobot = Myrobot(fps=fps, image_topic=image_topic, depth_topic=depth_topic, raw_point_topics=raw_point_topics, wait=wait)
     myrobot.info()
+    rospy.sleep(5)
 
     print("getting around octomap...")
     myrobot.get_around_octomap(values=[-30, 30, 0], is_degree=True, should_reset=True)
@@ -204,8 +206,8 @@ if __name__ == "__main__":
         print(obj_orientation)
         grasp = Grasp(position=obj_position_vector, rpy=(0, math.pi, 0))
 
-        # myrobot.scene_handler.add_sphere("object", obj.center_pose, radius=obj.short_radius)
-        myrobot.mv_handler.current_move_group.pick("", [grasp])
+        myrobot.scene_handler.add_sphere("object", obj.center_pose, radius=obj.short_radius)
+        myrobot.mv_handler.current_move_group.pick("object", [grasp])
         myrobot.scene_handler.update_octomap()
 
         print("will initialize")
