@@ -17,8 +17,22 @@
         <xacro:f_joint name="${prefix}_joint_arm_base" xyz="${xyz}" rpy="${rpy}" parent="${parent}" child="${prefix}_base_link" />
         <xacro:vs087 prefix="${prefix}" />
         <xacro:soft_hand prefix="${prefix}" connected_to="${prefix}_J6" xyz="0 0 0" rpy="0 0 0" />
+        <!-- virtual tip -->
         <xacro:f_joint name="${prefix}_joint_tip" xyz="0 0 0.3425" parent="${prefix}_soft_hand_base_link" child="${prefix}_soft_hand_tip" />
         <link name="${prefix}_soft_hand_tip" />
+        <!-- finger joints -->
+        <xacro:a_joint name="${prefix}_finger_1_joint" type="revolute" axis="1 0 0" parent="${prefix}_soft_hand_base_link" child="${prefix}_finger_1_link" xyz="0 0 0.3425"/>
+        <link name="${prefix}_finger_1_link">
+            <!-- ref: https://answers.ros.org/question/102276/this-robot-has-a-joint-named-foo-which-is-not-in-the-gazebo-model/ -->
+            <inertial>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <mass value="0.001" />
+                <inertia
+                  ixx="0.001" ixy="0.0" ixz="0.0"
+                  iyy="0.001" iyz="0.0"
+                  izz="0.001" />
+            </inertial>
+        </link>
     </xacro:macro>
 
     <xacro:macro name="d435" params="prefix parent xyz:='0 0 0' rpy='0 0 0' publish_pointcloud:=true">

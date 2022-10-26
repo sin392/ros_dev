@@ -90,6 +90,7 @@ class PlanningSceneHandler(mc.PlanningSceneInterface):
 class Grasp(BaseGrasp):
     def __init__(self, position=None, orientation=None,  xyz=(0, 0, 0), rpy=(0, 0, 0), frame_id="base_link", allowed_touch_objects=[]):
         super(Grasp, self).__init__()
+        # setting grasp-pose: this is for parent_link
         self.grasp_pose.header.frame_id = frame_id
         self.allowed_touch_objects = allowed_touch_objects
         if position is None:
@@ -110,11 +111,15 @@ class Grasp(BaseGrasp):
         self.post_grasp_retreat.min_distance = 1e-6
         self.post_grasp_retreat.desired_distance = 0.100000
         # setting posture of eef before grasp
-        self.pre_grasp_posture.joint_names = []
-        self.pre_grasp_posture.points = [JointTrajectoryPoint()]
+        self.pre_grasp_posture.joint_names = ["left_finger_1_joint"]
+        # self.pre_grasp_posture.points = [JointTrajectoryPoint()]
+        # self.pre_grasp_posture.points[0].positions = [0]
+        # self.pre_grasp_posture.points[0].time_from_start = rospy.Duration(0.5)
         # setting posture of eef during grasp
-        self.grasp_posture.joint_names = []
-        self.grasp_posture.points = [JointTrajectoryPoint()]
+        self.grasp_posture.joint_names = ["left_finger_1_joint"]
+        # self.grasp_posture.points = [JointTrajectoryPoint()]
+        # self.pre_grasp_posture.points[0].positions = [0]
+        # self.pre_grasp_posture.points[0].time_from_start = rospy.Duration(0.5)
 
 
 class Myrobot:
@@ -214,11 +219,9 @@ if __name__ == "__main__":
         if len(objects) == 0:
             continue
 
-        print(objects)
         obj = objects[0]
         obj_name = "object_{}".format(len(registered_objects))
         obj_position_point = obj.center_pose.pose.position
-        print(obj_position_point)
         obj_position_vector = Vector3(obj_position_point.x, obj_position_point.y, obj_position_point.z + 0.1)
 
         # add object
@@ -229,7 +232,10 @@ if __name__ == "__main__":
         
         # pick
         print("start pick")
-        grasp = Grasp(position=obj_position_vector, rpy=(0, math.pi, 0), allowed_touch_objects=[obj_name])
+        # TODO: change grsp frame_id from "base_link" to each hand frame
+        print("angle", obj.angle)
+        radian = Angle.deg_to_rad(obj.angle)
+        grasp = Grasp(position=obj_position_vector, rpy=(math.pi, 0, radian), allowed_touch_objects=[obj_name])
         myrobot.pick(obj_name, [grasp])
 
         print("will initialize")

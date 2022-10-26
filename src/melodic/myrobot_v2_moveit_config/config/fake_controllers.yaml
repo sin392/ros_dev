@@ -21,10 +21,12 @@ controller_list:
       - right_joint_6
   - name: fake_left_hand_controller
     type: $(arg fake_execution_type)
-    joints: []
+    joints:
+      - left_finger_1_joint
   - name: fake_right_hand_controller
     type: $(arg fake_execution_type)
-    joints: []
+    joints:
+      - right_finger_1_joint
   - name: fake_arms_controller
     type: $(arg fake_execution_type)
     joints:
