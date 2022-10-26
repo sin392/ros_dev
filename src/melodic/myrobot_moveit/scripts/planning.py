@@ -155,7 +155,6 @@ class Myrobot:
         for value in values:
             plan = self.plan(joint_back=value, is_degree=is_degree)
             self.execute(plan, wait=True)
-            rospy.sleep(1)
             self.scene_handler.update_octomap()
 
     def plan(self, joints={}, is_degree=False, **kwargs):
@@ -201,7 +200,6 @@ if __name__ == "__main__":
     myrobot = Myrobot(fps=fps, image_topic=image_topic, depth_topic=depth_topic, raw_point_topics=raw_point_topics, wait=wait)
     myrobot.info()
     myrobot.initialize_whole_pose()
-    rospy.sleep(1)
 
     print("getting around octomap...")
     myrobot.get_around_octomap(values=[-30, 30, 0], is_degree=True, should_reset=True)
@@ -228,16 +226,15 @@ if __name__ == "__main__":
         obj_pose.pose.orientation = Quaternion()
         myrobot.scene_handler.add_cylinder(obj_name, obj_pose, height=obj.length_to_center, radius=obj.long_radius)
         myrobot.scene_handler.update_octomap()
-        rospy.sleep(1)
-        print("start pick")
+        
         # pick
+        print("start pick")
         grasp = Grasp(position=obj_position_vector, rpy=(0, math.pi, 0), allowed_touch_objects=[obj_name])
         myrobot.pick(obj_name, [grasp])
 
         print("will initialize")
         myrobot.initialize_current_pose()
 
-        rospy.sleep(1)
         myrobot.scene_handler.remove_attached_object("")
         myrobot.scene_handler.remove_world_object()
 
