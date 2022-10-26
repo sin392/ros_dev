@@ -65,6 +65,10 @@
 
     <!-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
 
+    <!-- TODO: remove world_joint -->
+    <link name="world" />
+    <xacro:f_joint name="world_joint" parent="world" child="base_link" />
+
     <link name="base_link" />
     <!-- cart -->
     <link name="cart">
