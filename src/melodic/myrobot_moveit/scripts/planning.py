@@ -222,7 +222,7 @@ if __name__ == "__main__":
         obj = objects[0]
         obj_name = "object_{}".format(len(registered_objects))
         obj_position_point = obj.center_pose.pose.position
-        obj_position_vector = Vector3(obj_position_point.x, obj_position_point.y, obj_position_point.z + 0.1)
+        obj_position_vector = Vector3(obj_position_point.x, obj_position_point.y, obj_position_point.z - obj.length_to_center / 2)
 
         # add object
         obj_pose = obj.center_pose
@@ -233,9 +233,8 @@ if __name__ == "__main__":
         # pick
         print("start pick")
         # TODO: change grsp frame_id from "base_link" to each hand frame
-        print("angle", obj.angle)
         radian = Angle.deg_to_rad(obj.angle)
-        grasp = Grasp(position=obj_position_vector, rpy=(math.pi, 0, radian), allowed_touch_objects=[obj_name])
+        grasp = Grasp(position=obj_position_vector, rpy=(math.pi, 0, radian), allowed_touch_objects=[obj_name, "all"])
         myrobot.pick(obj_name, [grasp])
 
         print("will initialize")
