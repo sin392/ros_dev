@@ -116,6 +116,66 @@
         <joint name="right_joint_6" value="0" />
         <joint name="right_joint_sholder" value="0" />
     </group_state>
+    <group_state name="base_and_left_arm_default" group="base_and_left_arm">
+        <joint name="joint_back" value="0" />
+        <joint name="joint_body" value="0.358" />
+        <joint name="left_joint_1" value="0" />
+        <joint name="left_joint_2" value="0.7854" />
+        <joint name="left_joint_3" value="-0.7854" />
+        <joint name="left_joint_4" value="0" />
+        <joint name="left_joint_5" value="-1.5707" />
+        <joint name="left_joint_6" value="0" />
+        <joint name="left_joint_sholder" value="0" />
+    </group_state>
+    <group_state name="body_and_left_arm_default" group="body_and_left_arm">
+        <joint name="joint_body" value="0.358" />
+        <joint name="left_joint_1" value="0" />
+        <joint name="left_joint_2" value="0.7854" />
+        <joint name="left_joint_3" value="-0.7854" />
+        <joint name="left_joint_4" value="0" />
+        <joint name="left_joint_5" value="-1.5707" />
+        <joint name="left_joint_6" value="0" />
+        <joint name="left_joint_sholder" value="0" />
+    </group_state>
+    <group_state name="base_and_right_arm_default" group="base_and_right_arm">
+        <joint name="joint_back" value="0" />
+        <joint name="joint_body" value="0.358" />
+        <joint name="right_joint_1" value="0" />
+        <joint name="right_joint_2" value="0.7854" />
+        <joint name="right_joint_3" value="-0.7854" />
+        <joint name="right_joint_4" value="0" />
+        <joint name="right_joint_5" value="-1.5707" />
+        <joint name="right_joint_6" value="0" />
+        <joint name="right_joint_sholder" value="0" />
+    </group_state>
+    <group_state name="body_and_right_arm_default" group="body_and_right_arm">
+        <joint name="joint_body" value="0.358" />
+        <joint name="right_joint_1" value="0" />
+        <joint name="right_joint_2" value="0.7854" />
+        <joint name="right_joint_3" value="-0.7854" />
+        <joint name="right_joint_4" value="0" />
+        <joint name="right_joint_5" value="-1.5707" />
+        <joint name="right_joint_6" value="0" />
+        <joint name="right_joint_sholder" value="0" />
+    </group_state>
+    <group_state name="base_and_arms_default" group="base_and_arms">
+        <joint name="joint_back" value="0" />
+        <joint name="joint_body" value="0.358" />
+        <joint name="left_joint_1" value="0" />
+        <joint name="left_joint_2" value="0.7854" />
+        <joint name="left_joint_3" value="-0.7854" />
+        <joint name="left_joint_4" value="0" />
+        <joint name="left_joint_5" value="-1.5707" />
+        <joint name="left_joint_6" value="0" />
+        <joint name="left_joint_sholder" value="0" />
+        <joint name="right_joint_1" value="0" />
+        <joint name="right_joint_2" value="0.7854" />
+        <joint name="right_joint_3" value="-0.7854" />
+        <joint name="right_joint_4" value="0" />
+        <joint name="right_joint_5" value="-1.5707" />
+        <joint name="right_joint_6" value="0" />
+        <joint name="right_joint_sholder" value="0" />
+    </group_state>
     <group_state name="base_and_arms_default" group="base_and_arms">
         <joint name="joint_back" value="0" />
         <joint name="joint_body" value="0.358" />

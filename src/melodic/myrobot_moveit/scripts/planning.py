@@ -33,13 +33,22 @@ class MoveGroupHandler:
     def __init__(self, start_move_group, whole_move_group):
         self.start_move_group = start_move_group
         self.whole_move_group = whole_move_group
+        self.whole_name = whole_move_group.get_name()
         self.current_move_group = self.start_move_group
 
     def reset_move_group(self):
         # TODO: also reset joint values
         self.current_move_group = self.start_move_group
 
-    def initialize_whole_pose(self, target_name):
+    def initialize_current_pose(self):
+        group_name = self.get_current_name()
+        target_name = "{}_default".format(group_name)
+        target_joint_dict = self.current_move_group.get_named_target_values(target_name)
+        plan = self.current_move_group.plan(target_joint_dict)
+        self.current_move_group.execute(plan)
+
+    def initialize_whole_pose(self):
+        target_name = "{}_default".format(self.whole_name)
         target_joint_dict = self.whole_move_group.get_named_target_values(target_name)
         plan = self.whole_move_group.plan(target_joint_dict)
         self.whole_move_group.execute(plan)
@@ -134,9 +143,11 @@ class Myrobot:
             wait=wait
         )
 
-    # TODO: to be able to change joint_body
+    def initialize_current_pose(self):
+        self.mv_handler.initialize_current_pose()
+
     def initialize_whole_pose(self):
-        self.mv_handler.initialize_whole_pose("base_and_arms_default")
+        self.mv_handler.initialize_whole_pose()
 
     def get_around_octomap(self, values=[-30, 30, 0], is_degree=False, should_reset=True):
         if should_reset:
@@ -190,7 +201,7 @@ if __name__ == "__main__":
     myrobot = Myrobot(fps=fps, image_topic=image_topic, depth_topic=depth_topic, raw_point_topics=raw_point_topics, wait=wait)
     myrobot.info()
     myrobot.initialize_whole_pose()
-    rospy.sleep(3)
+    rospy.sleep(1)
 
     print("getting around octomap...")
     myrobot.get_around_octomap(values=[-30, 30, 0], is_degree=True, should_reset=True)
@@ -217,16 +228,16 @@ if __name__ == "__main__":
         obj_pose.pose.orientation = Quaternion()
         myrobot.scene_handler.add_cylinder(obj_name, obj_pose, height=obj.length_to_center, radius=obj.long_radius)
         myrobot.scene_handler.update_octomap()
-        rospy.sleep(5)
+        rospy.sleep(1)
         print("start pick")
         # pick
         grasp = Grasp(position=obj_position_vector, rpy=(0, math.pi, 0), allowed_touch_objects=[obj_name])
         myrobot.pick(obj_name, [grasp])
 
         print("will initialize")
-        myrobot.initialize_whole_pose()
+        myrobot.initialize_current_pose()
 
-        rospy.sleep(5)
+        rospy.sleep(1)
         myrobot.scene_handler.remove_attached_object("")
         myrobot.scene_handler.remove_world_object()
 
