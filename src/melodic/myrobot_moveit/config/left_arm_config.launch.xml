@@ -41,5 +41,5 @@
     <param name="joint_6_name" value="left_joint_6" />
     <param name="joint_7_name" value="left_joint_sholder" />
     <param name="joint_8_name" value="joint_body" />
-    <param name="arm_group" value="0" />
+    <param name="arm_group" value="1" />
 </launch> 
