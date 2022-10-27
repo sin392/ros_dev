@@ -13,10 +13,10 @@
     <xacro:include filename="$(find myrobot_description)/urdf/soft_hand/model.xacro" />
     <xacro:include filename="$(find myrobot_description)/urdf/utils.xacro" />
 
-    <xacro:macro name="arm_with_soft_hand" params="prefix parent xyz rpy">
-        <xacro:f_joint name="${prefix}_joint_arm_base" xyz="${xyz}" rpy="${rpy}" parent="${parent}" child="${prefix}_base_link" />
+    <xacro:macro name="arm_with_soft_hand" params="prefix parent arm_xyz arm_rpy hand_xyz='0 0 0' hand_rpy='0 0 0'">
+        <xacro:f_joint name="${prefix}_joint_arm_base" xyz="${arm_xyz}" rpy="${arm_rpy}" parent="${parent}" child="${prefix}_base_link" />
         <xacro:vs087 prefix="${prefix}" />
-        <xacro:soft_hand prefix="${prefix}" connected_to="${prefix}_J6" xyz="0 0 0" rpy="0 0 0" />
+        <xacro:soft_hand prefix="${prefix}" connected_to="${prefix}_J6" xyz="${hand_xyz}" rpy="${hand_rpy}" />
         <!-- virtual tip -->
         <xacro:f_joint name="${prefix}_joint_tip" xyz="0 0 0.3425" parent="${prefix}_soft_hand_base_link" child="${prefix}_soft_hand_tip" />
         <link name="${prefix}_soft_hand_tip" />
@@ -35,9 +35,11 @@
         </link>
     </xacro:macro>
 
-    <xacro:macro name="d435" params="prefix parent xyz:='0 0 0' rpy='0 0 0' publish_pointcloud:=true">
-        <xacro:sensor_d435 name="${prefix}_camera" topics_ns="/${robot_name}/${prefix}_camera" parent="${parent}" publish_pointcloud="1">
-            <origin xyz="${xyz}" rpy="${rpy}" />
+    <xacro:macro name="d435" params="prefix parent xyz:='0 0 0' rpy='0 0 0' camera_xyz='0 0 0' camera_rpy='0 0 0' publish_pointcloud:=true">
+        <xacro:f_joint name="${prefix}_camera_base_joint" xyz="${xyz}" rpy="${rpy}" parent="${parent}" child="${prefix}_camera_base_link" />
+        <link name="${prefix}_camera_base_link" />
+        <xacro:sensor_d435 name="${prefix}_camera" topics_ns="/${robot_name}/${prefix}_camera" parent="${prefix}_camera_base_link" publish_pointcloud="1" >
+            <origin xyz="${camera_xyz}" rpy="${camera_rpy}"/>
         </xacro:sensor_d435>
     </xacro:macro>
 
@@ -118,24 +120,22 @@
     <xacro:d435 prefix="body" parent="body" xyz="${body_sx + 0.1} 0 0.1" rpy="0 ${radians(45)} 0" publish_pointcloud="1" />
 
     <!-- right arm -->
-    <xacro:a_joint name="${prefix_1}_joint_sholder" type="revolute" axis="0 0 1" parent="body" child="${prefix_1}_sholder" xyz="${body_sx / 2 + body_spacer_length} -${body_sy / 2 + body_side_spacer_length} -${(sholder_sz / 2) - body_side_spacer_radius}" rpy="-${radians(90)} 0 0" low="-0.01745" up="1.58824" />
+    <xacro:a_joint name="${prefix_1}_joint_sholder" type="revolute" axis="0 0 1" parent="body" child="${prefix_1}_sholder" xyz="${body_sx / 2 + body_spacer_length} -${body_sy / 2 + body_side_spacer_length} -${(sholder_sz / 2) - body_side_spacer_radius}" rpy="${radians(-90)} 0 0" low="-0.01745" up="1.58824" />
     <link name="${prefix_1}_sholder">
         <xacro:_box xyz="0 0 0" size="${sholder_sx} ${sholder_sy} 0.02" color="red" />
         <xacro:_box xyz="${sholder_sx / 2 - 0.01} 0 -${sholder_sz / 2 + 0.01}" size="0.02 ${sholder_sy} ${sholder_sz}" color="red" />
     </link>
-    <xacro:arm_with_soft_hand prefix="${prefix_1}" parent="${prefix_1}_sholder" xyz="${sholder_sx / 2} 0 -${sholder_sz / 2}" rpy="-${radians(90)} 0 -${radians(90)}" />
+    <xacro:arm_with_soft_hand prefix="${prefix_1}" parent="${prefix_1}_sholder" arm_xyz="${sholder_sx / 2} 0 -${sholder_sz / 2}" arm_rpy="${radians(-90)} 0 ${radians(-90)}" hand_rpy="0 0 ${radians(135)}" />
     <!-- right camera -->
-    <xacro:d435 prefix="${prefix_1}" parent="${prefix_1}_soft_hand_base_link" xyz="0 0 0.17" rpy="0 ${radians(-90)} 0" publish_pointcloud="true" />
+    <xacro:d435 prefix="${prefix_1}" parent="${prefix_1}_soft_hand_base_link" xyz="0 0 0.17" rpy="${radians(45)} ${radians(-90)} 0" camera_xyz="0 0 -0.0125" publish_pointcloud="true" />
 
     <!-- left arm -->
-    <xacro:a_joint name="${prefix_2}_joint_sholder" type="revolute" axis="0 0 1" parent="body" child="${prefix_2}_sholder" xyz="${body_sx / 2 + body_spacer_length} ${body_sy / 2 + body_side_spacer_length} -${(sholder_sz / 2) - body_side_spacer_radius}" rpy="-${radians(90)} 0 0" low="-0.01745" up="1.58824" />
+    <xacro:a_joint name="${prefix_2}_joint_sholder" type="revolute" axis="0 0 1" parent="body" child="${prefix_2}_sholder" xyz="${body_sx / 2 + body_spacer_length} ${body_sy / 2 + body_side_spacer_length} -${(sholder_sz / 2) - body_side_spacer_radius}" rpy="${radians(-90)} 0 0" low="-0.01745" up="1.58824" />
     <link name="${prefix_2}_sholder">
         <xacro:_box xyz="0 0 0" size="${sholder_sx} ${sholder_sy} 0.02" color="red" />
         <xacro:_box xyz="${sholder_sx / 2 - 0.01} 0 ${sholder_sz / 2 + 0.01}" size="0.02 ${sholder_sy} ${sholder_sz}" color="red" />
     </link>
-    <xacro:arm_with_soft_hand prefix="${prefix_2}" parent="${prefix_2}_sholder" xyz="${sholder_sx / 2} 0 ${sholder_sz / 2}" rpy="-${radians(90)} 0 -${radians(90)}" />
+    <xacro:arm_with_soft_hand prefix="${prefix_2}" parent="${prefix_2}_sholder" arm_xyz="${sholder_sx / 2} 0 ${sholder_sz / 2}" arm_rpy="${radians(-90)} 0 ${radians(-90)}" hand_rpy="0 0 ${radians(-135)}" />
     <!-- left camera -->
-    <!-- <xacro:d435 prefix="${prefix_2}" parent="${prefix_2}_J6" xyz="0.07 -0.07 0.15" rpy="${radians(-45)} ${radians(-90)} 0" publish_pointcloud="true" /> -->
-    <!-- <xacro:d435 prefix="${prefix_2}" parent="${prefix_2}_J6" xyz="0.07 -0.07 0.15" rpy="${radians(-45)} ${radians(-90)} 0" publish_pointcloud="true" /> -->
-    <xacro:d435 prefix="${prefix_2}" parent="${prefix_2}_soft_hand_base_link" xyz="0 0 0.17" rpy="0 ${radians(-90)} 0" publish_pointcloud="true" />
+    <xacro:d435 prefix="${prefix_2}" parent="${prefix_2}_soft_hand_base_link" xyz="0 0 0.17" rpy="${radians(135)} ${radians(-90)} 0" camera_xyz="0 0 -0.0125" publish_pointcloud="true" />
 </robot>
