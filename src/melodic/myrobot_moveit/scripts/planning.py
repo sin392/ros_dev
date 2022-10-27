@@ -94,7 +94,7 @@ class PlanningSceneHandler(mc.PlanningSceneInterface):
         self.oh.update()
 
 class Grasp(BaseGrasp):
-    def __init__(self, position=None, orientation=None, xyz=(0, 0, 0), rpy=(0, 0, 0), min_distance=0.05, desired_distance=0.15, frame_id="base_link", allowed_touch_objects=[]):
+    def __init__(self, position=None, orientation=None, xyz=(0, 0, 0), rpy=(0, 0, 0), min_distance=0.05, desired_distance=0.1, frame_id="base_link", finger_joints=[], allowed_touch_objects=[]):
         super(Grasp, self).__init__()
         # setting grasp-pose: this is for parent_link
         self.grasp_pose.header.frame_id = frame_id
@@ -117,12 +117,12 @@ class Grasp(BaseGrasp):
         self.post_grasp_retreat.min_distance = min_distance
         self.post_grasp_retreat.desired_distance = desired_distance
         # setting posture of eef before grasp
-        self.pre_grasp_posture.joint_names = ["left_finger_1_joint"]
+        self.pre_grasp_posture.joint_names = finger_joints
         # self.pre_grasp_posture.points = [JointTrajectoryPoint()]
         # self.pre_grasp_posture.points[0].positions = [0]
         # self.pre_grasp_posture.points[0].time_from_start = rospy.Duration(0.5)
         # setting posture of eef during grasp
-        self.grasp_posture.joint_names = ["left_finger_1_joint"]
+        self.grasp_posture.joint_names = finger_joints
         # self.grasp_posture.points = [JointTrajectoryPoint()]
         # self.pre_grasp_posture.points[0].positions = [0]
         # self.pre_grasp_posture.points[0].time_from_start = rospy.Duration(0.5)
@@ -175,22 +175,33 @@ class Myrobot:
     def execute(self, plan, wait=False):
         return self.mv_handler.execute(plan, wait)
 
-    def pick(self, object_name, object_msg):
+    def pick(self, object_name, object_msg, desired_distance=0.1):
         obj_position_point = object_msg.center_pose.pose.position
-        obj_position_vector = Vector3(obj_position_point.x, obj_position_point.y, obj_position_point.z - object_msg.length_to_center / 2 + 0.05)
+        obj_position_vector = Vector3(obj_position_point.x, obj_position_point.y, obj_position_point.z - object_msg.length_to_center / 2)
         radian = Angle.deg_to_rad(object_msg.angle)
         # TODO: change grsp frame_id from "base_link" to each hand frame
-        grasp = Grasp(position=obj_position_vector, rpy=(math.pi, 0, radian), desired_distance=0.15, allowed_touch_objects=[object_name])
 
-        self.select_arm(obj_position_vector.y)
+        arm_index = self.select_arm(obj_position_vector.y)
+        finger_joints = ["left_finger_1_joint"] if arm_index == 0 else ["right_finger_1_joint"] 
+        grasp = Grasp(
+            position=obj_position_vector,
+            rpy=(math.pi, 0, radian),
+            desired_distance=desired_distance,
+            finger_joints=finger_joints,
+            allowed_touch_objects=[object_name]
+        )
         return self.mv_handler.pick(object_name, [grasp])
 
     def detect(self):
         return self.gd_cli.detect()
 
     def select_arm(self, y):
-        new_move_group = self.mv_handler.left_start_move_group if y > 0 else self.mv_handler.right_start_move_group
+        # 0: left, 1: right
+        arm_index =  0 if y > 0 else 1
+        print("y: {}, arm_index: {}".format(y, arm_index))
+        new_move_group = self.mv_handler.left_start_move_group if arm_index == 0 else self.mv_handler.right_start_move_group
         self.mv_handler.set_current_move_group(new_move_group)
+        return arm_index
 
     def info(self):
         print("-" * 30)
