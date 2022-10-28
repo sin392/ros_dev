@@ -73,7 +73,10 @@ class MoveGroupHandler:
         return self.whole_move_group.plan(merged_joints)
 
     def execute(self, plan, wait):
-        return self.whole_move_group.execute(plan, wait=wait)
+        res =  self.whole_move_group.execute(plan, wait=wait)
+        self.whole_move_group.stop()
+        self.whole_move_group.clear_pose_targets()
+        return res
 
     def pick(self, object_name, grasps):
         self.current_move_group.pick(object_name, grasps)
@@ -173,7 +176,8 @@ class Myrobot:
         return self.mv_handler.plan(joints, is_degree, **kwargs)
 
     def execute(self, plan, wait=False):
-        return self.mv_handler.execute(plan, wait)
+        res =  self.mv_handler.execute(plan, wait)
+        return res
 
     def pick(self, object_name, object_msg, desired_distance=0.1):
         obj_position_point = object_msg.center_pose.pose.position
