@@ -137,5 +137,7 @@
     </link>
     <xacro:arm_with_soft_hand prefix="${prefix_2}" parent="${prefix_2}_sholder" arm_xyz="${sholder_sx / 2} 0 ${sholder_sz / 2}" arm_rpy="${radians(-90)} 0 ${radians(-90)}" hand_rpy="0 0 ${radians(-135)}" />
     <!-- left camera -->
-    <xacro:d435 prefix="${prefix_2}" parent="${prefix_2}_soft_hand_base_link" xyz="0 0 0.17" rpy="${radians(135)} ${radians(-90)} 0" camera_xyz="0 0 -0.0125" publish_pointcloud="true" />
+    <!-- TODO: update camera direction (needs image flip) -->
+    <!-- <xacro:d435 prefix="${prefix_2}" parent="${prefix_2}_soft_hand_base_link" xyz="0 0 0.17" rpy="${radians(135)} ${radians(-90)} 0" camera_xyz="0 0 -0.0125" publish_pointcloud="true" /> -->
+    <xacro:d435 prefix="${prefix_2}" parent="${prefix_2}_soft_hand_base_link" xyz="0 0 0.17" rpy="${radians(-45)} ${radians(-90)} 0" camera_xyz="0 0 -0.0125" publish_pointcloud="true" />
 </robot>
