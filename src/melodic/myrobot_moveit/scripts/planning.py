@@ -98,7 +98,10 @@ class PlanningSceneHandler(mc.PlanningSceneInterface):
         self.oh.update()
 
 class Grasp(BaseGrasp):
-    def __init__(self, position=None, orientation=None, xyz=(0, 0, 0), rpy=(0, 0, 0), min_distance=0.05, desired_distance=0.1, frame_id="base_link", finger_joints=[], allowed_touch_objects=[]):
+    def __init__(self, approach_desired_distance, approach_min_distance, 
+                 retreat_desired_distance, retreat_min_distance, 
+                 position=None, orientation=None, xyz=(0, 0, 0), rpy=(0, 0, 0), 
+                 frame_id="base_link", finger_joints=[], allowed_touch_objects=[]):
         super(Grasp, self).__init__()
         # setting grasp-pose: this is for parent_link
         self.grasp_pose.header.frame_id = frame_id
@@ -113,13 +116,13 @@ class Grasp(BaseGrasp):
         # setting pre-grasp approach
         self.pre_grasp_approach.direction.header.frame_id = frame_id
         self.pre_grasp_approach.direction.vector.z = -1
-        self.pre_grasp_approach.min_distance = min_distance
-        self.pre_grasp_approach.desired_distance = desired_distance
+        self.pre_grasp_approach.min_distance = approach_min_distance
+        self.pre_grasp_approach.desired_distance = approach_desired_distance
         # setting post-grasp retreat
         self.post_grasp_retreat.direction.header.frame_id = frame_id
         self.post_grasp_retreat.direction.vector.z = 1
-        self.post_grasp_retreat.min_distance = min_distance
-        self.post_grasp_retreat.desired_distance = desired_distance
+        self.post_grasp_retreat.min_distance = retreat_min_distance
+        self.post_grasp_retreat.desired_distance = retreat_desired_distance
         # setting posture of eef before grasp
         self.pre_grasp_posture.joint_names = finger_joints
         # self.pre_grasp_posture.points = [JointTrajectoryPoint()]
@@ -180,7 +183,7 @@ class Myrobot:
         res =  self.mv_handler.execute(plan, wait)
         return res
 
-    def pick(self, object_name, object_msg, desired_distance=0.1):
+    def pick(self, object_name, object_msg, approach_desired_distance=0.05, approach_min_distance=0.01, retreat_desired_distance=0.05, retreat_min_distance=0.01):
         obj_position_point = object_msg.center_pose.pose.position
         z = max(obj_position_point.z - object_msg.length_to_center / 2, 0.01)
         print("z: {}".format(z))
@@ -193,7 +196,10 @@ class Myrobot:
         grasp = Grasp(
             position=obj_position_vector,
             rpy=(math.pi, 0, radian),
-            desired_distance=desired_distance,
+            approach_desired_distance=approach_desired_distance,
+            approach_min_distance=approach_min_distance,
+            retreat_desired_distance=retreat_desired_distance,
+            retreat_min_distance=retreat_min_distance,
             finger_joints=finger_joints,
             allowed_touch_objects=[object_name]
         )
@@ -260,13 +266,19 @@ if __name__ == "__main__":
 
         # add object
         obj_pose = obj.center_pose
+        # obj_pose.pose.position.z -= obj.length_to_center / 2
         obj_pose.pose.orientation = Quaternion()
         myrobot.scene_handler.add_cylinder(obj_name, obj_pose, height=obj.length_to_center, radius=obj.long_radius)
         myrobot.scene_handler.update_octomap()
         
         # pick
         print("start pick")
-        myrobot.pick(obj_name, obj)
+        myrobot.pick(obj_name, obj, 
+                     approach_desired_distance=obj.length_to_center,
+                     retreat_desired_distance=obj.length_to_center,
+                     approach_min_distance=0.05,
+                     retreat_min_distance=obj.length_to_center / 2,
+        )
 
         print("will initialize")
         myrobot.initialize_current_pose()
