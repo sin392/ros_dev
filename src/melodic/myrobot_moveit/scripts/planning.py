@@ -190,7 +190,7 @@ class Myrobot:
         for value in values:
             plan = self.plan(joint_back=value, is_degree=is_degree)
             self.execute(plan, wait=True)
-            rospy.sleep(0)
+            rospy.sleep(sleep_time)
             self.scene_handler.update_octomap()
 
     def plan(self, joints={}, is_degree=False, **kwargs):
