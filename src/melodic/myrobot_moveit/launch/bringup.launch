@@ -25,12 +25,14 @@
     <arg name="fps" default="1"/>
     <arg name="sensors" default="[body_camera, left_camera, right_camera]"/>
     <arg name="wait_server" default="true" />
+    <arg name="use_constraint" default="false" />
 
     <arg name="enable_auto_planning" default="true" />
 
     <param name="fps" value="$(arg fps)"/>
     <rosparam param="~sensors" subst_value="true">$(arg sensors)</rosparam>
     <param name="~wait_server" value="$(arg wait_server)"/>
+    <param name="~use_constraint" value="$(arg use_constraint)"/>
 
     <param name="image_topic" value="/$(arg robot_name)/left_camera/color/image_raw" />
     <param name="depth_topic" value="/$(arg robot_name)/left_camera/aligned_depth_to_color/image_raw" />

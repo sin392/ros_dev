@@ -188,19 +188,23 @@ class PlaceLocation(BasePlaceLocation):
 
 
 class Myrobot:
-    def __init__(self, fps, image_topic, depth_topic, raw_point_topics, wait = True):
+    def __init__(self, fps, image_topic, depth_topic, raw_point_topics, wait = True, use_constraint = False):
         mc.roscpp_initialize(sys.argv)
 
         self.robot = mc.RobotCommander()
         self.scene_handler = PlanningSceneHandler(raw_point_topics)
 
         # constraints
-        constraint_rpy = (0, math.pi, math.pi / 4) # TODO: compute z from finger property (now 45 for 4 fingers)
-        constraint_xyz_tolerance = (3.6, 3.6, 3.6) # TODO: update this value
-        left_hand_constraint = self._create_constraint("left_hand_constraint", link_name="left_soft_hand_tip", 
-                                                      rpy=constraint_rpy, xyz_tolerance=constraint_xyz_tolerance)
-        right_hand_constraint = self._create_constraint("right_hand_constraint", link_name="right_soft_hand_tip", 
-                                                      rpy=constraint_rpy, xyz_tolerance=constraint_xyz_tolerance)
+        if use_constraint:
+            constraint_rpy = (0, math.pi, math.pi / 4) # TODO: compute z from finger property (now 45 for 4 fingers)
+            constraint_xyz_tolerance = (0.45, 0.45, 3.6) # TODO: update this value
+            left_hand_constraint = self._create_constraint("left_hand_constraint", link_name="left_soft_hand_tip", 
+                                                        rpy=constraint_rpy, xyz_tolerance=constraint_xyz_tolerance)
+            right_hand_constraint = self._create_constraint("right_hand_constraint", link_name="right_soft_hand_tip", 
+                                                        rpy=constraint_rpy, xyz_tolerance=constraint_xyz_tolerance)
+        else:
+            left_hand_constraint = Constraints()
+            right_hand_constraint = Constraints()
 
         # left groups
         mv_base_to_left_arm = MoveGroup("base_and_left_arm", constraint=left_hand_constraint)
@@ -351,10 +355,11 @@ if __name__ == "__main__":
     raw_point_topics = ["/{}/{}/depth/color/points".format(ns, sensor_name) for sensor_name in sensors]
 
     wait = rospy.get_param("~wait_server", default=True)
+    use_constraint = rospy.get_param("~use_constraint", default=False)
     rospy.loginfo("################################################")
 
     print("initializing instances...")
-    myrobot = Myrobot(fps=fps, image_topic=image_topic, depth_topic=depth_topic, raw_point_topics=raw_point_topics, wait=wait)
+    myrobot = Myrobot(fps=fps, image_topic=image_topic, depth_topic=depth_topic, raw_point_topics=raw_point_topics, wait=wait, use_constraint=use_constraint)
     myrobot.info()
     myrobot.initialize_whole_pose()
 
