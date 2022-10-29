@@ -9,7 +9,7 @@ import moveit_commander as mc
 from moveit_msgs.msg import Grasp as BaseGrasp
 from grasp_detection_client import GraspDetectionClient
 from geometry_msgs.msg import Vector3, Quaternion
-# from trajectory_msgs.msg import JointTrajectoryPoint
+from trajectory_msgs.msg import JointTrajectoryPoint
 from tf.transformations import quaternion_from_euler
 
 from octomap_handler import OctomapHandler
@@ -145,14 +145,10 @@ class Grasp(BaseGrasp):
         self.post_grasp_retreat.desired_distance = retreat_desired_distance
         # setting posture of eef before grasp
         self.pre_grasp_posture.joint_names = finger_joints
-        # self.pre_grasp_posture.points = [JointTrajectoryPoint()]
-        # self.pre_grasp_posture.points[0].positions = [0]
-        # self.pre_grasp_posture.points[0].time_from_start = rospy.Duration(0.5)
+        self.pre_grasp_posture.points = [JointTrajectoryPoint(positions=[0.0], time_from_start=rospy.Duration(0.5))]
         # setting posture of eef during grasp
         self.grasp_posture.joint_names = finger_joints
-        # self.grasp_posture.points = [JointTrajectoryPoint()]
-        # self.pre_grasp_posture.points[0].positions = [0]
-        # self.pre_grasp_posture.points[0].time_from_start = rospy.Duration(0.5)
+        self.grasp_posture.points = [JointTrajectoryPoint(positions=[0.0], time_from_start=rospy.Duration(0.5))]
 
 
 class Myrobot:
