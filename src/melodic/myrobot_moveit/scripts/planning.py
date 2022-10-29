@@ -33,25 +33,35 @@ class MoveGroup(mc.MoveGroupCommander):
 class MoveGroupHandler:
     def __init__(self, left_start_move_group, right_start_move_group, start_move_group, whole_move_group):
         self.left_start_move_group = left_start_move_group
+        self.left_eef_default_pose = left_start_move_group.get_current_pose().pose
         self.right_start_move_group = right_start_move_group
+        self.right_eef_default_pose = right_start_move_group.get_current_pose().pose
         self.start_move_group = start_move_group
+        self.start_eef_default_pose = start_move_group.get_current_pose().pose
         self.whole_move_group = whole_move_group
         self.whole_name = whole_move_group.get_name()
-        self.set_current_move_group(self.start_move_group)
+        self.set_current_move_group(self.start_move_group, self.start_eef_default_pose)
 
-    def set_current_move_group(self, move_group):
+    def set_current_move_group(self, move_group, default_eef_pose=None):
         self.current_move_group = move_group
+        self.current_eef_default_pose = default_eef_pose
         rospy.loginfo("current move group is changed to '{}'".format(self.get_current_name()))
 
     def reset_move_group(self):
         # TODO: also reset joint values
         self.current_move_group = self.start_move_group
-
-    def initialize_current_pose(self):
+        self.current_eef_default_pose = self.start_eef_default_pose
+        
+    def initialize_current_pose(self, cartesian_mode=False, c_eef_step=0.01, c_jump_threshold=0.0):
         group_name = self.get_current_name()
         target_name = "{}_default".format(group_name)
         target_joint_dict = self.current_move_group.get_named_target_values(target_name)
-        plan = self.current_move_group.plan(target_joint_dict)
+        if cartesian_mode:
+            waypoints = [self.current_eef_default_pose]
+            plan, _ = self.current_move_group.compute_cartesian_path(waypoints, c_eef_step, c_jump_threshold)
+            print("cartesian planning")
+        else:
+            plan = self.current_move_group.plan(target_joint_dict)
         self.current_move_group.execute(plan)
 
     def initialize_whole_pose(self):
@@ -162,18 +172,19 @@ class Myrobot:
             wait=wait
         )
 
-    def initialize_current_pose(self):
-        self.mv_handler.initialize_current_pose()
+    def initialize_current_pose(self, cartesian_mode=False, c_eef_step=0.01, c_jump_threshold=0.0):
+        self.mv_handler.initialize_current_pose(cartesian_mode, c_eef_step, c_jump_threshold)
 
     def initialize_whole_pose(self):
         self.mv_handler.initialize_whole_pose()
 
-    def get_around_octomap(self, values=[-30, 30, 0], is_degree=False, should_reset=True):
+    def get_around_octomap(self, values=[-30, 30, 0], sleep_time=0, is_degree=False, should_reset=True):
         if should_reset:
             self.scene_handler.clear_octomap()
         for value in values:
             plan = self.plan(joint_back=value, is_degree=is_degree)
             self.execute(plan, wait=True)
+            rospy.sleep(0)
             self.scene_handler.update_octomap()
 
     def plan(self, joints={}, is_degree=False, **kwargs):
@@ -203,7 +214,7 @@ class Myrobot:
             allowed_touch_objects=[object_name]
         )  for angle in object_msg.angles]
         res = self.mv_handler.pick(object_name, grasps)
-        return res
+        return res, arm_index
 
     def detect(self):
         return self.gd_cli.detect()
@@ -212,8 +223,14 @@ class Myrobot:
         # 0: left, 1: right
         arm_index =  0 if y > 0 else 1
         print("y: {}, arm_index: {}".format(y, arm_index))
-        new_move_group = self.mv_handler.left_start_move_group if arm_index == 0 else self.mv_handler.right_start_move_group
-        self.mv_handler.set_current_move_group(new_move_group)
+        if arm_index == 0:
+            new_move_group = self.mv_handler.left_start_move_group
+            new_eef_default_pose = self.mv_handler.left_eef_default_pose
+        else:
+            new_move_group = self.mv_handler.right_start_move_group
+            new_eef_default_pose = self.mv_handler.right_eef_default_pose
+
+        self.mv_handler.set_current_move_group(new_move_group, new_eef_default_pose)
         return arm_index
 
     def info(self):
@@ -249,7 +266,7 @@ if __name__ == "__main__":
     myrobot.initialize_whole_pose()
 
     print("getting around octomap...")
-    myrobot.get_around_octomap(values=[-30, 30, 0], is_degree=True, should_reset=True)
+    myrobot.get_around_octomap(values=[-30, 30, 0], sleep_time=0.3, is_degree=True, should_reset=True)
 
     print("stating detect flow...")
     registered_objects = []
@@ -273,7 +290,7 @@ if __name__ == "__main__":
         
         # pick
         print("start pick")
-        myrobot.pick(obj_name, obj, 
+        res = myrobot.pick(obj_name, obj, 
                      approach_desired_distance=insert_depth * 1.5,
                      retreat_desired_distance=insert_depth * 2,
                      approach_min_distance=insert_depth,
@@ -281,7 +298,7 @@ if __name__ == "__main__":
         )
 
         print("will initialize")
-        myrobot.initialize_current_pose()
+        myrobot.initialize_current_pose(cartesian_mode=True)
 
         myrobot.scene_handler.remove_attached_object("")
         myrobot.scene_handler.remove_world_object()
