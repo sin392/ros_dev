@@ -268,16 +268,17 @@ if __name__ == "__main__":
         obj_pose = obj.center_pose
         # obj_pose.pose.position.z -= obj.length_to_center / 2
         obj_pose.pose.orientation = Quaternion()
-        myrobot.scene_handler.add_cylinder(obj_name, obj_pose, height=obj.length_to_center, radius=obj.long_radius)
+        insert_depth = obj.length_to_center
+        myrobot.scene_handler.add_cylinder(obj_name, obj_pose, height=insert_depth, radius=obj.long_radius)
         myrobot.scene_handler.update_octomap()
         
         # pick
         print("start pick")
         myrobot.pick(obj_name, obj, 
-                     approach_desired_distance=obj.length_to_center,
-                     retreat_desired_distance=obj.length_to_center,
-                     approach_min_distance=0.05,
-                     retreat_min_distance=obj.length_to_center / 2,
+                     approach_desired_distance=insert_depth * 1.5,
+                     retreat_desired_distance=insert_depth * 2,
+                     approach_min_distance=insert_depth,
+                     retreat_min_distance=insert_depth * 1.5
         )
 
         print("will initialize")
