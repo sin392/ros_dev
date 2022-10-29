@@ -163,7 +163,7 @@ class Myrobot:
 
         # constraints
         constraint_rpy = (0, math.pi, 0)
-        constraint_xyz_tolerance = (3.6, 3.6, 3.6)
+        constraint_xyz_tolerance = (3.6, 3.6, 3.6) # TODO: update this value
         left_hand_constraint = self._create_constraint("left_hand_constraint", link_name="left_soft_hand_tip", 
                                                       rpy=constraint_rpy, xyz_tolerance=constraint_xyz_tolerance)
         right_hand_constraint = self._create_constraint("right_hand_constraint", link_name="right_soft_hand_tip", 
