@@ -5,8 +5,9 @@ import sys
 import math
 from random import randint
 import rospy
+from std_msgs.msg import Header
 import moveit_commander as mc
-from moveit_msgs.msg import Grasp as BaseGrasp
+from moveit_msgs.msg import Grasp as BaseGrasp, Constraints, OrientationConstraint
 from grasp_detection_client import GraspDetectionClient
 from geometry_msgs.msg import Vector3, Quaternion
 from trajectory_msgs.msg import JointTrajectoryPoint
@@ -22,10 +23,12 @@ class Angle:
         return cls.deg_to_rad_ratio * degree
 
 class MoveGroup(mc.MoveGroupCommander):
-    def __init__(self, name, parent=None):
+    def __init__(self, name, parent=None, constraint=Constraints()):
         super(MoveGroup, self).__init__(name)
+        self.constraint = constraint
         self.parent = parent
         # self.next = mc.MoveGroupCommander(next_name)
+        self.set_path_constraints(constraint)
 
     def get_current_joint_dict(self):
         return dict(zip(self.get_active_joints(), self.get_current_joint_values()))
@@ -100,7 +103,7 @@ class MoveGroupHandler:
             plan, _ = self.current_move_group.compute_cartesian_path(waypoints, c_eef_step, c_jump_threshold)
             self.execute(plan, wait=True)
         
-        self.current_move_group.pick(object_name, grasps)
+        return self.current_move_group.pick(object_name, grasps)
 
     def get_current_name(self):
         return self.current_move_group.get_name()
@@ -158,14 +161,22 @@ class Myrobot:
         self.robot = mc.RobotCommander()
         self.scene_handler = PlanningSceneHandler(raw_point_topics)
 
+        # constraints
+        constraint_rpy = (0, math.pi, 0)
+        constraint_xyz_tolerance = (3.6, 3.6, 3.6)
+        left_hand_constraint = self._create_constraint("left_hand_constraint", link_name="left_soft_hand_tip", 
+                                                      rpy=constraint_rpy, xyz_tolerance=constraint_xyz_tolerance)
+        right_hand_constraint = self._create_constraint("right_hand_constraint", link_name="right_soft_hand_tip", 
+                                                      rpy=constraint_rpy, xyz_tolerance=constraint_xyz_tolerance)
+
         # left groups
-        mv_base_to_left_arm = MoveGroup("base_and_left_arm")
-        mv_body_to_left_arm = MoveGroup("body_and_left_arm", parent=mv_base_to_left_arm)
-        # mv_left_arm = MoveGroup("left_arm", parent=mv_body_to_left_arm)
+        mv_base_to_left_arm = MoveGroup("base_and_left_arm", constraint=left_hand_constraint)
+        mv_body_to_left_arm = MoveGroup("body_and_left_arm", parent=mv_base_to_left_arm, constraint=left_hand_constraint)
+        # mv_left_arm = MoveGroup("left_arm", parent=mv_body_to_left_arm, constraint=constraint)
         # right groups
-        mv_base_to_right_arm = MoveGroup("base_and_right_arm")
-        mv_body_to_right_arm = MoveGroup("body_and_right_arm", parent=mv_base_to_right_arm)
-        # mv_right_arm = MoveGroup("right_arm", parent=mv_body_to_right_arm)
+        mv_base_to_right_arm = MoveGroup("base_and_right_arm", constraint=right_hand_constraint)
+        mv_body_to_right_arm = MoveGroup("body_and_right_arm", parent=mv_base_to_right_arm, constraint=right_hand_constraint)
+        # mv_right_arm = MoveGroup("right_arm", parent=mv_body_to_right_arm, constraint=constraint)
         # whole group
         mv_base_to_arms = MoveGroup("base_and_arms")
 
@@ -177,6 +188,23 @@ class Myrobot:
             depth_topic=depth_topic,
             wait=wait
         )
+
+    def _create_constraint(self, name, link_name, rpy, base_frame_id="base_link", xyz_tolerance=(3.6, 3.6, 3.6)):
+        q = quaternion_from_euler(rpy[0], rpy[1], rpy[2])
+        constraint = Constraints(
+            name=name,
+            orientation_constraints = [OrientationConstraint(
+                header=Header(frame_id=base_frame_id),
+                link_name=link_name,
+                orientation=Quaternion(x=q[0], y=q[1], z=q[2], w=q[3]),
+                # allow max rotations
+                absolute_x_axis_tolerance = xyz_tolerance[0],
+                absolute_y_axis_tolerance = xyz_tolerance[1],
+                absolute_z_axis_tolerance = xyz_tolerance[2],
+                weight = 1
+            )]
+        )
+        return constraint
 
     def initialize_current_pose(self, cartesian_mode=False, c_eef_step=0.01, c_jump_threshold=0.0):
         self.mv_handler.initialize_current_pose(cartesian_mode, c_eef_step, c_jump_threshold)
