@@ -62,9 +62,10 @@
       <direction>-0.5 0.1 -0.9</direction>
     </light>
     <model name='mytable'>
+      <static>1</static>
       <link name='link'>
         <inertial>
-          <mass>1</mass>
+          <mass>100</mass>
           <inertia>
             <ixx>0.083</ixx>
             <ixy>0</ixy>
@@ -111,7 +112,7 @@
       <static>1</static>
       <link name='link'>
         <inertial>
-          <mass>1</mass>
+          <mass>100</mass>
           <inertia>
             <ixx>1</ixx>
             <ixy>0</ixy>
