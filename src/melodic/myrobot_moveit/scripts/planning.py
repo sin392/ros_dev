@@ -3,6 +3,7 @@
 
 import sys
 import math
+from random import randint
 import rospy
 import moveit_commander as mc
 from moveit_msgs.msg import Grasp as BaseGrasp
@@ -181,7 +182,9 @@ class Myrobot:
 
     def pick(self, object_name, object_msg, desired_distance=0.1):
         obj_position_point = object_msg.center_pose.pose.position
-        obj_position_vector = Vector3(obj_position_point.x, obj_position_point.y, obj_position_point.z - object_msg.length_to_center / 2)
+        z = max(obj_position_point.z - object_msg.length_to_center / 2, 0.01)
+        print("z: {}".format(z))
+        obj_position_vector = Vector3(obj_position_point.x, obj_position_point.y, z)
         radian = Angle.deg_to_rad(object_msg.angle)
         # TODO: change grsp frame_id from "base_link" to each hand frame
 
@@ -194,7 +197,8 @@ class Myrobot:
             finger_joints=finger_joints,
             allowed_touch_objects=[object_name]
         )
-        return self.mv_handler.pick(object_name, [grasp])
+        res = self.mv_handler.pick(object_name, [grasp])
+        return res
 
     def detect(self):
         return self.gd_cli.detect()
@@ -250,7 +254,8 @@ if __name__ == "__main__":
         if len(objects) == 0:
             continue
 
-        obj = objects[0]
+        target_index = randint(0, len(objects) - 1)
+        obj = objects[target_index]
         obj_name = "object_{}".format(len(registered_objects))
 
         # add object
