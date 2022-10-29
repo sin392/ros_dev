@@ -59,7 +59,6 @@ class MoveGroupHandler:
         if cartesian_mode:
             waypoints = [self.current_eef_default_pose]
             plan, _ = self.current_move_group.compute_cartesian_path(waypoints, c_eef_step, c_jump_threshold)
-            print("cartesian planning")
         else:
             plan = self.current_move_group.plan(target_joint_dict)
         self.current_move_group.execute(plan)
@@ -89,7 +88,18 @@ class MoveGroupHandler:
         self.whole_move_group.clear_pose_targets()
         return res
 
-    def pick(self, object_name, grasps):
+    def pick(self, object_name, grasps, pre_move=False, c_eef_step=0.01, c_jump_threshold=0.0):
+        if pre_move:
+            pre_pose = self.current_eef_default_pose
+            grasp_position = grasps[0].grasp_pose.pose.position # x, y are same among grasps
+            apploach_desired_distance = grasps[0].pre_grasp_approach.desired_distance
+            pre_pose.position.x = grasp_position.x
+            pre_pose.position.y = grasp_position.y
+            pre_pose.position.y = apploach_desired_distance
+            waypoints = [pre_pose]
+            plan, _ = self.current_move_group.compute_cartesian_path(waypoints, c_eef_step, c_jump_threshold)
+            self.execute(plan, wait=True)
+        
         self.current_move_group.pick(object_name, grasps)
 
     def get_current_name(self):
@@ -194,7 +204,9 @@ class Myrobot:
         res =  self.mv_handler.execute(plan, wait)
         return res
 
-    def pick(self, object_name, object_msg, approach_desired_distance=0.05, approach_min_distance=0.01, retreat_desired_distance=0.05, retreat_min_distance=0.01):
+    def pick(self, object_name, object_msg, 
+             pre_move=False, c_eef_step=0.01, c_jump_threshold=0.0,
+             approach_desired_distance=0.05, approach_min_distance=0.01, retreat_desired_distance=0.05, retreat_min_distance=0.01):
         obj_position_point = object_msg.center_pose.pose.position
         z = max(obj_position_point.z - object_msg.length_to_center / 2, 0.01)
         print("z: {}".format(z))
@@ -213,7 +225,7 @@ class Myrobot:
             finger_joints=finger_joints,
             allowed_touch_objects=[object_name]
         )  for angle in object_msg.angles]
-        res = self.mv_handler.pick(object_name, grasps)
+        res = self.mv_handler.pick(object_name, grasps, pre_move, c_eef_step, c_jump_threshold)
         return res, arm_index
 
     def detect(self):
@@ -290,7 +302,7 @@ if __name__ == "__main__":
         
         # pick
         print("start pick")
-        res = myrobot.pick(obj_name, obj, 
+        res = myrobot.pick(obj_name, obj, pre_move=False,
                      approach_desired_distance=insert_depth * 1.5,
                      retreat_desired_distance=insert_depth * 2,
                      approach_min_distance=insert_depth,
