@@ -7,9 +7,9 @@ from random import randint
 import rospy
 from std_msgs.msg import Header
 import moveit_commander as mc
-from moveit_msgs.msg import Grasp as BaseGrasp, Constraints, OrientationConstraint
+from moveit_msgs.msg import Grasp as BaseGrasp, PlaceLocation as BasePlaceLocation, Constraints, OrientationConstraint
 from grasp_detection_client import GraspDetectionClient
-from geometry_msgs.msg import Vector3, Quaternion, PoseStamped
+from geometry_msgs.msg import Vector3, Quaternion, PoseStamped, Pose
 from trajectory_msgs.msg import JointTrajectoryPoint
 from tf.transformations import quaternion_from_euler
 
@@ -105,6 +105,9 @@ class MoveGroupHandler:
         
         return self.current_move_group.pick(object_name, grasps)
 
+    def place(self, object_name, locations):
+        return self.current_move_group.place(object_name, locations)
+
     def get_current_name(self):
         return self.current_move_group.get_name()
 
@@ -153,6 +156,36 @@ class Grasp(BaseGrasp):
         self.grasp_posture.joint_names = finger_joints
         self.grasp_posture.points = [JointTrajectoryPoint(positions=[0.0], time_from_start=rospy.Duration(0.5))]
 
+class PlaceLocation(BasePlaceLocation):
+    def __init__(self, approach_desired_distance, approach_min_distance, 
+                 retreat_desired_distance, retreat_min_distance, 
+                 position=None, orientation=None, xyz=(0, 0, 0), rpy=(0, 0, 0), 
+                 frame_id="base_link", finger_joints=[], allowed_touch_objects=[]):
+        super(PlaceLocation, self).__init__()
+        # setting place-pose: this is for parent_link
+        self.place_pose.header.frame_id = frame_id
+        self.allowed_touch_objects = allowed_touch_objects
+        if position is None:
+            position = Vector3(xyz[0], xyz[1], xyz[2])
+        if orientation is None:
+            q = quaternion_from_euler(rpy[0], rpy[1], rpy[2])
+            orientation = Quaternion(x=q[0], y=q[1], z=q[2], w=q[3])
+        self.place_pose.pose.position = position
+        self.place_pose.pose.orientation = orientation
+        # setting pre-place approach
+        self.pre_place_approach.direction.header.frame_id = frame_id
+        self.pre_place_approach.direction.vector.z = -1
+        self.pre_place_approach.min_distance = approach_min_distance
+        self.pre_place_approach.desired_distance = approach_desired_distance
+        # setting post-place retreat
+        self.post_place_retreat.direction.header.frame_id = frame_id
+        self.post_place_retreat.direction.vector.z = 1
+        self.post_place_retreat.min_distance = retreat_min_distance
+        self.post_place_retreat.desired_distance = retreat_desired_distance
+        # setting posture of eef after place
+        self.post_place_posture.joint_names = finger_joints
+        self.post_place_posture.points = [JointTrajectoryPoint(positions=[0.0], time_from_start=rospy.Duration(0.5))]
+
 
 class Myrobot:
     def __init__(self, fps, image_topic, depth_topic, raw_point_topics, wait = True):
@@ -162,7 +195,7 @@ class Myrobot:
         self.scene_handler = PlanningSceneHandler(raw_point_topics)
 
         # constraints
-        constraint_rpy = (0, math.pi, 0)
+        constraint_rpy = (0, math.pi, math.pi / 4) # TODO: compute z from finger property (now 45 for 4 fingers)
         constraint_xyz_tolerance = (3.6, 3.6, 3.6) # TODO: update this value
         left_hand_constraint = self._create_constraint("left_hand_constraint", link_name="left_soft_hand_tip", 
                                                       rpy=constraint_rpy, xyz_tolerance=constraint_xyz_tolerance)
@@ -259,6 +292,23 @@ class Myrobot:
         res = self.mv_handler.pick(object_name, grasps, pre_move, c_eef_step, c_jump_threshold)
         return res, arm_index
 
+    def place(self, arm_index, object_name, approach_desired_distance=0.05, approach_min_distance=0.01, retreat_desired_distance=0.05, retreat_min_distance=0.01):
+        finger_joints = ["left_finger_1_joint"] if arm_index == 0 else ["right_finger_1_joint"] 
+        location = PlaceLocation(xyz=(0, -1.25, 1.2), 
+                                 approach_desired_distance=approach_desired_distance,
+                                 approach_min_distance=approach_min_distance,
+                                 retreat_desired_distance=retreat_desired_distance,
+                                 retreat_min_distance=retreat_min_distance,
+                                 finger_joints=finger_joints,
+                                 allowed_touch_objects=[object_name])
+        # res = self.mv_handler.place(object_name, [location])
+        pose = Pose()
+        pose.position.x, pose.position.y, pose.position.z = (0, -1.25, 0.4)
+
+        self.mv_handler.set_current_move_group(self.mv_handler.current_move_group.parent, self.mv_handler.current_eef_default_pose) # tmp
+        res = self.mv_handler.place(object_name, pose)
+        return res        
+
     def detect(self):
         return self.gd_cli.detect()
 
@@ -333,13 +383,16 @@ if __name__ == "__main__":
         
         # pick
         print("start pick")
-        res = myrobot.pick(obj_name, obj, pre_move=False,
+        # TODO: pull up arm index computation from pick
+        res, arm_index = myrobot.pick(obj_name, obj, pre_move=False,
                      approach_desired_distance=insert_depth * 1.5,
                      retreat_desired_distance=insert_depth * 2,
                      approach_min_distance=insert_depth,
                      retreat_min_distance=insert_depth * 1.5
         )
         print(res)
+        # print("start place")
+        # res = myrobot.place(arm_index, obj_name)
 
         print("will initialize")
         myrobot.initialize_current_pose(cartesian_mode=True)
