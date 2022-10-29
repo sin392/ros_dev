@@ -188,22 +188,21 @@ class Myrobot:
         z = max(obj_position_point.z - object_msg.length_to_center / 2, 0.01)
         print("z: {}".format(z))
         obj_position_vector = Vector3(obj_position_point.x, obj_position_point.y, z)
-        radian = Angle.deg_to_rad(object_msg.angle)
         # TODO: change grsp frame_id from "base_link" to each hand frame
 
         arm_index = self.select_arm(obj_position_vector.y)
         finger_joints = ["left_finger_1_joint"] if arm_index == 0 else ["right_finger_1_joint"] 
-        grasp = Grasp(
+        grasps = [Grasp(
             position=obj_position_vector,
-            rpy=(math.pi, 0, radian),
+            rpy=(math.pi, 0, Angle.deg_to_rad(angle)),
             approach_desired_distance=approach_desired_distance,
             approach_min_distance=approach_min_distance,
             retreat_desired_distance=retreat_desired_distance,
             retreat_min_distance=retreat_min_distance,
             finger_joints=finger_joints,
             allowed_touch_objects=[object_name]
-        )
-        res = self.mv_handler.pick(object_name, [grasp])
+        )  for angle in object_msg.angles]
+        res = self.mv_handler.pick(object_name, grasps)
         return res
 
     def detect(self):
