@@ -9,7 +9,7 @@ from std_msgs.msg import Header
 import moveit_commander as mc
 from moveit_msgs.msg import Grasp as BaseGrasp, Constraints, OrientationConstraint
 from grasp_detection_client import GraspDetectionClient
-from geometry_msgs.msg import Vector3, Quaternion
+from geometry_msgs.msg import Vector3, Quaternion, PoseStamped
 from trajectory_msgs.msg import JointTrajectoryPoint
 from tf.transformations import quaternion_from_euler
 
@@ -181,7 +181,14 @@ class Myrobot:
         mv_base_to_arms = MoveGroup("base_and_arms")
 
         self.mv_handler = MoveGroupHandler(mv_body_to_left_arm, mv_body_to_right_arm, mv_body_to_left_arm, mv_base_to_arms)
-        
+
+        box_pose = PoseStamped()
+        box_pose.header.frame_id = "world"
+        box_pose.pose.position =Vector3(0, -1, 0)
+        q = quaternion_from_euler(0.0, 0.0, 0.0)
+        box_pose.pose.orientation = Quaternion(x=q[0], y=q[1], z=q[2], w=q[3])
+        self.scene_handler.add_box("table", box_pose, size=(0.5, 0.5, 0.2))
+            
         self.gd_cli = GraspDetectionClient( 
             fps=fps, 
             image_topic=image_topic, 
@@ -332,11 +339,12 @@ if __name__ == "__main__":
                      approach_min_distance=insert_depth,
                      retreat_min_distance=insert_depth * 1.5
         )
+        print(res)
 
         print("will initialize")
         myrobot.initialize_current_pose(cartesian_mode=True)
 
         myrobot.scene_handler.remove_attached_object("")
-        myrobot.scene_handler.remove_world_object()
+        myrobot.scene_handler.remove_world_object(obj_name)
 
         myrobot.scene_handler.update_octomap()
