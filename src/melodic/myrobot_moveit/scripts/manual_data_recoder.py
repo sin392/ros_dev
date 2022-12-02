@@ -12,7 +12,7 @@ from sensor_msgs.msg import Image
 from modules.const import WHOLE_OUTPUTS_PATH
 from modules.ros.utils import multiarray2numpy
 from detect.msg import InstanceSegmentationActionResult, GraspDetectionActionResult, \
-    InstanceSegmentationResult, GraspDetectionResult
+    InstanceSegmentationResult, GraspDetectionResult, GraspDetectionDebugInfo
 
 class Client(object):
     def __init__(self, image_topic, depth_topic, instances_topic, objects_topic):
@@ -29,7 +29,8 @@ class Client(object):
             # mf.Subscriber(image_topic, Image), 
             # mf.Subscriber(depth_topic, Image),
             mf.Subscriber("/is_result", InstanceSegmentationResult), 
-            mf.Subscriber("/gd_result", GraspDetectionResult)
+            mf.Subscriber("/gd_result", GraspDetectionResult),
+            mf.Subscriber("{}/debug".format(objects_topic), GraspDetectionDebugInfo),
         ]
         # Others
         self.bridge = CvBridge()
@@ -51,12 +52,13 @@ class Client(object):
 
     def ts_callback(self, 
     # img_msg, depth_msg, 
-    instances_goal_msg, objects_goal_msg):
+    instances_goal_msg, objects_goal_msg, objects_debug_msg):
         try:
             self.img_msg = rospy.wait_for_message(self.image_topic, Image)
             self.depth_msg = rospy.wait_for_message(self.depth_topic, Image)
             self.instances_msg = instances_goal_msg
             self.objects_msg = objects_goal_msg
+            self.objects_debug_msg = objects_debug_msg
 
             self.is_empty = False
         except Exception as err:
@@ -70,8 +72,8 @@ class Client(object):
             mask = self.bridge.imgmsg_to_cv2(instance_msg.mask)
             contour = multiarray2numpy(int, np.int32, instance_msg.contour)
             center = instance_msg.center
-            candidates = [(point.x, point.y) for point in object_msg.points]
-            objects.append({"mask": mask, "contour": contour, "center": center, "candidates": candidates})
+            candidates_list = self.objects_debug_msg.candidates_list
+            objects.append({"mask": mask, "contour": contour, "center": center, "candidates_list": candidates_list})
 
         return {"img": img, "depth": depth, "objects": objects}
 
@@ -85,6 +87,11 @@ if __name__ == "__main__":
 
     image_topic = rospy.get_param("image_topic")
     depth_topic = rospy.get_param("depth_topic")
+    debug = rospy.get_param("debug")
+
+    if not debug:
+        print("Please set 'debug:=false' for bringup.launch in 'detect'")
+        exit()
 
     instances_topic = "/instance_segmentation_server/result"
     objects_topic = "/grasp_detection_server/result"
