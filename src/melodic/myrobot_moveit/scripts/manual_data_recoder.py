@@ -69,8 +69,9 @@ class Client(object):
         for instance_msg, object_msg in zip(self.instances_msg.instances, self.objects_msg.objects):
             mask = self.bridge.imgmsg_to_cv2(instance_msg.mask)
             contour = multiarray2numpy(int, np.int32, instance_msg.contour)
+            center = instance_msg.center
             candidates = [(point.x, point.y) for point in object_msg.points]
-            objects.append({"mask": mask, "contour": contour, "candidates": candidates})
+            objects.append({"mask": mask, "contour": contour, "center": center, "candidates": candidates})
 
         return {"img": img, "depth": depth, "objects": objects}
 
