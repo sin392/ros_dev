@@ -68,23 +68,15 @@ class Client(object):
         img = self.bridge.imgmsg_to_cv2(self.img_msg)
         depth = self.bridge.imgmsg_to_cv2(self.depth_msg)
         objects = []
-        for instance_msg, object_msg in zip(self.instances_msg.instances, self.objects_msg.objects):
+        for instance_msg, candidates_msg in zip(self.instances_msg.instances, self.objects_debug_msg.candidates_list):
             mask = self.bridge.imgmsg_to_cv2(instance_msg.mask)
             contour = multiarray2numpy(int, np.int32, instance_msg.contour)
             center = instance_msg.center
-            print("before", len(self.objects_debug_msg.candidates_list[0].candidates))
-            # candidates_list = [point.uv for candidates_msg in self.objects_debug_msg.candidates_list 
-            #                     for candidate_msg in candidates_msg.candidates
-                                # for point in candidate_msg.points]
-            candidates_list = []
-            for candidates_msg in self.objects_debug_msg.candidates_list:
-                candidates = []
-                for candidate_msg in candidates_msg.candidates:
-                    candidate = [point.uv for point in candidate_msg.points]
-                    candidates.append(candidate)
-                candidates_list.append(candidates)
-            print("after", len(candidates_list))
-            objects.append({"mask": mask, "contour": contour, "center": center, "candidates_list": candidates_list})
+            candidates = []
+            for candidate_msg in candidates_msg.candidates:
+                candidate = [point.uv for point in candidate_msg.points]
+                candidates.append(candidate)
+            objects.append({"mask": mask, "contour": contour, "center": center, "candidates": candidates})
 
         return {"img": img, "depth": depth, "objects": objects}
 
