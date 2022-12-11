@@ -10,7 +10,6 @@ generic_hw_control_loop:
 hardware_interface:
   joints: &entire_joints
     - joint_back
-    - joint_body
     - left_joint_sholder
     - left_joint_1
     - left_joint_2
@@ -18,6 +17,7 @@ hardware_interface:
     - left_joint_4
     - left_joint_5
     - left_joint_6
+    - joint_body
     - right_joint_sholder
     - right_joint_1
     - right_joint_2
@@ -39,17 +39,17 @@ myrobot:
   left_arm_controller:
     type: position_controllers/JointTrajectoryController
     joints: &left_arm_joints
-      - joint_body
-      - left_joint_sholder
       - left_joint_1
       - left_joint_2
       - left_joint_3
       - left_joint_4
       - left_joint_5
       - left_joint_6
+      - joint_back
+      - left_joint_sholder
     allow_partial_joints_goal: True
     gains: &left_arm_gains
-      joint_body: { p: 100, d: 1, i: 1, i_clamp: 1 }
+      joint_back: { p: 100, d: 1, i: 1, i_clamp: 1 }
       left_joint_sholder: { p: 100, d: 1, i: 1, i_clamp: 1 }
       left_joint_1: { p: 100, d: 1, i: 1, i_clamp: 1 }
       left_joint_2: { p: 100, d: 1, i: 1, i_clamp: 1 }
@@ -63,7 +63,7 @@ myrobot:
   right_arm_controller:
     type: position_controllers/JointTrajectoryController
     joints: &right_arm_joints
-      - joint_back
+      - joint_body
       - right_joint_sholder
       - right_joint_1
       - right_joint_2
@@ -73,14 +73,14 @@ myrobot:
       - right_joint_6
     allow_partial_joints_goal: True
     gains: &right_arm_gains
-      joint_back: { p: 100, d: 1, i: 1, i_clamp: 1 }
-      right_joint_sholder: { p: 100, d: 1, i: 1, i_clamp: 1 }
       right_joint_1: { p: 100, d: 1, i: 1, i_clamp: 1 }
       right_joint_2: { p: 100, d: 1, i: 1, i_clamp: 1 }
       right_joint_3: { p: 100, d: 1, i: 1, i_clamp: 1 }
       right_joint_4: { p: 100, d: 1, i: 1, i_clamp: 1 }
       right_joint_5: { p: 100, d: 1, i: 1, i_clamp: 1 }
       right_joint_6: { p: 100, d: 1, i: 1, i_clamp: 1 }
+      joint_body: { p: 100, d: 1, i: 1, i_clamp: 1 }
+      right_joint_sholder: { p: 100, d: 1, i: 1, i_clamp: 1 }
     constraints:
       goal_time: 1
       stopped_velocity_tolerance: 0

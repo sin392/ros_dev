@@ -96,7 +96,7 @@
     </gazebo>
     <xacro:f_joint name="joint_cart" xyz="0 0 ${cart_sz / 2}" parent="base_link" child="cart" />
 
-    <!-- joint_back_base is right_J8 -->
+    <!-- joint_back is left_J8 -->
     <xacro:a_joint name="joint_back" type="revolute" xyz="${(cart_sx - back_base_sx) / 2} 0 ${cart_sz / 2}" parent="cart" child="back" axis="0 0 1" low="-1.58824" up="1.58824" />
     <!-- <xacro:box_link name="back_base" xyz="0 0 ${back_base_sz / 2}" size="${back_base_sx} ${back_base_sy} ${back_base_sz}" color="red" /> -->
     <!-- <xacro:f_joint name="joint_back" xyz="-${(back_base_sx + back_sx) / 2} 0 ${back_sz / 2}" parent="back_base" child="back" /> -->
@@ -106,9 +106,10 @@
         <xacro:_box xyz="0 0 ${(back_base_sz / 2) + back_spacer_length}" size="${back_base_sx} ${back_base_sy} ${back_base_sz}" color="red" />
         <xacro:_box xyz="-${(back_base_sx + back_sx) / 2} 0 ${back_sz / 2 + back_spacer_length}" size="${back_sx} ${back_sy} ${back_sz}" color="red" />
     </link>
-
+    
     <!-- body -->
     <!-- TODO: デフォルト位置と可動範囲は要調節 -->
+    <!-- joint_body is right_J8 -->
     <xacro:a_joint name="joint_body" type="prismatic" xyz="-${back_base_sx / 2} 0 ${back_spacer_length + (back_sz / 2)}" parent="back" child="body" axis="0 0 1" low="0" up="${back_sz / 2 - body_spacer_radius}" />
     <link name="body">
         <xacro:_cylinder xyz="${body_spacer_length / 2} 0 0" rpy="0 ${radians(90)} 0" radius="${body_spacer_radius}" length="${body_spacer_length}" color="green" />
