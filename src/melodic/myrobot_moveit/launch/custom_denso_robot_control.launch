@@ -15,7 +15,7 @@
     <!-- following params to be wanted to be placed under the each node -->
     <!-- Controller -->
     <!-- <rosparam ns="/$(arg robot_name)" file="$(find myrobot_description)/$(arg robot_name).yaml" /> -->
-    <group ns="/$(arg robot_name)/right_arm">
+    <!-- <group ns="/$(arg robot_name)/right_arm">
         <include file="$(find myrobot_moveit)/config/right_arm_config.launch.xml" >
             <arg name="ip_address" value="$(arg ip_address_right)" />
         </include>
@@ -26,12 +26,18 @@
             <arg name="ip_address" value="$(arg ip_address_left)" />
         </include>
         <node name="denso_robot_control" pkg="denso_robot_control" type="denso_robot_control" output="screen" />
+    </group> -->
+    <group ns="/$(arg robot_name)">
+        <include file="$(find myrobot_moveit)/config/right_arm_config.launch.xml" >
+            <arg name="ip_address" value="$(arg ip_address_right)" />
+        </include>
+        <node name="right_arm_controller" pkg="denso_robot_control" type="denso_robot_control" output="screen" />
     </group>
     <!-- <node name="denso_robot_control" pkg="denso_robot_control" type="denso_robot_control" output="screen" ns="/$(arg robot_name)" /> -->
     <!-- <node name="denso_robot_control" pkg="denso_robot_control" type="denso_robot_control" output="screen" ns="/$(arg robot_name)" /> -->
 
     <rosparam file="$(find myrobot_v2_moveit_config)/config/ros_controllers.yaml" command="load" />
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/myrobot" args="--namespace=/myrobot 
-        joint_state_controller right_arm_controller left_arm_controller
+        joint_state_controller right_arm_controller 
     " />
 </launch>
