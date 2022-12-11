@@ -92,9 +92,13 @@ RUN echo "${USER}:${PASS}" | chpasswd
 # /dev/video0のPermission Denied回避
 RUN usermod -aG sudo,video ${USER}
 
-RUN mkdir -p ${HOME}/.gazebo/models
-COPY ./models/ ${HOME}/.gazebo/models/
-RUN chmod 777 ${HOME}/.gazebo
+# realsenseが読み込めない問題の回避
+# ref: https://github.com/IntelRealSense/realsense-ros/issues/1408
+RUN wget https://github.com/IntelRealSense/librealsense/blob/master/config/99-realsense-libusb.rules -P /etc/udev/rules.d
+
+# RUN mkdir -p ${HOME}/.gazebo/models
+# COPY ./models/ ${HOME}/.gazebo/models/
+# RUN chmod 777 ${HOME}/.gazebo
 
 # gazebo起動後に生成される設定ファイルのURLエラー回避
 RUN  mkdir -p ${HOME}/.ignition/fuel

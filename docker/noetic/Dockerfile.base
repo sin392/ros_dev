@@ -6,21 +6,24 @@ ENV HOME /home/${USER}
 ENV ROS_WORKSPACE ${HOME}/catkin_ws
 ENV PASS password
 
-ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt update
-RUN apt-get install -y \
-    ca-certificates git wget sudo ninja-build \
-	iputils-ping net-tools netcat lsb-release vim tmux
+# apt updateだとinstall失敗する？
+RUN apt-get update
+RUN apt-get install -y  lsb-release software-properties-common
 
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+RUN add-apt-repository universe
 RUN apt update
+
 RUN apt-get install -y --allow-downgrades --allow-remove-essential --allow-change-held-packages \
+    ca-certificates git wget sudo ninja-build \
+	iputils-ping net-tools netcat vim tmux \
 	libpcap-dev libopenblas-dev \
 	gstreamer1.0-tools libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgstreamer-plugins-good1.0-dev \
 	ros-noetic-desktop python3-rosdep python3-rosinstall-generator python3-vcstool build-essential \
-	python3-catkin-tools
+	python3-catkin-tools python3-pip
 
 # キーボードレイアウト選択回避 | ref: https://qiita.com/DS27/items/7301cce7a2c1dec107ad
 RUN apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
@@ -42,6 +45,11 @@ RUN echo "export ROSLAUNCH_SSH_UNKNOWN=1" >> ${HOME}/.bashrc
 RUN echo "set +e" >> ${HOME}/.bashrc
 
 WORKDIR ${ROS_WORKSPACE}
+RUN echo -e ":set encoding=utf-8\n:set fileencodings=iso-2022-jp,euc-jp,sjis,utf-8\n:set fileformats=unix,dos,mac" >> ${HOME}/.vimrc
+RUN git config --global core.editor vim
+# Configure alias
+RUN echo 'alias pip="pip3"' >> /home/appuser/.bashrc
+# Configure ROS
 RUN /bin/bash -c "source /opt/ros/noetic/setup.bash; catkin build"
 RUN echo "source \${ROS_WORKSPACE}/devel/setup.bash" >> ${HOME}/.bashrc
 RUN echo "export ROS_PACKAGE_PATH=\${ROS_PACKAGE_PATH}:${ROS_WORKSPACE}" >> ${HOME}/.bashrc
@@ -59,31 +67,38 @@ RUN usermod -aG sudo,video ${USER}
 USER ${USER}
 ENV PATH="/home/appuser/.local/bin:${PATH}"
 
-RUN wget https://bootstrap.pypa.io/pip/get-pip.py && \
-	# python3.7 get-pip.py --user && \
-	python3.8 get-pip.py --user && \
-	rm get-pip.py
-
-# Important! Otherwise, it uses existing numpy from host-modules which throws error
-RUN pip install --user numpy==1.20.3
+# RUN wget https://bootstrap.pypa.io/pip/get-pip.py && \
+# 	# python3.7 get-pip.py --user && \
+# 	python3.8 get-pip.py --user && \
+# 	rm get-pip.py
 
 # install dependencies
 # See https://pytorch.org/ for other options if you use a different version of CUDA
-RUN pip install --user tensorboard cmake   # cmake from apt-get is too old
-RUN pip install --user torch==1.10 torchvision==0.11.1 -f https://download.pytorch.org/whl/cu111/torch_stable.html
-RUN pip install --user opencv-python
+# Important! Otherwise, it uses existing numpy from host-modules which throws error
+RUN pip3 install numpy==1.20.3
 
-RUN pip install --user 'git+https://github.com/facebookresearch/fvcore'
+# install dependencies
+# See https://pytorch.org/ for other options if you use a different version of CUDA
+# cmake from apt-get is too old
+RUN pip3 install tensorboard cmake
+RUN pip3 install torch==1.10 torchvision==0.11.1 -f https://download.pytorch.org/whl/cu111/torch_stable.html
+RUN pip3 install opencv-python
+RUN pip3 install scikit-learn
+
+# RUN pip3 install 'git+https://github.com/facebookresearch/fvcore'
 # install detectron2
-RUN git clone https://github.com/facebookresearch/detectron2 detectron2_repo
-# set FORCE_CUDA because during `docker build` cuda is not accessible
-ENV FORCE_CUDA="1"
-# This will by default build detectron2 for all common cuda architectures and take a lot more time,
-# because inside `docker build`, there is no way to tell which architecture will be used.
-ARG TORCH_CUDA_ARCH_LIST="Kepler;Kepler+Tesla;Maxwell;Maxwell+Tegra;Pascal;Volta;Turing"
-ENV TORCH_CUDA_ARCH_LIST="${TORCH_CUDA_ARCH_LIST}"
+# RUN git clone https://github.com/facebookresearch/detectron2 detectron2_repo
+# # set FORCE_CUDA because during `docker build` cuda is not accessible
+# ENV FORCE_CUDA="1"
+# # This will by default build detectron2 for all common cuda architectures and take a lot more time,
+# # because inside `docker build`, there is no way to tell which architecture will be used.
+# ARG TORCH_CUDA_ARCH_LIST="Kepler;Kepler+Tesla;Maxwell;Maxwell+Tegra;Pascal;Volta;Turing"
+# ENV TORCH_CUDA_ARCH_LIST="${TORCH_CUDA_ARCH_LIST}"
 
-RUN pip install --user -e detectron2_repo
+# RUN pip3 install -e detectron2_repo
+
+RUN pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu111/torch1.10/index.html
+
 
 # Set a fixed model cache directory.
 ENV FVCORE_CACHE="/tmp"

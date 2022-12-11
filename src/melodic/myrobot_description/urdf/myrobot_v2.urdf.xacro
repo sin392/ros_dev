@@ -8,7 +8,6 @@
     </gazebo>
 
     <xacro:include filename="$(find denso_robot_descriptions)/vs087_description/vs087.urdf.xacro" />
-    <xacro:include filename="$(find franka_description)/robots/panda_gazebo.xacro" />
     <xacro:include filename="$(find myrobot_description)/urdf/camera/_d435.urdf.xacro" />
     <xacro:include filename="$(find myrobot_description)/urdf/soft_hand/model.xacro" />
     <xacro:include filename="$(find myrobot_description)/urdf/utils.xacro" />
