@@ -30,7 +30,7 @@
     <!-- <node name="denso_robot_control" pkg="denso_robot_control" type="denso_robot_control" output="screen" ns="/$(arg robot_name)" /> -->
     <!-- <node name="denso_robot_control" pkg="denso_robot_control" type="denso_robot_control" output="screen" ns="/$(arg robot_name)" /> -->
 
-    <rosparam file="$(find myrobot_moveit_config)/config/ros_controllers.yaml" command="load" />
+    <rosparam file="$(find myrobot_v2_moveit_config)/config/ros_controllers.yaml" command="load" />
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/myrobot" args="--namespace=/myrobot 
         joint_state_controller right_arm_controller left_arm_controller
     " />
