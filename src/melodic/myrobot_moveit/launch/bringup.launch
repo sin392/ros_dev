@@ -18,6 +18,7 @@
     <arg name="bcap_slave_control_cycle_msec" default="8" />
 
     <arg name="gazebo_gui" default="true" />
+    <arg name="rviz_gui" default="true" />
     <arg name="paused" default="true" />
     <arg name="debug" default="false" />
     <arg name="load_robot_description" default="true" />
@@ -49,10 +50,28 @@
         <param name="use_gui" value="false" />
         <param name="publish_frequency" type="double" value="125.0" />
         <!-- replace following with each denso_robot_control nodes -->
-        <rosparam param="source_list" subst_value="true">[/$(arg robot_name)/joint_states]</rosparam>
+        <rosparam param="source_list" subst_value="true">
+            [/$(arg robot_name)/joint_states]
+        </rosparam>
     </node>
 
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen" />
+
+    <include file="$(find myrobot_v2_moveit_config)/launch/move_group.launch">
+        <arg name="publish_monitored_planning_scene" value="true" />
+        <arg name="allow_trajectory_execution" value="true" />
+        <arg name="fake_execution" value="false" />
+        <arg name="info" value="true" />
+        <arg name="debug" value="$(arg debug)" />
+    </include>
+
+    <group if="$(arg rviz_gui)">
+        <include file="$(find myrobot_v2_moveit_config)/launch/moveit_rviz.launch">
+            <arg name="rviz_config" value="$(find myrobot_v2_moveit_config)/launch/moveit.rviz" />
+        </include>
+    </group>
+
+    <!-- <include file="$(find denso_robot_moveit_config)/launch/default_warehouse_db.launch" /> -->
 
     <group if="$(arg sim)">
         <include file="$(find myrobot_v2_moveit_config)/launch/gazebo.launch">
@@ -74,28 +93,13 @@
             <arg name="recv_format" value="$(arg recv_format)" />
             <arg name="bcap_slave_control_cycle_msec" value="$(arg bcap_slave_control_cycle_msec)" />
         </include>
-        <include file="$(find myrobot_moveit)/launch/multiple_rs_camera.launch">
+        <!-- <include file="$(find myrobot_moveit)/launch/multiple_rs_camera.launch">
             <arg name="robot_name" value="$(arg robot_name)" />
             <arg name="camera_serial_no_1" default="$(arg camera_serial_no_1)" />
             <arg name="camera_serial_no_2" default="$(arg camera_serial_no_2)" />
             <arg name="camera_serial_no_3" default="$(arg camera_serial_no_3)" />
-        </include>
+        </include> -->
     </group>
-
-
-    <include file="$(find myrobot_v2_moveit_config)/launch/move_group.launch">
-        <arg name="publish_monitored_planning_scene" value="true" />
-        <arg name="allow_trajectory_execution" value="true" />
-        <arg name="fake_execution" value="false" />
-        <arg name="info" value="true" />
-        <arg name="debug" value="$(arg debug)" />
-    </include>
-
-    <include file="$(find myrobot_v2_moveit_config)/launch/moveit_rviz.launch">
-        <arg name="rviz_config" value="$(find myrobot_v2_moveit_config)/launch/moveit.rviz" />
-    </include>
-
-    <!-- <include file="$(find denso_robot_moveit_config)/launch/default_warehouse_db.launch" /> -->
     
     <group if="$(arg enable_auto_planning)">
         <node name="auto_planner" pkg="myrobot_moveit" type="planning.py" output="screen"/>
