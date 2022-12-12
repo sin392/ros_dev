@@ -8,9 +8,15 @@
     <arg name="ip_address_right" default="192.168.11.101" />
     <arg name="ip_address_left" default="192.168.11.102" />
 
+    <!-- left -->
     <arg name="camera_serial_no_1" default="032622073208" />
+    <!-- right -->
     <arg name="camera_serial_no_2" default="" />
-    <arg name="camera_serial_no_3" default="" />
+    <!-- body -->
+    <arg name="camera_serial_no_3" default="047322070125" />
+    <!-- for auto octomap update -->
+    <!-- <arg name="sensors" default="[left_camera, right_camera, body_camera]"/> -->
+    <arg name="sensors" default="[left_camera, body_camera]"/>
 
     <arg name="send_format" default="288" />
     <arg name="recv_format" default="292" />
@@ -24,14 +30,12 @@
     <arg name="load_robot_description" default="true" />
 
     <arg name="fps" default="1"/>
-    <arg name="sensors" default="[body_camera, left_camera, right_camera]"/>
     <arg name="wait_server" default="true" />
     <arg name="use_constraint" default="false" />
 
     <arg name="enable_auto_planning" default="true" />
 
     <param name="fps" value="$(arg fps)"/>
-    <rosparam param="~sensors" subst_value="true">$(arg sensors)</rosparam>
     <param name="~wait_server" value="$(arg wait_server)"/>
     <param name="~use_constraint" value="$(arg use_constraint)"/>
 
@@ -46,24 +50,15 @@
         <!-- <arg name="robot_name" value="$(arg robot_name)" /> -->
     </include>
 
-    <group if="$(arg sim)">
-        <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-            <param name="publish_frequency" type="double" value="125.0" />
-            <rosparam param="source_list" subst_value="true">
-                [/$(arg robot_name)/joint_states]
-            </rosparam>
-        </node>
-    </group>
-    <group unless="$(arg sim)">
-        <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-            <param name="publish_frequency" type="double" value="125.0" />
-            <rosparam param="source_list" subst_value="true">
-                [/$(arg robot_name)/joint_states, /$(arg robot_name)/right_arm/joint_states, /$(arg robot_name)/left_arm/joint_states]
-            </rosparam>
-        </node>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen" />
+
+    <group if="$(arg rviz_gui)">
+        <include file="$(find myrobot_v2_moveit_config)/launch/moveit_rviz.launch">
+            <arg name="rviz_config" value="$(find myrobot_v2_moveit_config)/launch/moveit.rviz" />
+        </include>
     </group>
 
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen" />
+    <!-- <include file="$(find denso_robot_moveit_config)/launch/default_warehouse_db.launch" /> -->
 
     <include file="$(find myrobot_v2_moveit_config)/launch/move_group.launch">
         <arg name="sim" value="$(arg sim)"/>
@@ -74,15 +69,13 @@
         <arg name="debug" value="$(arg debug)" />
     </include>
 
-    <group if="$(arg rviz_gui)">
-        <include file="$(find myrobot_v2_moveit_config)/launch/moveit_rviz.launch">
-            <arg name="rviz_config" value="$(find myrobot_v2_moveit_config)/launch/moveit.rviz" />
-        </include>
-    </group>
-
-    <!-- <include file="$(find denso_robot_moveit_config)/launch/default_warehouse_db.launch" /> -->
-
     <group if="$(arg sim)">
+        <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+            <param name="publish_frequency" type="double" value="125.0" />
+            <rosparam param="source_list" subst_value="true">
+                [/$(arg robot_name)/joint_states]
+            </rosparam>
+        </node>
         <include file="$(find myrobot_v2_moveit_config)/launch/gazebo.launch">
             <arg name="paused" value="$(arg paused)" />
             <arg name="gazebo_gui" value="$(arg gazebo_gui)" />
@@ -91,8 +84,13 @@
             <arg name="world_path" value="$(arg world_path)" />
         </include>
     </group>
-
     <group unless="$(arg sim)">
+        <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+            <param name="publish_frequency" type="double" value="125.0" />
+            <rosparam param="source_list" subst_value="true">
+                [/$(arg robot_name)/joint_states, /$(arg robot_name)/right_arm/joint_states, /$(arg robot_name)/left_arm/joint_states]
+            </rosparam>
+        </node>
         <include file="$(find myrobot_moveit)/launch/custom_denso_robot_control.launch">
             <arg name="robot_name" value="$(arg robot_name)" />
             <arg name="ip_address_cart" value="$(arg ip_address_cart)" />
@@ -102,12 +100,12 @@
             <arg name="recv_format" value="$(arg recv_format)" />
             <arg name="bcap_slave_control_cycle_msec" value="$(arg bcap_slave_control_cycle_msec)" />
         </include>
-        <!-- <include file="$(find myrobot_moveit)/launch/multiple_rs_camera.launch">
+        <include file="$(find myrobot_moveit)/launch/multiple_rs_camera.launch">
             <arg name="robot_name" value="$(arg robot_name)" />
             <arg name="camera_serial_no_1" default="$(arg camera_serial_no_1)" />
             <arg name="camera_serial_no_2" default="$(arg camera_serial_no_2)" />
             <arg name="camera_serial_no_3" default="$(arg camera_serial_no_3)" />
-        </include> -->
+        </include>
     </group>
     
     <group if="$(arg enable_auto_planning)">
@@ -115,7 +113,9 @@
     </group>
     <group unless="$(arg enable_auto_planning)">
         <node name="grasp_detection_client" pkg="myrobot_moveit" type="grasp_detection_client.py" />
-        <node name="frequently_octomap_updater" pkg="myrobot_moveit" type="octomap_handler.py"/>
+        <node name="frequently_octomap_updater" pkg="myrobot_moveit" type="octomap_handler.py">
+            <rosparam param="sensors" subst_value="true">$(arg sensors)</rosparam>
+        </node>   
     </group>
 
 </launch>
