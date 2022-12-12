@@ -48,35 +48,40 @@
     <xacro:property name="prefix_1" value="right" />
     <xacro:property name="prefix_2" value="left" />
 
-    <xacro:property name="cart_sx" value="1.088" />
-    <xacro:property name="cart_sy" value="0.663" />
-    <xacro:property name="cart_sz" value="0.294" />
+    <!-- cart body -->
+    <xacro:property name="cart_sx" value="1.3" />
+    <xacro:property name="cart_sy" value="0.74" />
+    <xacro:property name="cart_sz" value="0.32" />
     <xacro:property name="cart_mass" value="100" />
+    <xacro:property name="cart_box_sx" value="0.61" />
+    <xacro:property name="cart_box_sy" value="0.74" />
+    <xacro:property name="cart_box_sz" value="0.45" />
 
-    <xacro:property name="cart_box_sx" value="0.618" />
-    <xacro:property name="cart_box_sy" value="0.663" />
-    <xacro:property name="cart_box_sz" value="0.430" />
+    <!-- base -->
+    <xacro:property name="back_spacer_x_margin" value="0.27" />
+    <xacro:property name="back_spacer_length" value="0.07" />
+    <xacro:property name="back_spacer_radius" value="0.11" />
+    <xacro:property name="back_base_sx" value="0.43" />
+    <xacro:property name="back_base_sy" value="0.22" />
+    <xacro:property name="back_base_sz" value="0.025" />
+    <xacro:property name="back_sx" value="0.085" />
+    <xacro:property name="back_sy" value="0.22" />
+    <xacro:property name="back_sz" value="0.875" />
+    
 
-    <xacro:property name="body_sx" value="0.217" />
-    <xacro:property name="body_sy" value="0.144" />
-    <xacro:property name="body_sz" value="0.396" />
-    <xacro:property name="body_spacer_length" value="0.078" />
-    <xacro:property name="body_spacer_radius" value="${body_sy / 2}" />
-    <xacro:property name="body_side_spacer_length" value="0.048" />
-    <xacro:property name="body_side_spacer_radius" value="${body_sy / 2}" />
+    <xacro:property name="body_base_sx" value="0.08" />
+    <xacro:property name="body_base_sy" value="0.22" />
+    <xacro:property name="body_base_sz" value="0.78" />
+    <xacro:property name="body_base_z_margin" value="0.045" />
+    <xacro:property name="body_sx" value="0.26" />
+    <xacro:property name="body_sy" value="0.14" />
+    <xacro:property name="body_sz" value="0.39" />
+    <xacro:property name="body_side_spacer_length" value="0.06" />
+    <xacro:property name="body_side_spacer_radius" value="0.125" />
 
-    <xacro:property name="back_spacer_length" value="0.05" />
-    <xacro:property name="back_spacer_radius" value="${body_sy / 2}" />
-    <xacro:property name="back_base_sx" value="${body_sx + body_spacer_length}" />
-    <xacro:property name="back_base_sy" value="${body_sy}" />
-    <xacro:property name="back_base_sz" value="0.05" />
-    <xacro:property name="back_sx" value="0.078" />
-    <xacro:property name="back_sy" value="0.144" />
-    <xacro:property name="back_sz" value="0.86" />
-
-    <xacro:property name="sholder_sx" value="0.215" />
-    <xacro:property name="sholder_sy" value="0.215" />
-    <xacro:property name="sholder_sz" value="0.215" />
+    <xacro:property name="sholder_sx" value="0.25" />
+    <xacro:property name="sholder_sy" value="0.25" />
+    <xacro:property name="sholder_sz" value="0.2" />
 
     <!-- //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
 
@@ -97,47 +102,44 @@
     <xacro:f_joint name="joint_cart" xyz="0 0 ${cart_sz / 2}" parent="base_link" child="cart" />
 
     <!-- joint_back is right_J8 -->
-    <xacro:a_joint name="joint_back" type="revolute" xyz="${(cart_sx - back_base_sx) / 2} 0 ${cart_sz / 2}" parent="cart" child="back" axis="0 0 1" low="-1.58824" up="1.58824" />
-    <!-- <xacro:box_link name="back_base" xyz="0 0 ${back_base_sz / 2}" size="${back_base_sx} ${back_base_sy} ${back_base_sz}" color="red" /> -->
-    <!-- <xacro:f_joint name="joint_back" xyz="-${(back_base_sx + back_sx) / 2} 0 ${back_sz / 2}" parent="back_base" child="back" /> -->
-    <!-- <xacro:box_link name="back" size="${back_sx} ${back_sy} ${back_sz}" /> -->
+    <xacro:a_joint name="joint_back" type="revolute" xyz="${(cart_sx - back_spacer_radius) / 2 - back_spacer_x_margin} 0 ${cart_sz / 2}" parent="cart" child="back" axis="0 0 1" low="-1.58824" up="1.58824" />
     <link name="back">
         <xacro:_cylinder xyz="0 0 ${back_spacer_length / 2}" rpy="0 0 0" radius="${back_spacer_radius}" length="${back_spacer_length}" color="red" />
-        <xacro:_box xyz="0 0 ${(back_base_sz / 2) + back_spacer_length}" size="${back_base_sx} ${back_base_sy} ${back_base_sz}" color="red" />
-        <xacro:_box xyz="-${(back_base_sx + back_sx) / 2} 0 ${back_sz / 2 + back_spacer_length}" size="${back_sx} ${back_sy} ${back_sz}" color="red" />
+        <xacro:_box xyz="-${back_base_sx / 2 - back_spacer_radius} 0 ${(back_base_sz / 2) + back_spacer_length}" size="${back_base_sx} ${back_base_sy} ${back_base_sz}" color="red" />
+        <xacro:_box xyz="-${back_base_sx - (back_sx / 2) - back_spacer_radius} 0 ${back_sz / 2 + back_base_sz + back_spacer_length}" size="${back_sx} ${back_sy} ${back_sz}" color="red" />
     </link>
     
     <!-- body -->
     <!-- TODO: デフォルト位置と可動範囲は要調節 -->
     <!-- joint_body is left_J8 (上下移動) -->
-    <xacro:a_joint name="joint_body" type="prismatic" xyz="-${back_base_sx / 2} 0 ${back_spacer_length + (back_sz / 2)}" parent="back" child="body" axis="0 0 1" low="-0.001" up="0.495" />
+    <xacro:a_joint name="joint_body" type="prismatic" xyz="-${back_base_sx - back_sx - back_spacer_radius} 0 ${back_spacer_length + back_base_sz + body_base_z_margin}" parent="back" child="body" axis="0 0 1" low="-0.001" up="0.495" />
     <link name="body">
-        <xacro:_cylinder xyz="${body_spacer_length / 2} 0 0" rpy="0 ${radians(90)} 0" radius="${body_spacer_radius}" length="${body_spacer_length}" color="green" />
-        <xacro:_box xyz="${body_sx / 2 + body_spacer_length} 0 -${(body_sz) / 2 - body_spacer_radius}" size="${body_sx} ${body_sy} ${body_sz}" color="green" />
-        <xacro:_cylinder xyz="${body_sx / 2 + body_spacer_length} -${(body_sy + body_side_spacer_length) / 2} -${(sholder_sz / 2) - body_side_spacer_radius}" rpy="${radians(90)} 0 0" radius="${body_side_spacer_radius}" length="${body_side_spacer_length}" color="green" />
-        <xacro:_cylinder xyz="${body_sx / 2 + body_spacer_length} ${(body_sy + body_side_spacer_length) /2} -${(sholder_sz / 2) - body_side_spacer_radius}" rpy="${radians(90)} 0 0" radius="${body_side_spacer_radius}" length="${body_side_spacer_length}" color="green" />
+        <xacro:_box xyz="${body_base_sx / 2} 0 ${body_base_sz / 2}" size="${body_base_sx} ${body_base_sy} ${body_base_sz}" color="green" />
+        <xacro:_box xyz="${body_sx / 2 + body_base_sx} 0 ${(body_sz + body_base_sz) / 2}" size="${body_sx} ${body_sy} ${body_sz}" color="green" />
+        <xacro:_cylinder xyz="${body_sx / 2 + body_base_sx} -${(body_sy + body_side_spacer_length) / 2} ${body_base_sz - body_side_spacer_radius}" rpy="${radians(90)} 0 0" radius="${body_side_spacer_radius}" length="${body_side_spacer_length}" color="green" />
+        <xacro:_cylinder xyz="${body_sx / 2 + body_base_sx} ${(body_sy + body_side_spacer_length) / 2} ${body_base_sz - body_side_spacer_radius}" rpy="${radians(90)} 0 0" radius="${body_side_spacer_radius}" length="${body_side_spacer_length}" color="green" />
     </link>
-    <xacro:d435 prefix="body" parent="body" xyz="${body_sx + 0.1} 0 0.1" rpy="0 ${radians(45)} 0" publish_pointcloud="1" />
+    <xacro:d435 prefix="body" parent="body" xyz="${body_sx + 0.05} 0 ${body_base_sz + 0.15}" rpy="0 ${radians(45)} 0" publish_pointcloud="1" />
 
     <!-- right arm -->
-    <xacro:a_joint name="${prefix_1}_joint_sholder" type="revolute" axis="0 0 -1" parent="body" child="${prefix_1}_sholder" xyz="${body_sx / 2 + body_spacer_length} -${body_sy / 2 + body_side_spacer_length} -${(sholder_sz / 2) - body_side_spacer_radius}" rpy="${radians(-90)} ${radians(90)} 0" low="-0.01745" up="1.58824" />
+    <xacro:a_joint name="${prefix_1}_joint_sholder" type="revolute" axis="0 0 -1" parent="body" child="${prefix_1}_sholder" xyz="${body_sx / 2 + body_base_sx} -${body_sy / 2 + body_side_spacer_length} ${body_base_sz - (sholder_sy / 2)}" rpy="${radians(-90)} ${radians(90)} 0" low="-0.01745" up="1.58824" />
     <link name="${prefix_1}_sholder">
-        <xacro:_box xyz="0 0 0" size="${sholder_sx} ${sholder_sy} 0.02" color="red" />
-        <xacro:_box xyz="${sholder_sx / 2 - 0.01} 0 -${sholder_sz / 2 + 0.01}" size="0.02 ${sholder_sy} ${sholder_sz}" color="red" />
+        <xacro:_box xyz="0 0 -${0.02 / 2}" size="${sholder_sx} ${sholder_sy} 0.02" color="red" />
+        <xacro:_box xyz="${(sholder_sx - 0.02) / 2} 0 -${sholder_sz / 2 + 0.02}" size="0.02 ${sholder_sy} ${sholder_sz}" color="red" />
     </link>
-    <xacro:arm_with_soft_hand prefix="${prefix_1}" parent="${prefix_1}_sholder" arm_xyz="${sholder_sx / 2} 0 -${sholder_sz / 2}" arm_rpy="${radians(-90)} 0 ${radians(-90)}" hand_rpy="0 0 ${radians(135)}" />
+    <xacro:arm_with_soft_hand prefix="${prefix_1}" parent="${prefix_1}_sholder" arm_xyz="${sholder_sx / 2} 0 -${sholder_sz / 2 + 0.02}" arm_rpy="${radians(-90)} 0 ${radians(-90)}" hand_rpy="0 0 ${radians(135)}" />
     <!-- right camera -->
-    <xacro:d435 prefix="${prefix_1}" parent="${prefix_1}_soft_hand_base_link" xyz="0 0 0.17" rpy="${radians(45)} ${radians(-90)} 0" camera_xyz="0 0 -0.0125" publish_pointcloud="true" />
+    <xacro:d435 prefix="${prefix_1}" parent="${prefix_1}_soft_hand_base_link" xyz="0 0 ${0.145 + 0.04}" rpy="${radians(45)} ${radians(-90)} 0" camera_xyz="0 0 -0.0125" publish_pointcloud="true" />
 
     <!-- left arm -->
-    <xacro:a_joint name="${prefix_2}_joint_sholder" type="revolute" axis="0 0 -1" parent="body" child="${prefix_2}_sholder" xyz="${body_sx / 2 + body_spacer_length} ${body_sy / 2 + body_side_spacer_length} -${(sholder_sz / 2) - body_side_spacer_radius}" rpy="${radians(-90)} ${radians(90)} 0" low="-0.01745" up="1.58824" />
+    <xacro:a_joint name="${prefix_2}_joint_sholder" type="revolute" axis="0 0 -1" parent="body" child="${prefix_2}_sholder" xyz="${body_sx / 2 + body_base_sx} ${body_sy / 2 + body_side_spacer_length} ${body_base_sz - (sholder_sy / 2)}" rpy="${radians(-90)} ${radians(90)} 0" low="-0.01745" up="1.58824" />
     <link name="${prefix_2}_sholder">
-        <xacro:_box xyz="0 0 0" size="${sholder_sx} ${sholder_sy} 0.02" color="red" />
-        <xacro:_box xyz="${sholder_sx / 2 - 0.01} 0 ${sholder_sz / 2 + 0.01}" size="0.02 ${sholder_sy} ${sholder_sz}" color="red" />
+        <xacro:_box xyz="0 0 ${0.02 /2}" size="${sholder_sx} ${sholder_sy} 0.02" color="red" />
+        <xacro:_box xyz="${(sholder_sx - 0.02) / 2} 0 ${sholder_sz / 2 + 0.02}" size="0.02 ${sholder_sy} ${sholder_sz}" color="red" />
     </link>
-    <xacro:arm_with_soft_hand prefix="${prefix_2}" parent="${prefix_2}_sholder" arm_xyz="${sholder_sx / 2} 0 ${sholder_sz / 2}" arm_rpy="${radians(-90)} 0 ${radians(-90)}" hand_rpy="0 0 ${radians(-135)}" />
+    <xacro:arm_with_soft_hand prefix="${prefix_2}" parent="${prefix_2}_sholder" arm_xyz="${sholder_sx / 2} 0 ${sholder_sz / 2 + 0.02}" arm_rpy="${radians(-90)} 0 ${radians(-90)}" hand_rpy="0 0 ${radians(-135)}" />
     <!-- left camera -->
     <!-- TODO: update camera direction (needs image flip) -->
     <!-- <xacro:d435 prefix="${prefix_2}" parent="${prefix_2}_soft_hand_base_link" xyz="0 0 0.17" rpy="${radians(135)} ${radians(-90)} 0" camera_xyz="0 0 -0.0125" publish_pointcloud="true" /> -->
-    <xacro:d435 prefix="${prefix_2}" parent="${prefix_2}_soft_hand_base_link" xyz="0 0 0.17" rpy="${radians(-45)} ${radians(-90)} 0" camera_xyz="0 0 -0.0125" publish_pointcloud="true" />
+    <xacro:d435 prefix="${prefix_2}" parent="${prefix_2}_soft_hand_base_link" xyz="0 0 ${0.145 + 0.04}" rpy="${radians(-45)} ${radians(-90)} 0" camera_xyz="0 0 -0.0125" publish_pointcloud="true" />
 </robot>
