@@ -151,10 +151,10 @@ class Grasp(BaseGrasp):
         self.post_grasp_retreat.desired_distance = retreat_desired_distance
         # setting posture of eef before grasp
         self.pre_grasp_posture.joint_names = finger_joints
-        self.pre_grasp_posture.points = [JointTrajectoryPoint(positions=[0.0], time_from_start=rospy.Duration(0.5))]
+        self.pre_grasp_posture.points = [JointTrajectoryPoint(positions=[0.0], time_from_start=rospy.Duration(2.0))]
         # setting posture of eef during grasp
         self.grasp_posture.joint_names = finger_joints
-        self.grasp_posture.points = [JointTrajectoryPoint(positions=[0.0], time_from_start=rospy.Duration(0.5))]
+        self.grasp_posture.points = [JointTrajectoryPoint(positions=[0.0], time_from_start=rospy.Duration(2.0))]
 
 class PlaceLocation(BasePlaceLocation):
     def __init__(self, approach_desired_distance, approach_min_distance, 
@@ -252,9 +252,11 @@ class Myrobot:
 
     def initialize_current_pose(self, cartesian_mode=False, c_eef_step=0.01, c_jump_threshold=0.0):
         self.mv_handler.initialize_current_pose(cartesian_mode, c_eef_step, c_jump_threshold)
+        self.mv_handler.reset_move_group()
 
     def initialize_whole_pose(self):
         self.mv_handler.initialize_whole_pose()
+        self.mv_handler.reset_move_group()
 
     def get_around_octomap(self, values=[-30, 30, 0], sleep_time=0, is_degree=False, should_reset=True):
         if should_reset:
@@ -274,7 +276,7 @@ class Myrobot:
 
     def pick(self, object_name, object_msg, 
              pre_move=False, c_eef_step=0.01, c_jump_threshold=0.0,
-             approach_desired_distance=0.05, approach_min_distance=0.01, retreat_desired_distance=0.05, retreat_min_distance=0.01):
+             approach_desired_distance=0.1, approach_min_distance=0.05, retreat_desired_distance=0.1, retreat_min_distance=0.05):
         obj_position_point = object_msg.center_pose.pose.position
         z = max(obj_position_point.z - object_msg.length_to_center / 2, 0.01)
         print("z: {}".format(z))
@@ -294,6 +296,7 @@ class Myrobot:
             allowed_touch_objects=[object_name]
         )  for angle in object_msg.angles]
         res = self.mv_handler.pick(object_name, grasps, pre_move, c_eef_step, c_jump_threshold)
+        print("pick res: {}".format(res))
         return res, arm_index
 
     def place(self, arm_index, object_name, approach_desired_distance=0.05, approach_min_distance=0.01, retreat_desired_distance=0.05, retreat_min_distance=0.01):
@@ -390,10 +393,10 @@ if __name__ == "__main__":
         print("start pick")
         # TODO: pull up arm index computation from pick
         res, arm_index = myrobot.pick(obj_name, obj, pre_move=False,
-                     approach_desired_distance=insert_depth * 1.5,
+                     approach_desired_distance=insert_depth * 2,
                      retreat_desired_distance=insert_depth * 2,
-                     approach_min_distance=insert_depth,
-                     retreat_min_distance=insert_depth * 1.5
+                     approach_min_distance=insert_depth * 1.2,
+                     retreat_min_distance= insert_depth * 1.2
         )
         print(res)
         # print("start place")
