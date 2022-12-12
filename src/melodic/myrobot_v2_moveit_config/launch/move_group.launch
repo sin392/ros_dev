@@ -1,5 +1,5 @@
 <launch>
-
+  <arg name="sim" default="false"/>
   <!-- GDB Debug Option -->
   <arg name="debug" default="false" />
   <arg unless="$(arg debug)" name="launch_prefix" value="" />
@@ -53,6 +53,7 @@
 
   <!-- Trajectory Execution Functionality -->
   <include ns="move_group" file="$(find myrobot_v2_moveit_config)/launch/trajectory_execution.launch.xml" if="$(arg allow_trajectory_execution)">
+    <arg name="sim" value="$(arg sim)"/>
     <arg name="moveit_manage_controllers" value="true" />
     <arg name="moveit_controller_manager" value="myrobot" unless="$(arg fake_execution)"/>
     <arg name="moveit_controller_manager" value="fake" if="$(arg fake_execution)"/>
