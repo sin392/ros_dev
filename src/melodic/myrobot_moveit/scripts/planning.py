@@ -233,7 +233,7 @@ class Myrobot:
             wait=wait
         )
 
-    def _create_constraint(self, name, link_name, rpy, base_frame_id="base_link", xyz_tolerance=(3.6, 3.6, 3.6)):
+    def _create_constraint(self, name, link_name, rpy, base_frame_id="base_link", xyz_tolerance=(0.05, 0.05, 3.6)):
         q = quaternion_from_euler(rpy[0], rpy[1], rpy[2])
         constraint = Constraints(
             name=name,
@@ -351,11 +351,11 @@ if __name__ == "__main__":
     fps = rospy.get_param("fps", default=1)
     image_topic = rospy.get_param("image_topic")
     depth_topic = rospy.get_param("depth_topic")
-    sensors = rospy.get_param("~sensors", default=("body_camera", "left_camera", "right_camera"))
+    sensors = rospy.get_param("sensors", default=("body_camera", "left_camera", "right_camera"))
     raw_point_topics = ["/{}/{}/depth/color/points".format(ns, sensor_name) for sensor_name in sensors]
 
-    wait = rospy.get_param("~wait_server", default=True)
-    use_constraint = rospy.get_param("~use_constraint", default=False)
+    wait = rospy.get_param("wait_server", default=True)
+    use_constraint = rospy.get_param("use_constraint", default=False)
     rospy.loginfo("################################################")
 
     print("initializing instances...")

@@ -36,8 +36,9 @@
     <arg name="enable_auto_planning" default="true" />
 
     <param name="fps" value="$(arg fps)"/>
-    <param name="~wait_server" value="$(arg wait_server)"/>
-    <param name="~use_constraint" value="$(arg use_constraint)"/>
+    <rosparam param="sensors" subst_value="true">$(arg sensors)</rosparam>
+    <param name="wait_server" value="$(arg wait_server)"/>
+    <param name="use_constraint" value="$(arg use_constraint)"/>
 
     <param name="image_topic" value="/$(arg robot_name)/left_camera/color/image_raw" />
     <param name="depth_topic" value="/$(arg robot_name)/left_camera/aligned_depth_to_color/image_raw" />
@@ -113,9 +114,7 @@
     </group>
     <group unless="$(arg enable_auto_planning)">
         <node name="grasp_detection_client" pkg="myrobot_moveit" type="grasp_detection_client.py" />
-        <node name="frequently_octomap_updater" pkg="myrobot_moveit" type="octomap_handler.py">
-            <rosparam param="sensors" subst_value="true">$(arg sensors)</rosparam>
-        </node>   
+        <node name="frequently_octomap_updater" pkg="myrobot_moveit" type="octomap_handler.py"/>            
     </group>
 
 </launch>
