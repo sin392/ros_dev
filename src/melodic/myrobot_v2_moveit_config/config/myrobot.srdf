@@ -217,8 +217,6 @@
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
     <end_effector name="left_eef" parent_link="left_soft_hand_tip" group="left_hand" parent_group="left_arm" />
     <end_effector name="right_eef" parent_link="right_soft_hand_tip" group="right_hand" parent_group="right_arm" />
-    <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
-    <!-- <virtual_joint name="virtual_joint_to_world" type="fixed" parent_frame="world" child_link="base_link" /> -->
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="back" link2="body" reason="Adjacent" />
     <disable_collisions link1="back" link2="body_camera_link" reason="Never" />
@@ -240,12 +238,21 @@
     <disable_collisions link1="body_camera_link" link2="cart" reason="Never" />
     <disable_collisions link1="body_camera_link" link2="left_J1" reason="Never" />
     <disable_collisions link1="body_camera_link" link2="left_J2" reason="Never" />
-    <disable_collisions link1="body_camera_link" link2="left_J6" reason="Never" />
     <disable_collisions link1="body_camera_link" link2="left_base_link" reason="Never" />
+    <disable_collisions link1="body_camera_link" link2="left_camera_link" reason="Never" />
     <disable_collisions link1="body_camera_link" link2="left_sholder" reason="Never" />
     <disable_collisions link1="body_camera_link" link2="right_J1" reason="Never" />
+    <disable_collisions link1="body_camera_link" link2="right_J2" reason="Never" />
     <disable_collisions link1="body_camera_link" link2="right_base_link" reason="Never" />
     <disable_collisions link1="body_camera_link" link2="right_sholder" reason="Never" />
+    <disable_collisions link1="cart" link2="left_J2" reason="Default" />
+    <disable_collisions link1="cart" link2="left_J3" reason="Default" />
+    <disable_collisions link1="cart" link2="left_base_link" reason="Never" />
+    <disable_collisions link1="cart" link2="left_sholder" reason="Never" />
+    <disable_collisions link1="cart" link2="right_J2" reason="Default" />
+    <disable_collisions link1="cart" link2="right_J3" reason="Default" />
+    <disable_collisions link1="cart" link2="right_base_link" reason="Never" />
+    <disable_collisions link1="cart" link2="right_sholder" reason="Never" />
     <disable_collisions link1="left_J1" link2="left_J2" reason="Adjacent" />
     <disable_collisions link1="left_J1" link2="left_base_link" reason="Adjacent" />
     <disable_collisions link1="left_J1" link2="left_sholder" reason="Never" />
@@ -271,13 +278,12 @@
     <disable_collisions link1="left_J5" link2="left_soft_hand_base_link" reason="Never" />
     <disable_collisions link1="left_J6" link2="left_camera_link" reason="Never" />
     <disable_collisions link1="left_J6" link2="left_soft_hand_base_link" reason="Adjacent" />
-    <disable_collisions link1="left_J6" link2="right_J6" reason="Never" />
-    <disable_collisions link1="left_J6" link2="right_camera_link" reason="Never" />
     <disable_collisions link1="left_base_link" link2="left_sholder" reason="Adjacent" />
     <disable_collisions link1="left_base_link" link2="right_J1" reason="Never" />
     <disable_collisions link1="left_base_link" link2="right_base_link" reason="Never" />
     <disable_collisions link1="left_base_link" link2="right_sholder" reason="Never" />
     <disable_collisions link1="left_camera_link" link2="left_soft_hand_base_link" reason="Adjacent" />
+    <disable_collisions link1="left_camera_link" link2="right_J6" reason="Never" />
     <disable_collisions link1="left_sholder" link2="right_J1" reason="Never" />
     <disable_collisions link1="left_sholder" link2="right_base_link" reason="Never" />
     <disable_collisions link1="left_sholder" link2="right_sholder" reason="Never" />
