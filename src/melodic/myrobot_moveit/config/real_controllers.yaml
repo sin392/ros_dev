@@ -1,0 +1,105 @@
+# Simulation settings for using moveit_sim_controllers
+moveit_sim_hw_interface:
+  joint_model_group: body
+  joint_model_group_pose: body_default
+# Settings for ros_control_boilerplate control loop
+generic_hw_control_loop:
+  loop_hz: 300
+  cycle_time_error_threshold: 0.01
+# Settings for ros_control hardware interface
+hardware_interface:
+  joints: &entire_joints
+    - joint_body
+    - left_joint_sholder
+    - left_joint_1
+    - left_joint_2
+    - left_joint_3
+    - left_joint_4
+    - left_joint_5
+    - left_joint_6
+    - joint_back
+    - right_joint_sholder
+    - right_joint_1
+    - right_joint_2
+    - right_joint_3
+    - right_joint_4
+    - right_joint_5
+    - right_joint_6
+sim_control_mode: 1 # 0: position, 1: velocity
+
+# ////////////////////////////////////////////////////////////////
+myrobot:
+  left_arm:
+    joint_state_controller:
+      type: joint_state_controller/JointStateController
+      publish_rate: 125
+    left_arm_controller:
+      type: position_controllers/JointTrajectoryController
+      joints: &left_arm_joints
+        - joint_body
+        - left_joint_sholder
+        - left_joint_1
+        - left_joint_2
+        - left_joint_3
+        - left_joint_4
+        - left_joint_5
+        - left_joint_6
+      allow_partial_joints_goal: True
+      gains: &left_arm_gains
+        joint_body: { p: 100, d: 1, i: 1, i_clamp: 1 }
+        left_joint_sholder: { p: 100, d: 1, i: 1, i_clamp: 1 }
+        left_joint_1: { p: 100, d: 1, i: 1, i_clamp: 1 }
+        left_joint_2: { p: 100, d: 1, i: 1, i_clamp: 1 }
+        left_joint_3: { p: 100, d: 1, i: 1, i_clamp: 1 }
+        left_joint_4: { p: 100, d: 1, i: 1, i_clamp: 1 }
+        left_joint_5: { p: 100, d: 1, i: 1, i_clamp: 1 }
+        left_joint_6: { p: 100, d: 1, i: 1, i_clamp: 1 }
+      constraints:
+        goal_time: 1
+        stopped_velocity_tolerance: 0
+  right_arm:
+    joint_state_controller:
+      type: joint_state_controller/JointStateController
+      publish_rate: 125
+    right_arm_controller:
+      type: position_controllers/JointTrajectoryController
+      joints: &right_arm_joints
+        - joint_back
+        - right_joint_sholder
+        - right_joint_1
+        - right_joint_2
+        - right_joint_3
+        - right_joint_4
+        - right_joint_5
+        - right_joint_6
+      allow_partial_joints_goal: True
+      gains: &right_arm_gains
+        joint_back: { p: 100, d: 1, i: 1, i_clamp: 1 }
+        right_joint_sholder: { p: 100, d: 1, i: 1, i_clamp: 1 }
+        right_joint_1: { p: 100, d: 1, i: 1, i_clamp: 1 }
+        right_joint_2: { p: 100, d: 1, i: 1, i_clamp: 1 }
+        right_joint_3: { p: 100, d: 1, i: 1, i_clamp: 1 }
+        right_joint_4: { p: 100, d: 1, i: 1, i_clamp: 1 }
+        right_joint_5: { p: 100, d: 1, i: 1, i_clamp: 1 }
+        right_joint_6: { p: 100, d: 1, i: 1, i_clamp: 1 }
+      constraints:
+        goal_time: 1
+        stopped_velocity_tolerance: 0
+
+# ////////////////////////////////////////////////////////////////
+# Publish all joint states
+# Creates the /joint_states topic necessary in ROS
+_controller_template: &_controller_template
+  name: myrobot/template_controller
+  action_ns: follow_joint_trajectory
+  type: FollowJointTrajectory
+  default: True
+  allow_partial_joints_goal: True
+  joints: []
+controller_list:
+  - <<: *_controller_template
+    name: myrobot/left_arm/left_arm_controller
+    joints: *left_arm_joints
+  - <<: *_controller_template
+    name: myrobot/right_arm/right_arm_controller
+    joints: *right_arm_joints

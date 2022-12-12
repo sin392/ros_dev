@@ -46,14 +46,22 @@
         <!-- <arg name="robot_name" value="$(arg robot_name)" /> -->
     </include>
 
-    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-        <param name="use_gui" value="false" />
-        <param name="publish_frequency" type="double" value="125.0" />
-        <!-- replace following with each denso_robot_control nodes -->
-        <rosparam param="source_list" subst_value="true">
-            [/$(arg robot_name)/joint_states]
-        </rosparam>
-    </node>
+    <group if="$(arg sim)">
+        <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+            <param name="publish_frequency" type="double" value="125.0" />
+            <rosparam param="source_list" subst_value="true">
+                [/$(arg robot_name)/joint_states]
+            </rosparam>
+        </node>
+    </group>
+    <group unless="$(arg sim)">
+        <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+            <param name="publish_frequency" type="double" value="125.0" />
+            <rosparam param="source_list" subst_value="true">
+                [/$(arg robot_name)/joint_states, /$(arg robot_name)/right_arm/joint_states, /$(arg robot_name)/left_arm/joint_states]
+            </rosparam>
+        </node>
+    </group>
 
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen" />
 
