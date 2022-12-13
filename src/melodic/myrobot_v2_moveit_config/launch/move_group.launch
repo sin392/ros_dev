@@ -1,6 +1,6 @@
 <launch>
   <arg name="sim" default="true"/>
-  <arg name="sensors_config_file_path" default="$(find myrobot_moveit_config)/config/sensors_3d.yaml" />
+  <arg name="sensors_config_file_path" default="$(find myrobot_v2_moveit_config)/config/sensors_3d.yaml" />
   <!-- GDB Debug Option -->
   <arg name="debug" default="false" />
   <arg unless="$(arg debug)" name="launch_prefix" value="" />

@@ -1,5 +1,5 @@
 <launch>
-  <arg name="sensors_config_file_path" default="$(find myrobot_moveit_config)/config/sensors_3d.yaml" />
+  <arg name="sensors_config_file_path" default="$(find myrobot_v2_moveit_config)/config/sensors_3d.yaml" />
   <!-- This file makes it easy to include the settings for sensor managers -->
 
   <!-- Params for 3D sensors config -->
