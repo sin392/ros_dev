@@ -361,6 +361,7 @@ if __name__ == "__main__":
     image_topic = rospy.get_param("image_topic")
     depth_topic = rospy.get_param("depth_topic")
     sensors = rospy.get_param("sensors", default=("body_camera", "left_camera", "right_camera"))
+    grasp_only = rospy.get_param("grasp_only", default="false")
     raw_point_topics = ["/{}/{}/depth/color/points".format(ns, sensor_name) for sensor_name in sensors]
 
     wait = rospy.get_param("wait_server", default=True)
@@ -409,7 +410,7 @@ if __name__ == "__main__":
             )
 
             print("pick result for the {}-th object: {}".format(target_index, is_pick_successed))
-            if is_pick_successed:
+            if not grasp_only and is_pick_successed:
                 myrobot.initialize_current_pose(cartesian_mode=True)
                 print("try toc place {}-th object".format(target_index))
                 is_place_successed = myrobot.place(arm_index, obj_name)
