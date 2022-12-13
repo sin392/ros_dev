@@ -36,6 +36,9 @@
 
     <arg name="enable_auto_planning" default="true" />
 
+    <arg name="db" default="false" />
+    <arg name="db_path" default="$(find myrobot_v2_moveit_config)/default_warehouse_mongo_db" />
+
     <param name="fps" value="$(arg fps)"/>
     <rosparam param="sensors" subst_value="true">$(arg sensors)</rosparam>
     <param name="wait_server" value="$(arg wait_server)"/>
@@ -55,13 +58,13 @@
 
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen" />
 
-    <group if="$(arg rviz_gui)">
-        <include file="$(find myrobot_v2_moveit_config)/launch/moveit_rviz.launch">
-            <arg name="rviz_config" value="$(find myrobot_v2_moveit_config)/launch/moveit.rviz" />
-        </include>
-    </group>
+    <include file="$(find myrobot_v2_moveit_config)/launch/moveit_rviz.launch" if="$(arg rviz_gui)">
+        <arg name="rviz_config" value="$(find myrobot_v2_moveit_config)/launch/moveit.rviz" />
+    </include>
 
-    <!-- <include file="$(find denso_robot_moveit_config)/launch/default_warehouse_db.launch" /> -->
+    <include file="$(find denso_robot_moveit_config)/launch/default_warehouse_db.launch" if="$(arg db)">
+        <arg name="moveit_warehouse_database_path" value="$(arg db_path)"/>
+    </include>
 
     <group if="$(arg sim)">
         <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
