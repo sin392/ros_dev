@@ -194,11 +194,6 @@ class Myrobot:
         self.robot = mc.RobotCommander()
         self.scene_handler = PlanningSceneHandler(raw_point_topics)
 
-        # if add_ground:
-        #     print("hoge")
-        #     print(Pose())
-        #     self.scene_handler.add_plane("ground plane", Pose())
-
         # constraints
         if use_constraint:
             # constraint_rpy = (0, math.pi, math.pi / 4) # TODO: compute z from finger property (now 45 for 4 fingers)
@@ -227,10 +222,15 @@ class Myrobot:
 
         box_pose = PoseStamped()
         box_pose.header.frame_id = "world"
-        box_pose.pose.position =Vector3(0, -1, 0)
+        box_pose.pose.position =Vector3(0, 1, 0)
         q = quaternion_from_euler(0.0, 0.0, 0.0)
         box_pose.pose.orientation = Quaternion(x=q[0], y=q[1], z=q[2], w=q[3])
         self.scene_handler.add_box("table", box_pose, size=(0.5, 0.5, 0.2))
+
+        if add_ground:
+            plane_pose = PoseStamped()
+            plane_pose.header.frame_id = "world"
+            self.scene_handler.add_plane("ground plane", plane_pose)
             
         self.gd_cli = GraspDetectionClient( 
             fps=fps, 
@@ -304,19 +304,19 @@ class Myrobot:
         return res, arm_index
 
     def place(self, arm_index, object_name, approach_desired_distance=0.1, approach_min_distance=0.05, retreat_desired_distance=0.01, retreat_min_distance=0.05):
-        finger_joints = ["left_finger_1_joint"] if arm_index == 0 else ["right_finger_1_joint"] 
-        location = PlaceLocation(xyz=(0, 1.25, 1.5), 
-                                 approach_desired_distance=approach_desired_distance,
-                                 approach_min_distance=approach_min_distance,
-                                 retreat_desired_distance=retreat_desired_distance,
-                                 retreat_min_distance=retreat_min_distance,
-                                 finger_joints=finger_joints,
-                                 allowed_touch_objects=[object_name])
+        self.mv_handler.set_current_move_group(self.mv_handler.current_move_group.parent, self.mv_handler.current_eef_default_pose) # tmp
+        finger_joints = ["left_finger_1_joint"] if arm_index == 0 else ["right_finger_1_joint"]
+        xyz = (0, 1, 0.4)
+        # location = PlaceLocation(xyz=xyz, 
+        #                          approach_desired_distance=approach_desired_distance,
+        #                          approach_min_distance=approach_min_distance,
+        #                          retreat_desired_distance=retreat_desired_distance,
+        #                          retreat_min_distance=retreat_min_distance,
+        #                          finger_joints=finger_joints,
+        #                          allowed_touch_objects=[object_name])
         # res = self.mv_handler.place(object_name, [location])
         pose = Pose()
-        pose.position.x, pose.position.y, pose.position.z = (0, -1.25, 0.4)
-
-        self.mv_handler.set_current_move_group(self.mv_handler.current_move_group.parent, self.mv_handler.current_eef_default_pose) # tmp
+        pose.position.x, pose.position.y, pose.position.z = xyz
         res = self.mv_handler.place(object_name, pose)
         return res        
 
@@ -366,7 +366,7 @@ if __name__ == "__main__":
     rospy.loginfo("################################################")
 
     print("initializing instances...")
-    myrobot = Myrobot(fps=fps, image_topic=image_topic, depth_topic=depth_topic, raw_point_topics=raw_point_topics, wait=wait, use_constraint=use_constraint)
+    myrobot = Myrobot(fps=fps, image_topic=image_topic, depth_topic=depth_topic, raw_point_topics=raw_point_topics, wait=wait, use_constraint=use_constraint, add_ground=True)
     myrobot.info()
     myrobot.initialize_whole_pose()
 
@@ -415,10 +415,11 @@ if __name__ == "__main__":
             else:
                 myrobot.scene_handler.remove_world_object(obj_name)
 
+        myrobot.scene_handler.remove_attached_object("")
+        myrobot.scene_handler.remove_world_object(obj_name)
+
         print("will initialize")
         myrobot.initialize_whole_pose()
 
-        myrobot.scene_handler.remove_attached_object("")
-        myrobot.scene_handler.remove_world_object(obj_name)
 
         myrobot.scene_handler.update_octomap()
