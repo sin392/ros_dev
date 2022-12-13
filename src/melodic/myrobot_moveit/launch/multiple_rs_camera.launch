@@ -4,29 +4,30 @@
     <arg name="camera_serial_no_2" default="" />
     <arg name="camera_serial_no_3" default="047322070125" />
 
+    <!-- delay each launch because power error if cameras are launched simultaneously -->
     <group ns="$(arg robot_name)">
         <group if="$(eval camera_serial_no_1 != '')">
-            <include file="$(find realsense2_camera)/launch/rs_camera.launch">
-                    <arg name="serial_no" value="$(arg camera_serial_no_1)" />
-                    <arg name="camera" value="left_camera" />
-                <arg name="align_depth" value="true" />
-                <arg name="filters" value="spatial,temporal,pointcloud" />
+            <include file="$(find timed_roslaunch)/timed_roslaunch.launch">
+                <arg name="time" value="1" />
+                <arg name="pkg" value="realsense2_camera" />
+                <arg name="file" value="rs_camera.launch" />
+                <arg name="value" value="serial_no:=$(arg camera_serial_no_1) camera:=left_camera align_depth:=true filters:=spatial,temporal,pointcloud" />
             </include>
         </group>
         <group if="$(eval camera_serial_no_2 != '')">
-            <include file="$(find realsense2_camera)/launch/rs_camera.launch">
-                    <arg name="serial_no" value="$(arg camera_serial_no_2)" />
-                    <arg name="camera" value="right_camera" />
-                <arg name="align_depth" value="true" />
-                <arg name="filters" value="spatial,temporal,pointcloud" />
+            <include file="$(find timed_roslaunch)/timed_roslaunch.launch">
+                <arg name="time" value="2" />
+                <arg name="pkg" value="realsense2_camera" />
+                <arg name="file" value="rs_camera.launch" />
+                <arg name="value" value="serial_no:=$(arg camera_serial_no_2) camera:=right_camera align_depth:=true filters:=spatial,temporal,pointcloud" />
             </include>
         </group>
         <group if="$(eval camera_serial_no_3 != '')">
-            <include file="$(find realsense2_camera)/launch/rs_camera.launch">
-                    <arg name="serial_no" value="$(arg camera_serial_no_3)" />
-                    <arg name="camera" value="body_camera" />
-                <arg name="align_depth" value="true" />
-                <arg name="filters" value="spatial,temporal,pointcloud" />
+            <include file="$(find timed_roslaunch)/timed_roslaunch.launch">
+                <arg name="time" value="3" />
+                <arg name="pkg" value="realsense2_camera" />
+                <arg name="file" value="rs_camera.launch" />
+                <arg name="value" value="serial_no:=$(arg camera_serial_no_3) camera:=body_camera align_depth:=true filters:=spatial,temporal,pointcloud" />
             </include>
         </group>
     </group>

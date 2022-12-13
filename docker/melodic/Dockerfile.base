@@ -60,7 +60,8 @@ RUN apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="
     ros-melodic-realsense2-camera-dbgsym \
     # use extended repogitory for gazebo instead of following
     ros-melodic-realsense2-description \
-    ros-melodic-franka-description
+    ros-melodic-franka-description \
+    ros-melodic-timed-roslaunch
 
 RUN mkdir -p ${ROS_WORKSPACE}/src
 # RUN git clone -b melodic-devel https://github.com/DENSORobot/denso_robot_ros.git ${HOME}/catkin_ws/src
