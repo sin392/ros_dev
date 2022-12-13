@@ -124,7 +124,7 @@ class PlanningSceneHandler(mc.PlanningSceneInterface):
         self.oh.update()
 
 class Grasp(BaseGrasp):
-    def __init__(self, approach_desired_distance, approach_min_distance, 
+    def __init__(self, grasp_quality, approach_desired_distance, approach_min_distance, 
                  retreat_desired_distance, retreat_min_distance, 
                  position=None, orientation=None, xyz=(0, 0, 0), rpy=(0, 0, 0), 
                  frame_id="base_link", finger_joints=[], allowed_touch_objects=[]):
@@ -132,6 +132,7 @@ class Grasp(BaseGrasp):
         # setting grasp-pose: this is for parent_link
         self.grasp_pose.header.frame_id = frame_id
         self.allowed_touch_objects = allowed_touch_objects
+        self.grasp_quality = grasp_quality
         if position is None:
             position = Vector3(xyz[0], xyz[1], xyz[2])
         if orientation is None:
@@ -282,7 +283,7 @@ class Myrobot:
 
     def pick(self, object_name, object_msg, 
              pre_move=False, c_eef_step=0.01, c_jump_threshold=0.0,
-             approach_desired_distance=0.1, approach_min_distance=0.05, retreat_desired_distance=0.1, retreat_min_distance=0.05):
+             grasp_quality=1., approach_desired_distance=0.1, approach_min_distance=0.05, retreat_desired_distance=0.1, retreat_min_distance=0.05):
         obj_position_point = object_msg.center_pose.pose.position
         z = max(obj_position_point.z - object_msg.length_to_center / 2, 0.01)
         print("z: {}".format(z))
@@ -293,6 +294,7 @@ class Myrobot:
         grasps = [Grasp(
             position=obj_position_vector,
             rpy=(math.pi, 0, Angle.deg_to_rad(angle)),
+            grasp_quality=grasp_quality,
             approach_desired_distance=approach_desired_distance,
             approach_min_distance=approach_min_distance,
             retreat_desired_distance=retreat_desired_distance,
@@ -399,6 +401,7 @@ if __name__ == "__main__":
             print("try toc pick {}-th object | score: {}".format(target_index, obj.score))
             # TODO: pull up arm index computation from pick
             is_pick_successed, arm_index = myrobot.pick(obj_name, obj, pre_move=False,
+                        grasp_quality=obj.score,
                         approach_desired_distance=insert_depth * 2,
                         retreat_desired_distance=insert_depth * 2,
                         approach_min_distance=insert_depth * 1.2,
