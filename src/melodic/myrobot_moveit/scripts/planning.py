@@ -188,16 +188,22 @@ class PlaceLocation(BasePlaceLocation):
 
 
 class Myrobot:
-    def __init__(self, fps, image_topic, depth_topic, raw_point_topics, wait = True, use_constraint = False):
+    def __init__(self, fps, image_topic, depth_topic, raw_point_topics, wait = True, use_constraint = False, add_ground = True):
         mc.roscpp_initialize(sys.argv)
 
         self.robot = mc.RobotCommander()
         self.scene_handler = PlanningSceneHandler(raw_point_topics)
 
+        # if add_ground:
+        #     print("hoge")
+        #     print(Pose())
+        #     self.scene_handler.add_plane("ground plane", Pose())
+
         # constraints
         if use_constraint:
-            constraint_rpy = (0, math.pi, math.pi / 4) # TODO: compute z from finger property (now 45 for 4 fingers)
-            constraint_xyz_tolerance = (0.45, 0.45, 3.6) # TODO: update this value
+            # constraint_rpy = (0, math.pi, math.pi / 4) # TODO: compute z from finger property (now 45 for 4 fingers)
+            constraint_rpy = (0, math.pi, 0) # TODO: compute z from finger property (now 45 for 4 fingers)
+            constraint_xyz_tolerance = (0.05, 0.05, 3.6) # TODO: update this value
             left_hand_constraint = self._create_constraint("left_hand_constraint", link_name="left_soft_hand_tip", 
                                                         rpy=constraint_rpy, xyz_tolerance=constraint_xyz_tolerance)
             right_hand_constraint = self._create_constraint("right_hand_constraint", link_name="right_soft_hand_tip", 
@@ -297,9 +303,9 @@ class Myrobot:
         res = self.mv_handler.pick(object_name, grasps, pre_move, c_eef_step, c_jump_threshold)
         return res, arm_index
 
-    def place(self, arm_index, object_name, approach_desired_distance=0.05, approach_min_distance=0.01, retreat_desired_distance=0.05, retreat_min_distance=0.01):
+    def place(self, arm_index, object_name, approach_desired_distance=0.1, approach_min_distance=0.05, retreat_desired_distance=0.01, retreat_min_distance=0.05):
         finger_joints = ["left_finger_1_joint"] if arm_index == 0 else ["right_finger_1_joint"] 
-        location = PlaceLocation(xyz=(0, -1.25, 1.2), 
+        location = PlaceLocation(xyz=(0, 1.25, 1.5), 
                                  approach_desired_distance=approach_desired_distance,
                                  approach_min_distance=approach_min_distance,
                                  retreat_desired_distance=retreat_desired_distance,
@@ -392,24 +398,25 @@ if __name__ == "__main__":
             # pick
             print("try toc pick {}-th object | score: {}".format(target_index, obj.score))
             # TODO: pull up arm index computation from pick
-            res, arm_index = myrobot.pick(obj_name, obj, pre_move=False,
+            is_pick_successed, arm_index = myrobot.pick(obj_name, obj, pre_move=False,
                         approach_desired_distance=insert_depth * 2,
                         retreat_desired_distance=insert_depth * 2,
                         approach_min_distance=insert_depth * 1.2,
                         retreat_min_distance= insert_depth * 1.2
             )
-            # print("start place")
-            # res = myrobot.place(arm_index, obj_name)
 
-            print("picking result for the {}-th object: {}".format(target_index, res))
-            if res:
-                # pick & placeが成功したら
+            print("pick result for the {}-th object: {}".format(target_index, is_pick_successed))
+            if is_pick_successed:
+                myrobot.initialize_current_pose(cartesian_mode=True)
+                print("try toc place {}-th object".format(target_index))
+                is_place_successed = myrobot.place(arm_index, obj_name)
+                print("place result for the {}-th object: {}".format(target_index, is_place_successed))
                 break
             else:
                 myrobot.scene_handler.remove_world_object(obj_name)
 
         print("will initialize")
-        myrobot.initialize_current_pose(cartesian_mode=True)
+        myrobot.initialize_whole_pose()
 
         myrobot.scene_handler.remove_attached_object("")
         myrobot.scene_handler.remove_world_object(obj_name)
