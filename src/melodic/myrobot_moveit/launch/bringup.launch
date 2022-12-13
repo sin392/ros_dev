@@ -63,16 +63,6 @@
 
     <!-- <include file="$(find denso_robot_moveit_config)/launch/default_warehouse_db.launch" /> -->
 
-    <include file="$(find myrobot_v2_moveit_config)/launch/move_group.launch">
-        <arg name="sim" value="$(arg sim)"/>
-        <arg name="sensors_config_file_path" value="$(find myrobot_v2_moveit_config)/config/custom_sensors_3d.yaml"/>
-        <arg name="publish_monitored_planning_scene" value="true" />
-        <arg name="allow_trajectory_execution" value="true" />
-        <arg name="fake_execution" value="false" />
-        <arg name="info" value="true" />
-        <arg name="debug" value="$(arg debug)" />
-    </include>
-
     <group if="$(arg sim)">
         <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
             <param name="publish_frequency" type="double" value="125.0" />
@@ -80,6 +70,15 @@
                 [/$(arg robot_name)/joint_states]
             </rosparam>
         </node>
+        <include file="$(find myrobot_v2_moveit_config)/launch/move_group.launch">
+            <arg name="controllers_config_file_path" value="$(find myrobot_v2_moveit_config)/config/ros_controllers.yaml"/>
+            <arg name="sensors_config_file_path" value="$(find myrobot_v2_moveit_config)/config/custom_sensors_3d.yaml"/>
+            <arg name="publish_monitored_planning_scene" value="true" />
+            <arg name="allow_trajectory_execution" value="true" />
+            <arg name="fake_execution" value="false" />
+            <arg name="info" value="true" />
+            <arg name="debug" value="$(arg debug)" />
+        </include>
         <include file="$(find myrobot_v2_moveit_config)/launch/gazebo.launch">
             <arg name="paused" value="$(arg paused)" />
             <arg name="gazebo_gui" value="$(arg gazebo_gui)" />
@@ -95,6 +94,15 @@
                 [/$(arg robot_name)/joint_states, /$(arg robot_name)/right_arm/joint_states, /$(arg robot_name)/left_arm/joint_states]
             </rosparam>
         </node>
+        <include file="$(find myrobot_v2_moveit_config)/launch/move_group.launch">
+            <arg name="controllers_config_file_path" value="$(find myrobot_moveit)/config/real_controllers.yaml"/>
+            <arg name="sensors_config_file_path" value="$(find myrobot_v2_moveit_config)/config/custom_sensors_3d.yaml"/>
+            <arg name="publish_monitored_planning_scene" value="true" />
+            <arg name="allow_trajectory_execution" value="true" />
+            <arg name="fake_execution" value="false" />
+            <arg name="info" value="true" />
+            <arg name="debug" value="$(arg debug)" />
+        </include>
         <include file="$(find myrobot_moveit)/launch/custom_denso_robot_control.launch">
             <arg name="robot_name" value="$(arg robot_name)" />
             <arg name="ip_address_cart" value="$(arg ip_address_cart)" />
@@ -111,6 +119,7 @@
             <arg name="camera_serial_no_3" default="$(arg camera_serial_no_3)" />
         </include>
     </group>
+
     
     <group if="$(arg enable_auto_planning)">
         <node name="auto_planner" pkg="myrobot_moveit" type="planning.py" output="screen"/>

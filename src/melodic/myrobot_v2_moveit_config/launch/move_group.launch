@@ -1,5 +1,5 @@
 <launch>
-  <arg name="sim" default="true"/>
+  <arg name="controllers_config_file_path" default="$(find myrobot_v2_moveit_config)/config/ros_controllers.yaml" />
   <arg name="sensors_config_file_path" default="$(find myrobot_v2_moveit_config)/config/sensors_3d.yaml" />
   <!-- GDB Debug Option -->
   <arg name="debug" default="false" />
@@ -54,7 +54,7 @@
 
   <!-- Trajectory Execution Functionality -->
   <include ns="move_group" file="$(find myrobot_v2_moveit_config)/launch/trajectory_execution.launch.xml" if="$(arg allow_trajectory_execution)">
-    <arg name="sim" value="$(arg sim)"/>
+    <arg name="controllers_config_file_path" value="$(arg controllers_config_file_path)"/>
     <arg name="moveit_manage_controllers" value="true" />
     <arg name="moveit_controller_manager" value="myrobot" unless="$(arg fake_execution)"/>
     <arg name="moveit_controller_manager" value="fake" if="$(arg fake_execution)"/>

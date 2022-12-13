@@ -1,5 +1,5 @@
 <launch>
-  <arg name="sim" default="true"/>
+  <arg name="controllers_config_file_path" default="$(find myrobot_v2_moveit_config)/config/ros_controllers.yaml" />
   <!-- This file makes it easy to include the settings for trajectory execution  -->
   <arg name="fake_execution_type" default="interpolate" />
 
