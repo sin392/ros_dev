@@ -55,7 +55,7 @@ class MoveGroupHandler:
         self.current_move_group = self.start_move_group
         self.current_eef_default_pose = self.start_eef_default_pose
         
-    def initialize_current_pose(self, cartesian_mode=False, c_eef_step=0.01, c_jump_threshold=0.0):
+    def initialize_current_pose(self, cartesian_mode=False, c_eef_step=0.01, c_jump_threshold=0.0, wait=True):
         group_name = self.get_current_name()
         target_name = "{}_default".format(group_name)
         target_joint_dict = self.current_move_group.get_named_target_values(target_name)
@@ -64,13 +64,13 @@ class MoveGroupHandler:
             plan, _ = self.current_move_group.compute_cartesian_path(waypoints, c_eef_step, c_jump_threshold)
         else:
             plan = self.current_move_group.plan(target_joint_dict)
-        self.current_move_group.execute(plan)
+        self.current_move_group.execute(plan, wait=wait)
 
-    def initialize_whole_pose(self):
+    def initialize_whole_pose(self, wait=True):
         target_name = "{}_default".format(self.whole_name)
         target_joint_dict = self.whole_move_group.get_named_target_values(target_name)
         plan = self.whole_move_group.plan(target_joint_dict)
-        self.whole_move_group.execute(plan)
+        self.whole_move_group.execute(plan, wait=wait)
 
 
     def plan(self, joints={}, is_degree=False, **kwargs):
@@ -282,7 +282,6 @@ class Myrobot:
         print("z: {}".format(z))
         obj_position_vector = Vector3(obj_position_point.x, obj_position_point.y, z)
         # TODO: change grsp frame_id from "base_link" to each hand frame
-
         arm_index = self.select_arm(obj_position_vector.y)
         finger_joints = ["left_finger_1_joint"] if arm_index == 0 else ["right_finger_1_joint"] 
         grasps = [Grasp(
