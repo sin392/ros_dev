@@ -16,3 +16,4 @@ outputs/*/**
 !src/melodic/cart*/**
 
 *.pyc
+default_warehouse_mongo_db
