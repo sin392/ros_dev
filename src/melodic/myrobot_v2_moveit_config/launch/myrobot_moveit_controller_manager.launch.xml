@@ -1,5 +1,5 @@
 <launch>
-  <arg name="sim" default="false"/>
+  <arg name="sim" default="true"/>
   
   <!-- Define the controller manager plugin to use for trajectory execution -->
   <param name="moveit_controller_manager" value="moveit_simple_controller_manager/MoveItSimpleControllerManager" />

@@ -1,5 +1,5 @@
 <launch>
-  <arg name="sim" default="false"/>
+  <arg name="sim" default="true"/>
   <!-- GDB Debug Option -->
   <arg name="debug" default="false" />
   <arg unless="$(arg debug)" name="launch_prefix" value="" />
