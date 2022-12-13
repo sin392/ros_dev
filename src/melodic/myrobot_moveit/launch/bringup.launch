@@ -62,9 +62,9 @@
         <arg name="rviz_config" value="$(find myrobot_v2_moveit_config)/launch/moveit.rviz" />
     </include>
 
-    <include file="$(find denso_robot_moveit_config)/launch/default_warehouse_db.launch" if="$(arg db)">
+    <include file="$(find myrobot_v2_moveit_config)/launch/default_warehouse_db.launch" if="$(arg db)">
         <arg name="moveit_warehouse_database_path" value="$(arg db_path)"/>
-    </include>
+      </include>
 
     <group if="$(arg sim)">
         <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
