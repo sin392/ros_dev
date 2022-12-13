@@ -3,7 +3,7 @@
 
 import sys
 import math
-from random import randint
+import numpy as np
 import rospy
 from std_msgs.msg import Header
 import moveit_commander as mc
@@ -376,30 +376,38 @@ if __name__ == "__main__":
         if len(objects) == 0:
             continue
 
-        target_index = randint(0, len(objects) - 1)
-        obj = objects[target_index]
-        obj_name = "object_{}".format(len(registered_objects))
+        scores = [obj.score for obj in objects]
+        ordered_indexes = np.argsort(scores)[::-1] # 降順
+        for target_index in ordered_indexes:
+            obj = objects[target_index]
+            obj_name = "object_{}".format(len(registered_objects))
 
-        # add object
-        obj_pose = obj.center_pose
-        # obj_pose.pose.position.z -= obj.length_to_center / 2
-        obj_pose.pose.orientation = Quaternion()
-        insert_depth = obj.length_to_center
-        myrobot.scene_handler.add_cylinder(obj_name, obj_pose, height=insert_depth, radius=obj.long_radius)
-        myrobot.scene_handler.update_octomap()
-        
-        # pick
-        print("start pick")
-        # TODO: pull up arm index computation from pick
-        res, arm_index = myrobot.pick(obj_name, obj, pre_move=False,
-                     approach_desired_distance=insert_depth * 2,
-                     retreat_desired_distance=insert_depth * 2,
-                     approach_min_distance=insert_depth * 1.2,
-                     retreat_min_distance= insert_depth * 1.2
-        )
-        print(res)
-        # print("start place")
-        # res = myrobot.place(arm_index, obj_name)
+            # add object
+            obj_pose = obj.center_pose
+            # obj_pose.pose.position.z -= obj.length_to_center / 2
+            obj_pose.pose.orientation = Quaternion()
+            insert_depth = obj.length_to_center
+            myrobot.scene_handler.add_cylinder(obj_name, obj_pose, height=insert_depth, radius=obj.long_radius)
+            myrobot.scene_handler.update_octomap()
+            
+            # pick
+            rospy.loginfo("try toc pick {}-th object | score: {}".format(target_index, obj.score))
+            # TODO: pull up arm index computation from pick
+            res, arm_index = myrobot.pick(obj_name, obj, pre_move=False,
+                        approach_desired_distance=insert_depth * 2,
+                        retreat_desired_distance=insert_depth * 2,
+                        approach_min_distance=insert_depth * 1.2,
+                        retreat_min_distance= insert_depth * 1.2
+            )
+            # print("start place")
+            # res = myrobot.place(arm_index, obj_name)
+
+            rospy.loginfo("picking result for the {}-th object: {}".format(target_index, res))
+            if res:
+                # pick & placeが成功したら
+                break
+            else:
+                myrobot.scene_handler.remove_world_object(obj_name)
 
         print("will initialize")
         myrobot.initialize_current_pose(cartesian_mode=True)
