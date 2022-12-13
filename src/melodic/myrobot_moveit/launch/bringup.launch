@@ -32,6 +32,7 @@
     <arg name="fps" default="1"/>
     <arg name="wait_server" default="true" />
     <arg name="use_constraint" default="false" />
+    <arg name="grasp_only" default="false" />
 
     <arg name="enable_auto_planning" default="true" />
 
@@ -39,6 +40,7 @@
     <rosparam param="sensors" subst_value="true">$(arg sensors)</rosparam>
     <param name="wait_server" value="$(arg wait_server)"/>
     <param name="use_constraint" value="$(arg use_constraint)"/>
+    <param name="grasp_only" value="$(arg grasp_only)"/>
 
     <param name="image_topic" value="/$(arg robot_name)/left_camera/color/image_raw" />
     <param name="depth_topic" value="/$(arg robot_name)/left_camera/aligned_depth_to_color/image_raw" />
