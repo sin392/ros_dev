@@ -103,7 +103,7 @@ class MoveGroupHandler:
             plan, _ = self.current_move_group.compute_cartesian_path(waypoints, c_eef_step, c_jump_threshold)
             self.execute(plan, wait=True)
         
-        return self.current_move_group.pick(object_name, grasps)
+        return bool(self.current_move_group.pick(object_name, grasps))
 
     def place(self, object_name, locations):
         return self.current_move_group.place(object_name, locations)
@@ -295,7 +295,6 @@ class Myrobot:
             allowed_touch_objects=[object_name]
         )  for angle in object_msg.angles]
         res = self.mv_handler.pick(object_name, grasps, pre_move, c_eef_step, c_jump_threshold)
-        print("pick res: {}".format(res))
         return res, arm_index
 
     def place(self, arm_index, object_name, approach_desired_distance=0.05, approach_min_distance=0.01, retreat_desired_distance=0.05, retreat_min_distance=0.01):
@@ -391,7 +390,7 @@ if __name__ == "__main__":
             myrobot.scene_handler.update_octomap()
             
             # pick
-            rospy.loginfo("try toc pick {}-th object | score: {}".format(target_index, obj.score))
+            print("try toc pick {}-th object | score: {}".format(target_index, obj.score))
             # TODO: pull up arm index computation from pick
             res, arm_index = myrobot.pick(obj_name, obj, pre_move=False,
                         approach_desired_distance=insert_depth * 2,
@@ -402,7 +401,7 @@ if __name__ == "__main__":
             # print("start place")
             # res = myrobot.place(arm_index, obj_name)
 
-            rospy.loginfo("picking result for the {}-th object: {}".format(target_index, res))
+            print("picking result for the {}-th object: {}".format(target_index, res))
             if res:
                 # pick & placeが成功したら
                 break
