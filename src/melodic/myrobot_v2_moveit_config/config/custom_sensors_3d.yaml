@@ -5,20 +5,20 @@ sensors:
     point_cloud_topic: /myrobot/body_camera/depth/color/republished_points
     max_update_rate: 1
     max_range: 5.0
-    padding_offset: 0.3
+    padding_offset: 0.2
     padding_scale: 1
     point_subsample: 5
   - sensor_plugin: occupancy_map_monitor/PointCloudOctomapUpdater
     point_cloud_topic: /myrobot/left_camera/depth/color/republished_points
     max_update_rate: 1
     max_range: 3.0
-    padding_offset: 0.3
+    padding_offset: 0.2
     padding_scale: 1
     point_subsample: 5
   - sensor_plugin: occupancy_map_monitor/PointCloudOctomapUpdater
     point_cloud_topic: /myrobot/right_camera/depth/color/republished_points
     max_update_rate: 1
     max_range: 3.0
-    padding_offset: 0.3
+    padding_offset: 0.2
     padding_scale: 1
     point_subsample: 5
