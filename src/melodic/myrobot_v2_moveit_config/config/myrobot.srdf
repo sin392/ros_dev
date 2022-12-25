@@ -237,13 +237,14 @@
     <disable_collisions link1="body" link2="right_sholder" reason="Adjacent" />
     <disable_collisions link1="body_camera_link" link2="cart" reason="Never" />
     <disable_collisions link1="body_camera_link" link2="left_J1" reason="Never" />
-    <disable_collisions link1="body_camera_link" link2="left_J2" reason="Never" />
     <disable_collisions link1="body_camera_link" link2="left_base_link" reason="Never" />
     <disable_collisions link1="body_camera_link" link2="left_camera_link" reason="Never" />
     <disable_collisions link1="body_camera_link" link2="left_sholder" reason="Never" />
     <disable_collisions link1="body_camera_link" link2="right_J1" reason="Never" />
     <disable_collisions link1="body_camera_link" link2="right_J2" reason="Never" />
+    <disable_collisions link1="body_camera_link" link2="right_J6" reason="Never" />
     <disable_collisions link1="body_camera_link" link2="right_base_link" reason="Never" />
+    <disable_collisions link1="body_camera_link" link2="right_camera_link" reason="Never" />
     <disable_collisions link1="body_camera_link" link2="right_sholder" reason="Never" />
     <disable_collisions link1="cart" link2="left_J2" reason="Default" />
     <disable_collisions link1="cart" link2="left_J3" reason="Default" />
@@ -264,26 +265,34 @@
     <disable_collisions link1="left_J2" link2="left_J5" reason="Never" />
     <disable_collisions link1="left_J2" link2="left_J6" reason="Never" />
     <disable_collisions link1="left_J2" link2="left_base_link" reason="Never" />
+    <disable_collisions link1="left_J2" link2="left_hand_joint" reason="Never" />
     <disable_collisions link1="left_J2" link2="left_sholder" reason="Never" />
     <disable_collisions link1="left_J3" link2="left_J4" reason="Adjacent" />
     <disable_collisions link1="left_J3" link2="left_J5" reason="Never" />
     <disable_collisions link1="left_J3" link2="left_J6" reason="Never" />
     <disable_collisions link1="left_J3" link2="left_camera_link" reason="Never" />
+    <disable_collisions link1="left_J3" link2="left_hand_joint" reason="Never" />
     <disable_collisions link1="left_J3" link2="left_soft_hand_base_link" reason="Never" />
     <disable_collisions link1="left_J4" link2="left_J5" reason="Adjacent" />
     <disable_collisions link1="left_J4" link2="left_J6" reason="Never" />
     <disable_collisions link1="left_J4" link2="left_camera_link" reason="Never" />
+    <disable_collisions link1="left_J4" link2="left_hand_joint" reason="Never" />
     <disable_collisions link1="left_J5" link2="left_J6" reason="Adjacent" />
     <disable_collisions link1="left_J5" link2="left_camera_link" reason="Never" />
+    <disable_collisions link1="left_J5" link2="left_hand_joint" reason="Never" />
     <disable_collisions link1="left_J5" link2="left_soft_hand_base_link" reason="Never" />
     <disable_collisions link1="left_J6" link2="left_camera_link" reason="Never" />
-    <disable_collisions link1="left_J6" link2="left_soft_hand_base_link" reason="Adjacent" />
+    <disable_collisions link1="left_J6" link2="left_hand_joint" reason="Adjacent" />
+    <disable_collisions link1="left_J6" link2="left_soft_hand_base_link" reason="Never" />
+    <disable_collisions link1="left_J6" link2="right_camera_link" reason="Never" />
     <disable_collisions link1="left_base_link" link2="left_sholder" reason="Adjacent" />
     <disable_collisions link1="left_base_link" link2="right_J1" reason="Never" />
     <disable_collisions link1="left_base_link" link2="right_base_link" reason="Never" />
     <disable_collisions link1="left_base_link" link2="right_sholder" reason="Never" />
+    <disable_collisions link1="left_camera_link" link2="left_hand_joint" reason="Never" />
     <disable_collisions link1="left_camera_link" link2="left_soft_hand_base_link" reason="Adjacent" />
-    <disable_collisions link1="left_camera_link" link2="right_J6" reason="Never" />
+    <disable_collisions link1="left_camera_link" link2="right_camera_link" reason="Never" />
+    <disable_collisions link1="left_hand_joint" link2="left_soft_hand_base_link" reason="Adjacent" />
     <disable_collisions link1="left_sholder" link2="right_J1" reason="Never" />
     <disable_collisions link1="left_sholder" link2="right_base_link" reason="Never" />
     <disable_collisions link1="left_sholder" link2="right_sholder" reason="Never" />
@@ -295,20 +304,27 @@
     <disable_collisions link1="right_J2" link2="right_J5" reason="Never" />
     <disable_collisions link1="right_J2" link2="right_J6" reason="Never" />
     <disable_collisions link1="right_J2" link2="right_base_link" reason="Never" />
+    <disable_collisions link1="right_J2" link2="right_hand_joint" reason="Never" />
     <disable_collisions link1="right_J2" link2="right_sholder" reason="Never" />
     <disable_collisions link1="right_J3" link2="right_J4" reason="Adjacent" />
     <disable_collisions link1="right_J3" link2="right_J5" reason="Never" />
     <disable_collisions link1="right_J3" link2="right_J6" reason="Never" />
     <disable_collisions link1="right_J3" link2="right_camera_link" reason="Never" />
+    <disable_collisions link1="right_J3" link2="right_hand_joint" reason="Never" />
     <disable_collisions link1="right_J3" link2="right_soft_hand_base_link" reason="Never" />
     <disable_collisions link1="right_J4" link2="right_J5" reason="Adjacent" />
     <disable_collisions link1="right_J4" link2="right_J6" reason="Never" />
     <disable_collisions link1="right_J4" link2="right_camera_link" reason="Never" />
+    <disable_collisions link1="right_J4" link2="right_hand_joint" reason="Never" />
     <disable_collisions link1="right_J5" link2="right_J6" reason="Adjacent" />
     <disable_collisions link1="right_J5" link2="right_camera_link" reason="Never" />
+    <disable_collisions link1="right_J5" link2="right_hand_joint" reason="Never" />
     <disable_collisions link1="right_J5" link2="right_soft_hand_base_link" reason="Never" />
     <disable_collisions link1="right_J6" link2="right_camera_link" reason="Never" />
-    <disable_collisions link1="right_J6" link2="right_soft_hand_base_link" reason="Adjacent" />
+    <disable_collisions link1="right_J6" link2="right_hand_joint" reason="Adjacent" />
+    <disable_collisions link1="right_J6" link2="right_soft_hand_base_link" reason="Never" />
     <disable_collisions link1="right_base_link" link2="right_sholder" reason="Adjacent" />
+    <disable_collisions link1="right_camera_link" link2="right_hand_joint" reason="Never" />
     <disable_collisions link1="right_camera_link" link2="right_soft_hand_base_link" reason="Adjacent" />
+    <disable_collisions link1="right_hand_joint" link2="right_soft_hand_base_link" reason="Adjacent" />
 </robot>
