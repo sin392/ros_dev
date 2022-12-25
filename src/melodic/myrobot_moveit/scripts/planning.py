@@ -10,6 +10,7 @@ import moveit_commander as mc
 from moveit_msgs.msg import Grasp as BaseGrasp, PlaceLocation as BasePlaceLocation, Constraints, OrientationConstraint
 from grasp_detection_client import GraspDetectionClient
 from geometry_msgs.msg import Vector3, Quaternion, PoseStamped, Pose
+from sensor_msgs.msg import Image
 from trajectory_msgs.msg import JointTrajectoryPoint
 from tf.transformations import quaternion_from_euler
 
@@ -98,7 +99,7 @@ class MoveGroupHandler:
             apploach_desired_distance = grasps[0].pre_grasp_approach.desired_distance
             pre_pose.position.x = grasp_position.x
             pre_pose.position.y = grasp_position.y
-            pre_pose.position.y = apploach_desired_distance
+            pre_pose.position.z =  grasp_position.z + apploach_desired_distance * 1.5
             waypoints = [pre_pose]
             plan, _ = self.current_move_group.compute_cartesian_path(waypoints, c_eef_step, c_jump_threshold)
             self.execute(plan, wait=True)
@@ -197,12 +198,12 @@ class Myrobot:
 
         # constraints
         if use_constraint:
-            # constraint_rpy = (0, math.pi, math.pi / 4) # TODO: compute z from finger property (now 45 for 4 fingers)
-            constraint_rpy = (0, math.pi, 0) # TODO: compute z from finger property (now 45 for 4 fingers)
+            constraint_rpy = (0, math.pi, math.pi / 4) # TODO: compute z from finger property (now 45 for 4 fingers)
             constraint_xyz_tolerance = (0.05, 0.05, 3.6) # TODO: update this value
-            left_hand_constraint = self._create_constraint("left_hand_constraint", link_name="left_soft_hand_tip", 
+            # constraint_xyz_tolerance = (0.08726, 0.08726, 6.28318) # TODO: update this value
+            left_hand_constraint = self._create_constraint("left_hand_constraint", link_name="left_soft_hand_base_link", 
                                                         rpy=constraint_rpy, xyz_tolerance=constraint_xyz_tolerance)
-            right_hand_constraint = self._create_constraint("right_hand_constraint", link_name="right_soft_hand_tip", 
+            right_hand_constraint = self._create_constraint("right_hand_constraint", link_name="right_soft_hand_base_link", 
                                                         rpy=constraint_rpy, xyz_tolerance=constraint_xyz_tolerance)
         else:
             left_hand_constraint = Constraints()
@@ -273,6 +274,7 @@ class Myrobot:
             self.execute(plan, wait=True)
             rospy.sleep(sleep_time)
             self.scene_handler.update_octomap()
+            rospy.sleep(sleep_time)
 
     def plan(self, joints={}, is_degree=False, **kwargs):
         return self.mv_handler.plan(joints, is_degree, **kwargs)
@@ -290,7 +292,9 @@ class Myrobot:
         obj_position_vector = Vector3(obj_position_point.x, obj_position_point.y, z)
         # TODO: change grsp frame_id from "base_link" to each hand frame
         arm_index = self.select_arm(obj_position_vector.y)
+        # 実機でハンドがない場合はjointsを空にしておく
         finger_joints = ["left_finger_1_joint"] if arm_index == 0 else ["right_finger_1_joint"] 
+        # finger_joints = []
         grasps = [Grasp(
             position=obj_position_vector,
             rpy=(math.pi, 0, Angle.deg_to_rad(angle)),
@@ -360,7 +364,7 @@ if __name__ == "__main__":
     fps = rospy.get_param("fps", default=1)
     image_topic = rospy.get_param("image_topic")
     depth_topic = rospy.get_param("depth_topic")
-    sensors = rospy.get_param("sensors", default=("body_camera", "left_camera", "right_camera"))
+    sensors = rospy.get_param("sensors", default=("left_camera", "right_camera", "body_camera"))
     grasp_only = rospy.get_param("grasp_only", default="false")
     raw_point_topics = ["/{}/{}/depth/color/points".format(ns, sensor_name) for sensor_name in sensors]
 
@@ -368,13 +372,17 @@ if __name__ == "__main__":
     use_constraint = rospy.get_param("use_constraint", default=False)
     rospy.loginfo("################################################")
 
+    print("waiting for image topics")
+    rospy.wait_for_message(image_topic, Image)
+    rospy.wait_for_message(depth_topic, Image)
+
     print("initializing instances...")
     myrobot = Myrobot(fps=fps, image_topic=image_topic, depth_topic=depth_topic, raw_point_topics=raw_point_topics, wait=wait, use_constraint=use_constraint, add_ground=True)
     myrobot.info()
     myrobot.initialize_whole_pose()
 
     print("getting around octomap...")
-    myrobot.get_around_octomap(values=[-30, 30, 0], sleep_time=0.3, is_degree=True, should_reset=True)
+    myrobot.get_around_octomap(values=[-30, 30, 0], sleep_time=1.0, is_degree=True, should_reset=True)
 
     print("stating detect flow...")
     registered_objects = []
@@ -401,7 +409,7 @@ if __name__ == "__main__":
             # pick
             print("try toc pick {}-th object | score: {}".format(target_index, obj.score))
             # TODO: pull up arm index computation from pick
-            is_pick_successed, arm_index = myrobot.pick(obj_name, obj, pre_move=False,
+            is_pick_successed, arm_index = myrobot.pick(obj_name, obj, pre_move=True,
                         grasp_quality=obj.score,
                         approach_desired_distance=insert_depth * 2,
                         retreat_desired_distance=insert_depth * 2,
@@ -415,15 +423,13 @@ if __name__ == "__main__":
                 print("try toc place {}-th object".format(target_index))
                 is_place_successed = myrobot.place(arm_index, obj_name)
                 print("place result for the {}-th object: {}".format(target_index, is_place_successed))
+                myrobot.scene_handler.remove_attached_object("")
+                print("will initialize")
+                myrobot.initialize_whole_pose()
                 break
             else:
-                myrobot.scene_handler.remove_world_object(obj_name)
+                print("will initialize")
+                myrobot.initialize_current_pose(cartesian_mode=True)
 
-        myrobot.scene_handler.remove_attached_object("")
         myrobot.scene_handler.remove_world_object(obj_name)
-
-        print("will initialize")
-        myrobot.initialize_whole_pose()
-
-
         myrobot.scene_handler.update_octomap()
