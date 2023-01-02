@@ -5,9 +5,11 @@ import sys
 import math
 import numpy as np
 import rospy
+from actionlib import SimpleActionClient
 from std_msgs.msg import Header
 import moveit_commander as mc
 from moveit_msgs.msg import Grasp as BaseGrasp, PlaceLocation as BasePlaceLocation, Constraints, OrientationConstraint
+from detect.msg import VisualizeTargetAction, VisualizeTargetGoal
 from grasp_detection_client import GraspDetectionClient
 from geometry_msgs.msg import Vector3, Quaternion, PoseStamped, Pose
 from sensor_msgs.msg import Image
@@ -370,6 +372,9 @@ if __name__ == "__main__":
 
     wait = rospy.get_param("wait_server", default=True)
     use_constraint = rospy.get_param("use_constraint", default=False)
+
+    vis_cli = SimpleActionClient("visualize_server_draw_target", VisualizeTargetAction)
+    vis_cli.wait_for_server()
     rospy.loginfo("################################################")
 
     print("waiting for image topics")
@@ -398,6 +403,9 @@ if __name__ == "__main__":
             obj = objects[target_index]
             obj_name = "object_{}".format(len(registered_objects))
 
+            # visualize target
+            vis_cli.send_goal(VisualizeTargetGoal(obj.index))
+            
             # add object
             obj_pose = obj.center_pose
             # obj_pose.pose.position.z -= obj.length_to_center / 2
