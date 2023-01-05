@@ -58,7 +58,7 @@ class MoveGroupHandler:
         self.current_move_group = self.start_move_group
         self.current_eef_default_pose = self.start_eef_default_pose
         
-    def initialize_current_pose(self, cartesian_mode=False, c_eef_step=0.01, c_jump_threshold=0.0, wait=True):
+    def initialize_current_pose(self, cartesian_mode=False, c_eef_step=0.01, c_jump_threshold=0.0, wait=True, plan_only=True):
         group_name = self.get_current_name()
         target_name = "{}_default".format(group_name)
         target_joint_dict = self.current_move_group.get_named_target_values(target_name)
@@ -67,13 +67,17 @@ class MoveGroupHandler:
             plan, _ = self.current_move_group.compute_cartesian_path(waypoints, c_eef_step, c_jump_threshold)
         else:
             plan = self.current_move_group.plan(target_joint_dict)
-        self.current_move_group.execute(plan, wait=wait)
+        if not plan_only:
+            self.current_move_group.execute(plan, wait=wait)
+        return plan
 
-    def initialize_whole_pose(self, wait=True):
+    def initialize_whole_pose(self, wait=True, plan_only=False):
         target_name = "{}_default".format(self.whole_name)
         target_joint_dict = self.whole_move_group.get_named_target_values(target_name)
         plan = self.whole_move_group.plan(target_joint_dict)
-        self.whole_move_group.execute(plan, wait=wait)
+        if not plan_only:
+            self.whole_move_group.execute(plan, wait=wait)
+        return plan
 
 
     def plan(self, joints={}, is_degree=False, **kwargs):
@@ -111,8 +115,11 @@ class MoveGroupHandler:
         
         return bool(self.current_move_group.pick(object_name, grasps))
 
-    def place(self, object_name, locations):
-        return self.current_move_group.place(object_name, locations)
+    def place(self, object_name, locations, pre_move=False):
+        if pre_move:
+            self.initialize_current_pose(cartesian_mode=True, wait=True)
+        self.set_current_move_group(self.current_move_group.parent, self.current_eef_default_pose) # tmp             
+        return bool(self.current_move_group.place(object_name, locations))
 
     def get_current_name(self):
         return self.current_move_group.get_name()
@@ -315,11 +322,10 @@ class Myrobot:
         res = self.mv_handler.pick(object_name, grasps, pre_move, c_eef_step, c_jump_threshold)
         return res, arm_index
 
-    def place(self, arm_index, object_name, approach_desired_distance=0.1, approach_min_distance=0.05, retreat_desired_distance=0.01, retreat_min_distance=0.05):
-        self.mv_handler.set_current_move_group(self.mv_handler.current_move_group.parent, self.mv_handler.current_eef_default_pose) # tmp
+    def place(self, arm_index, object_name, approach_desired_distance=0.1, approach_min_distance=0.05, retreat_desired_distance=0.01, retreat_min_distance=0.05, pre_move=False):
         finger_joints = ["left_finger_1_joint"] if arm_index == 0 else ["right_finger_1_joint"]
-        xyz = (0, 1, 0.4)
-        # location = PlaceLocation(xyz=xyz, 
+        place_position = (0, 1, 0.4)
+        # location = PlaceLocation(xyz=place_postion, 
         #                          approach_desired_distance=approach_desired_distance,
         #                          approach_min_distance=approach_min_distance,
         #                          retreat_desired_distance=retreat_desired_distance,
@@ -328,8 +334,8 @@ class Myrobot:
         #                          allowed_touch_objects=[object_name])
         # res = self.mv_handler.place(object_name, [location])
         pose = Pose()
-        pose.position.x, pose.position.y, pose.position.z = xyz
-        res = self.mv_handler.place(object_name, pose)
+        pose.position.x, pose.position.y, pose.position.z = place_position
+        res = self.mv_handler.place(object_name, pose, pre_move)
         return res        
 
     def detect(self):
@@ -436,7 +442,7 @@ if __name__ == "__main__":
             if not grasp_only and is_pick_successed:
                 myrobot.initialize_current_pose(cartesian_mode=True)
                 print("try toc place {}-th object".format(target_index))
-                is_place_successed = myrobot.place(arm_index, obj_name)
+                is_place_successed = myrobot.place(arm_index, obj_name, pre_move=True)
                 print("place result for the {}-th object: {}".format(target_index, is_place_successed))
                 myrobot.scene_handler.remove_attached_object("") 
                 print("will initialize")
