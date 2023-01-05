@@ -103,8 +103,11 @@ class MoveGroupHandler:
             pre_pose.position.y = grasp_position.y
             pre_pose.position.z =  grasp_position.z + apploach_desired_distance * 1.5
             waypoints = [pre_pose]
-            plan, _ = self.current_move_group.compute_cartesian_path(waypoints, c_eef_step, c_jump_threshold)
-            self.execute(plan, wait=True)
+            plan, plan_score = self.current_move_group.compute_cartesian_path(waypoints, c_eef_step, c_jump_threshold)
+            if plan_score == 1:
+                self.execute(plan, wait=True)
+            else:
+                print("pre_move is not completed. grasp will be continued without pre_move.")
         
         return bool(self.current_move_group.pick(object_name, grasps))
 
@@ -419,7 +422,7 @@ if __name__ == "__main__":
             myrobot.scene_handler.update_octomap()
             
             # pick
-            print("try toc pick {}-th object | score: {}".format(target_index, obj.score))
+            print("try to pick {}-th object | score: {}".format(target_index, obj.score))
             # TODO: pull up arm index computation from pick
             is_pick_successed, arm_index = myrobot.pick(obj_name, obj, pre_move=True,
                         grasp_quality=obj.score,
@@ -435,7 +438,7 @@ if __name__ == "__main__":
                 print("try toc place {}-th object".format(target_index))
                 is_place_successed = myrobot.place(arm_index, obj_name)
                 print("place result for the {}-th object: {}".format(target_index, is_place_successed))
-                myrobot.scene_handler.remove_attached_object("")
+                myrobot.scene_handler.remove_attached_object("") 
                 print("will initialize")
                 myrobot.initialize_whole_pose()
                 break
