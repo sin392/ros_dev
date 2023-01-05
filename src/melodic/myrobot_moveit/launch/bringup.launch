@@ -48,6 +48,7 @@
 
     <param name="image_topic" value="/$(arg robot_name)/left_camera/color/image_raw" />
     <param name="depth_topic" value="/$(arg robot_name)/left_camera/aligned_depth_to_color/image_raw" />
+    <param name="points_topic" value="/$(arg robot_name)/left_camera/depth/color/points" />
 
     <!-- remap -->
     <remap from="/joint_states" to="/myrobot/joint_states" />
