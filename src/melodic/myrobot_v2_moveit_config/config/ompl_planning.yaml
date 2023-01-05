@@ -121,7 +121,7 @@ planner_configs:
     dense_delta_fraction: 0.001  # delta fraction for interface detection. default: 0.001
     max_failures: 5000  # maximum consecutive failure limit. default: 5000
 left_arm:
-  default_planner_config: RRTConnect
+  default_planner_config: RRTstar
   planner_configs:
     - SBL
     - EST
@@ -147,7 +147,7 @@ left_arm:
     - SPARS
     - SPARStwo
 right_arm:
-  default_planner_config: RRTConnect
+  default_planner_config: RRTstar
   planner_configs:
     - SBL
     - EST
@@ -223,7 +223,7 @@ right_hand:
     - SPARS
     - SPARStwo
 base:
-  default_planner_config: RRTConnect
+  default_planner_config: RRTstar
   planner_configs:
     - SBL
     - EST
@@ -251,7 +251,7 @@ base:
   projection_evaluator: joints(joint_back,joint_body)
   longest_valid_segment_fraction: 0.005
 body_and_left_arm:
-  default_planner_config: RRTConnect
+  default_planner_config: RRTstar
   planner_configs:
     - SBL
     - EST
@@ -279,7 +279,7 @@ body_and_left_arm:
   projection_evaluator: joints(joint_body,left_joint_sholder)
   longest_valid_segment_fraction: 0.005
 body_and_right_arm:
-  default_planner_config: RRTConnect
+  default_planner_config: RRTstar
   planner_configs:
     - SBL
     - EST
@@ -307,7 +307,7 @@ body_and_right_arm:
   projection_evaluator: joints(joint_body,right_joint_sholder)
   longest_valid_segment_fraction: 0.005
 base_and_left_arm:
-  default_planner_config: RRTConnect
+  default_planner_config: RRTstar
   planner_configs:
     - SBL
     - EST
@@ -335,7 +335,7 @@ base_and_left_arm:
   projection_evaluator: joints(joint_back,joint_body)
   longest_valid_segment_fraction: 0.005
 base_and_right_arm:
-  default_planner_config: RRTConnect
+  default_planner_config: RRTstar
   planner_configs:
     - SBL
     - EST
