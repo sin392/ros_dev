@@ -2,18 +2,21 @@
 import message_filters as mf
 import rospy
 from cv_bridge import CvBridge
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import Image, PointCloud2
 from actionlib import SimpleActionClient
 from detect.msg import GraspDetectionAction, GraspDetectionGoal
 
 # ref: https://qiita.com/ynott/items/8acd03434569e23612f1
 class GraspDetectionClient(SimpleActionClient, object):
-    def __init__(self, fps, image_topic, depth_topic, ns="grasp_detection_server", ActionSpec=GraspDetectionAction, wait=True):
+    def __init__(self, fps, image_topic, depth_topic, points_topic, ns="grasp_detection_server", ActionSpec=GraspDetectionAction, wait=True):
         super(GraspDetectionClient, self).__init__(ns, ActionSpec)
         delay = 1 / fps * 0.5
 
+        # Topics
+        self.points_topic = points_topic
         # Subscribers
         subscribers = [mf.Subscriber(topic, Image) for topic in (image_topic, depth_topic)]
+        subscribers.append(mf.Subscriber(points_topic, PointCloud2))
         # Others
         self.bridge = CvBridge()
         self.request = None
@@ -24,9 +27,11 @@ class GraspDetectionClient(SimpleActionClient, object):
         if wait:
             self.wait_for_server()
 
-    def callback(self, img_msg, depth_msg):
+    # def callback(self, img_msg, depth_msg):
+    def callback(self, img_msg, depth_msg, points_msg):
         try:
-            self.request = GraspDetectionGoal(img_msg, depth_msg)
+            # points_msg = rospy.wait_for_message(self.points_topic, PointCloud2)
+            self.request = GraspDetectionGoal(img_msg, depth_msg, points_msg)
         except Exception as err:
             rospy.logerr(err)
 
@@ -46,11 +51,13 @@ if __name__ == "__main__":
     fps = rospy.get_param("fps")
     image_topic = rospy.get_param("image_topic")
     depth_topic = rospy.get_param("depth_topic")
+    points_topic = rospy.get_param("points_topic")
 
     cli = GraspDetectionClient(
         fps=fps,
         image_topic=image_topic,
         depth_topic=depth_topic,
+        points_topic=points_topic,
     )
 
     rate = rospy.Rate(1)

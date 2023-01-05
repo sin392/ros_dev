@@ -192,7 +192,7 @@ class PlaceLocation(BasePlaceLocation):
 
 
 class Myrobot:
-    def __init__(self, fps, image_topic, depth_topic, raw_point_topics, wait = True, use_constraint = False, add_ground = True):
+    def __init__(self, fps, image_topic, depth_topic, points_topic, raw_point_topics, wait = True, use_constraint = False, add_ground = True):
         mc.roscpp_initialize(sys.argv)
 
         self.robot = mc.RobotCommander()
@@ -240,6 +240,7 @@ class Myrobot:
             fps=fps, 
             image_topic=image_topic, 
             depth_topic=depth_topic,
+            points_topic=points_topic,
             wait=wait
         )
 
@@ -366,6 +367,7 @@ if __name__ == "__main__":
     fps = rospy.get_param("fps", default=1)
     image_topic = rospy.get_param("image_topic")
     depth_topic = rospy.get_param("depth_topic")
+    points_topic = rospy.get_param("points_topic")
     sensors = rospy.get_param("sensors", default=("left_camera", "right_camera", "body_camera"))
     grasp_only = rospy.get_param("grasp_only", default="false")
     raw_point_topics = ["/{}/{}/depth/color/points".format(ns, sensor_name) for sensor_name in sensors]
@@ -382,7 +384,8 @@ if __name__ == "__main__":
     rospy.wait_for_message(depth_topic, Image)
 
     print("initializing instances...")
-    myrobot = Myrobot(fps=fps, image_topic=image_topic, depth_topic=depth_topic, raw_point_topics=raw_point_topics, wait=wait, use_constraint=use_constraint, add_ground=True)
+    myrobot = Myrobot(fps=fps, image_topic=image_topic, depth_topic=depth_topic, points_topic=points_topic, 
+                      raw_point_topics=raw_point_topics, wait=wait, use_constraint=use_constraint, add_ground=True)
     myrobot.info()
     myrobot.initialize_whole_pose()
 
@@ -392,6 +395,7 @@ if __name__ == "__main__":
     print("stating detect flow...")
     registered_objects = []
     while not rospy.is_shutdown():
+        rospy.sleep(0.1)
         objects = myrobot.detect()
         print("objects: {}".format(len(objects)))
         if len(objects) == 0:
