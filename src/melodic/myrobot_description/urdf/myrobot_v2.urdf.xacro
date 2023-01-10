@@ -135,7 +135,8 @@
     </link>
     <xacro:arm_with_soft_hand prefix="${prefix_1}" parent="${prefix_1}_sholder" arm_xyz="${sholder_sx / 2} 0 -${sholder_sz / 2 + 0.02}" arm_rpy="${radians(-90)} 0 ${radians(-90)}" hand_rpy="0 0 ${radians(135)}" />
     <!-- right camera -->
-    <xacro:d435 prefix="${prefix_1}" parent="${prefix_1}_soft_hand_base_link" xyz="0 0 ${0.145 + 0.04}" rpy="${radians(45)} ${radians(-90)} 0" camera_xyz="0 0 -0.0125" publish_pointcloud="true" />
+    <!-- <xacro:d435 prefix="${prefix_1}" parent="${prefix_1}_soft_hand_base_link" xyz="0 0 ${0.145 + 0.04}" rpy="${radians(45)} ${radians(-90)} 0" camera_xyz="0 0 -0.0125" publish_pointcloud="true" /> -->
+    <xacro:d435 prefix="${prefix_1}" parent="${prefix_1}_hand_joint" xyz="0 0 0.012" rpy="0 0 0" camera_xyz="-0.0125 0 0.185" camera_rpy="0 ${radians(-90)} ${radians(180)}" publish_pointcloud="true" />
 
     <!-- left arm -->
     <xacro:a_joint name="${prefix_2}_joint_sholder" type="revolute" axis="0 0 -1" parent="body" child="${prefix_2}_sholder" xyz="${body_sx / 2 + body_base_sx} ${body_sy / 2 + body_side_spacer_length} ${body_base_sz - body_side_spacer_radius - body_side_spacer_z_margin}" rpy="${radians(-90)} ${radians(90)} 0" low="-0.01745" up="1.58824" />
@@ -146,6 +147,6 @@
     <xacro:arm_with_soft_hand prefix="${prefix_2}" parent="${prefix_2}_sholder" arm_xyz="${sholder_sx / 2} 0 ${sholder_sz / 2 + 0.02}" arm_rpy="${radians(-90)} 0 ${radians(-90)}" hand_rpy="0 0 ${radians(-135)}" />
     <!-- left camera -->
     <!-- TODO: update camera direction (needs image flip) -->
-    <!-- <xacro:d435 prefix="${prefix_2}" parent="${prefix_2}_soft_hand_base_link" xyz="0 0 0.17" rpy="${radians(135)} ${radians(-90)} 0" camera_xyz="0 0 -0.0125" publish_pointcloud="true" /> -->
-    <xacro:d435 prefix="${prefix_2}" parent="${prefix_2}_soft_hand_base_link" xyz="0 0 ${0.145 + 0.04}" rpy="${radians(-45)} ${radians(-90)} 0" camera_xyz="0 0 -0.0125" publish_pointcloud="true" />
+    <!-- <xacro:d435 prefix="${prefix_2}" parent="${prefix_2}_soft_hand_base_link" xyz="0 0 {0.145 + 0.04}" rpy="${radians(135)} ${radians(-90)} 0" camera_xyz="0 0 -0.0125" publish_pointcloud="true" /> -->
+    <xacro:d435 prefix="${prefix_2}" parent="${prefix_2}_hand_joint" xyz="0 0 0.012" rpy="0 0 0" camera_xyz="-0.0125 0 0.185" camera_rpy="0 ${radians(-90)} ${radians(180)}" publish_pointcloud="true" />
 </robot>
