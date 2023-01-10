@@ -17,9 +17,10 @@
         <xacro:vs087 prefix="${prefix}" />
         <xacro:f_joint name="${prefix}_joint_hand_joint" xyz="0 0 0" parent="${prefix}_J6" child="${prefix}_hand_joint" />
         <link name="${prefix}_hand_joint">
-            <xacro:_cylinder xyz="0 0 0.02375" rpy="0 0 0" radius="0.0475" length="0.012" color="white" />
+            <xacro:_cylinder xyz="0 0 0" rpy="0 0 0" radius="0.0475" length="0.012" color="white" />
         </link>
-        <xacro:soft_hand prefix="${prefix}" connected_to="${prefix}_hand_joint" xyz="${hand_xyz}" rpy="${hand_rpy}" />
+        <!-- <xacro:soft_hand prefix="${prefix}" connected_to="${prefix}_hand_joint" xyz="${hand_xyz}" rpy="${hand_rpy}" /> -->
+        <xacro:soft_hand prefix="${prefix}" connected_to="${prefix}_hand_joint" xyz="0 0 0" rpy="${hand_rpy}" />
         <!-- virtual tip -->
         <xacro:f_joint name="${prefix}_joint_tip" xyz="0 0 0.3425" parent="${prefix}_soft_hand_base_link" child="${prefix}_soft_hand_tip" />
         <link name="${prefix}_soft_hand_tip" />
