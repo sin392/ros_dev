@@ -11,7 +11,7 @@
                 <arg name="time" value="1" />
                 <arg name="pkg" value="realsense2_camera" />
                 <arg name="file" value="rs_camera.launch" />
-                <arg name="value" value="serial_no:=$(arg camera_serial_no_1) camera:=left_camera align_depth:=true filters:=spatial,temporal,pointcloud" />
+                <arg name="value" value="serial_no:=$(arg camera_serial_no_1) camera:=left_camera align_depth:=true filters:=decimation,spatial,temporal,hole_filling,pointcloud" />
             </include>
         </group>
         <group if="$(eval camera_serial_no_2 != '')">
@@ -19,7 +19,7 @@
                 <arg name="time" value="2" />
                 <arg name="pkg" value="realsense2_camera" />
                 <arg name="file" value="rs_camera.launch" />
-                <arg name="value" value="serial_no:=$(arg camera_serial_no_2) camera:=right_camera align_depth:=true filters:=spatial,temporal,pointcloud" />
+                <arg name="value" value="serial_no:=$(arg camera_serial_no_2) camera:=right_camera align_depth:=true filters:=decimation,spatial,temporal,hole_filling,pointcloud" />
             </include>
         </group>
         <group if="$(eval camera_serial_no_3 != '')">
@@ -27,7 +27,7 @@
                 <arg name="time" value="3" />
                 <arg name="pkg" value="realsense2_camera" />
                 <arg name="file" value="rs_camera.launch" />
-                <arg name="value" value="serial_no:=$(arg camera_serial_no_3) camera:=body_camera align_depth:=true filters:=spatial,temporal,pointcloud" />
+                <arg name="value" value="serial_no:=$(arg camera_serial_no_3) camera:=body_camera align_depth:=true filters:=decimation,spatial,temporal,hole_filling,pointcloud" />
             </include>
         </group>
     </group>
