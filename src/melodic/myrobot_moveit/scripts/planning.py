@@ -236,7 +236,7 @@ class Myrobot:
 
         box_pose = PoseStamped()
         box_pose.header.frame_id = "world"
-        box_pose.pose.position =Vector3(0, 1, 0)
+        box_pose.pose.position =Vector3(0, 1, 0.1)
         q = quaternion_from_euler(0.0, 0.0, 0.0)
         box_pose.pose.orientation = Quaternion(x=q[0], y=q[1], z=q[2], w=q[3])
         self.scene_handler.add_box("table", box_pose, size=(0.5, 0.5, 0.2))
