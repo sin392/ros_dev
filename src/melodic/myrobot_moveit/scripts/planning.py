@@ -384,20 +384,24 @@ if __name__ == "__main__":
     wait = rospy.get_param("wait_server", default=True)
     use_constraint = rospy.get_param("use_constraint", default=False)
 
-    vis_cli = SimpleActionClient("visualize_server_draw_target", VisualizeTargetAction)
-    vis_cli.wait_for_server()
     rospy.loginfo("################################################")
 
     print("waiting for image topics")
     rospy.wait_for_message(image_topic, Image)
     rospy.wait_for_message(depth_topic, Image)
 
+
     print("initializing instances...")
     myrobot = Myrobot(fps=fps, image_topic=image_topic, depth_topic=depth_topic, points_topic=points_topic, 
                       raw_point_topics=raw_point_topics, wait=wait, use_constraint=use_constraint, add_ground=True)
     myrobot.info()
-    myrobot.initialize_whole_pose()
 
+    print("waiting for visualize server")
+    vis_cli = SimpleActionClient("visualize_server_draw_target", VisualizeTargetAction)
+    vis_cli.wait_for_server()
+
+    print("initializing pose...")
+    myrobot.initialize_whole_pose()
     print("getting around octomap...")
     myrobot.get_around_octomap(values=[-30, 30, 0], sleep_time=1.0, is_degree=True, should_reset=True)
 
