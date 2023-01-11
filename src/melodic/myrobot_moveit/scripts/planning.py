@@ -378,6 +378,7 @@ if __name__ == "__main__":
 
     wait = rospy.get_param("wait_server", default=True)
     use_constraint = rospy.get_param("use_constraint", default=False)
+    pre_move = rospy.get_param("pre_move", default=True)
 
     rospy.loginfo("################################################")
 
@@ -429,7 +430,7 @@ if __name__ == "__main__":
             # pick
             print("try to pick {}-th object | score: {}".format(target_index, obj.score))
             # TODO: pull up arm index computation from pick
-            is_pick_successed, arm_index = myrobot.pick(obj_name, obj, pre_move=True,
+            is_pick_successed, arm_index = myrobot.pick(obj_name, obj, pre_move=pre_move,
                         grasp_quality=obj.score,
                         approach_desired_distance=insert_depth * 2,
                         retreat_desired_distance=insert_depth * 2,
@@ -441,7 +442,7 @@ if __name__ == "__main__":
             if not grasp_only and is_pick_successed:
                 myrobot.initialize_current_pose(cartesian_mode=True)
                 print("try toc place {}-th object".format(target_index))
-                is_place_successed = myrobot.place(arm_index, obj_name, pre_move=True)
+                is_place_successed = myrobot.place(arm_index, obj_name, pre_move=pre_move)
                 print("place result for the {}-th object: {}".format(target_index, is_place_successed))
                 myrobot.scene_handler.remove_attached_object("") 
                 print("will initialize")
