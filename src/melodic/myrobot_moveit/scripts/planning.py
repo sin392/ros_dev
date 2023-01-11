@@ -18,13 +18,6 @@ from tf.transformations import quaternion_from_euler
 
 from octomap_handler import OctomapHandler
 
-class Angle:
-    deg_to_rad_ratio = math.pi / 180
-
-    @classmethod
-    def deg_to_rad(cls, degree):
-        return cls.deg_to_rad_ratio * degree
-
 class MoveGroup(mc.MoveGroupCommander):
     def __init__(self, name, parent=None, constraint=Constraints()):
         super(MoveGroup, self).__init__(name)
@@ -87,7 +80,7 @@ class MoveGroupHandler:
         new_joints = joints
         new_joints.update(kwargs)
         if is_degree:
-            new_joints = { k:Angle.deg_to_rad(v)  for k,v in new_joints.items()}
+            new_joints = { k:np.radians(v)  for k,v in new_joints.items()}
 
         merged_joints = self.whole_move_group.get_current_joint_dict()
         merged_joints.update(new_joints)
@@ -312,7 +305,7 @@ class Myrobot:
         # finger_joints = []
         grasps = [Grasp(
             position=obj_position_vector,
-            rpy=(math.pi, 0, Angle.deg_to_rad(angle)),
+            rpy=(math.pi, 0, np.radians(object_msg.angle)),
             grasp_quality=grasp_quality,
             approach_desired_distance=approach_desired_distance,
             approach_min_distance=approach_min_distance,
@@ -320,7 +313,7 @@ class Myrobot:
             retreat_min_distance=retreat_min_distance,
             finger_joints=finger_joints,
             allowed_touch_objects=[object_name]
-        )  for angle in object_msg.angles]
+        )]
         res = self.mv_handler.pick(object_name, grasps, pre_move, c_eef_step, c_jump_threshold)
         return res, arm_index
 
