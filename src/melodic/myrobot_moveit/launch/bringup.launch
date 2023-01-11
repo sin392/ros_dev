@@ -21,6 +21,8 @@
 
     <arg name="send_format" default="288" />
     <arg name="recv_format" default="292" />
+    <!-- <arg name="send_format" default="0" />
+    <arg name="recv_format" default="2" /> -->
 
     <arg name="bcap_slave_control_cycle_msec" default="8" />
 
