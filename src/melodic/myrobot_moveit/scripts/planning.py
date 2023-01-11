@@ -421,6 +421,8 @@ if __name__ == "__main__":
         for target_index in ordered_indexes:
             obj = objects[target_index]
             obj_name = "object_{}".format(len(registered_objects))
+            # TMP: ズレの補正
+            obj.center_pose.pose.position.y -= 0.01
 
             # visualize target
             vis_cli.send_goal(VisualizeTargetGoal(obj.index))
