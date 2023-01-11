@@ -393,6 +393,9 @@ if __name__ == "__main__":
     myrobot = Myrobot(fps=fps, image_topic=image_topic, depth_topic=depth_topic, points_topic=points_topic, 
                       raw_point_topics=raw_point_topics, wait=wait, use_constraint=use_constraint, add_ground=True)
     myrobot.info()
+    # hand_radius_mmはdetect側のlaunchで設定しているのでwait後に読み込み
+    hand_radius_mm = rospy.get_param("hand_radius_mm", default="157.5")
+    collision_radius = hand_radius_mm / 1000 * 0.5
 
     print("waiting for visualize server")
     vis_cli = SimpleActionClient("visualize_server_draw_target", VisualizeTargetAction)
@@ -426,7 +429,8 @@ if __name__ == "__main__":
             # obj_pose.pose.position.z -= obj.length_to_center / 2
             obj_pose.pose.orientation = Quaternion()
             insert_depth = obj.length_to_center
-            myrobot.scene_handler.add_cylinder(obj_name, obj_pose, height=insert_depth, radius=obj.long_radius)
+            # TMP: 検出対象の外接矩形の半径からradiusを求めていたが若干精度悪い気がするので一旦固定値にしている
+            myrobot.scene_handler.add_cylinder(obj_name, obj_pose, height=insert_depth, radius=collision_radius)
             myrobot.scene_handler.update_octomap()
             
             # pick
