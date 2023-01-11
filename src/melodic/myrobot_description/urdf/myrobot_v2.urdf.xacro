@@ -119,7 +119,7 @@
     <!-- TODO: デフォルト位置と可動範囲は要調節 -->
     <!-- joint_body is left_J8 (上下移動) -->
     <!-- <xacro:a_joint name="joint_body" type="prismatic" xyz="-${back_base_sx - back_sx - back_spacer_radius} 0 ${back_spacer_length + back_base_sz + body_base_z_margin}" parent="back" child="body" axis="0 0 1" low="-0.001" up="0.495" /> -->
-    <xacro:a_joint name="joint_body" type="prismatic" xyz="-${back_base_sx - back_sx - back_spacer_radius} 0 ${back_spacer_length + back_base_sz + body_base_z_margin}" parent="back" child="body" axis="0 0 1" low="0" up="0.495" />
+    <xacro:a_joint name="joint_body" type="prismatic" xyz="-${back_base_sx - back_sx - back_spacer_radius} 0 ${back_spacer_length + back_base_sz + body_base_z_margin}" parent="back" child="body" axis="0 0 1" low="0" up="0.36" />
     <link name="body">
         <xacro:_box xyz="${body_base_sx / 2} 0 ${body_base_sz / 2}" size="${body_base_sx} ${body_base_sy} ${body_base_sz}" color="green" />
         <!-- <xacro:_box xyz="${body_sx / 2 + body_base_sx} 0 ${(body_sz + body_base_sz) / 2}" size="${body_sx} ${body_sy} ${body_sz}" color="green" /> -->
