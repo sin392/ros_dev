@@ -19,12 +19,13 @@ from tf.transformations import quaternion_from_euler
 from octomap_handler import OctomapHandler
 
 class MoveGroup(mc.MoveGroupCommander):
-    def __init__(self, name, parent=None, constraint=Constraints()):
+    def __init__(self, name, parent=None, constraint=Constraints(), support_surface_name=""):
         super(MoveGroup, self).__init__(name)
         self.constraint = constraint
         self.parent = parent
         # self.next = mc.MoveGroupCommander(next_name)
         self.set_path_constraints(constraint)
+        self.set_support_surface_name(support_surface_name)
 
     def get_current_joint_dict(self):
         return dict(zip(self.get_active_joints(), self.get_current_joint_values()))
@@ -203,6 +204,18 @@ class Myrobot:
         self.robot = mc.RobotCommander()
         self.scene_handler = PlanningSceneHandler(raw_point_topics)
 
+        box_pose = PoseStamped()
+        box_pose.header.frame_id = "world"
+        box_pose.pose.position =Vector3(0, 1, 0.2)
+        q = quaternion_from_euler(0.0, 0.0, 0.0)
+        box_pose.pose.orientation = Quaternion(x=q[0], y=q[1], z=q[2], w=q[3])
+        support_surface_name = "table"
+        self.scene_handler.add_box(support_surface_name, box_pose, size=(0.5, 0.5, 0.4))
+        if add_ground:
+            plane_pose = PoseStamped()
+            plane_pose.header.frame_id = "world"
+            self.scene_handler.add_plane("ground plane", plane_pose)    
+
         # constraints
         if use_constraint:
             constraint_rpy = (0, math.pi, math.pi / 4) # TODO: compute z from finger property (now 45 for 4 fingers)
@@ -217,30 +230,18 @@ class Myrobot:
             right_hand_constraint = Constraints()
 
         # left groups
-        mv_base_to_left_arm = MoveGroup("base_and_left_arm", constraint=left_hand_constraint)
-        mv_body_to_left_arm = MoveGroup("body_and_left_arm", parent=mv_base_to_left_arm, constraint=left_hand_constraint)
+        mv_base_to_left_arm = MoveGroup("base_and_left_arm", constraint=left_hand_constraint, support_surface_name=support_surface_name)
+        mv_body_to_left_arm = MoveGroup("body_and_left_arm", parent=mv_base_to_left_arm, constraint=left_hand_constraint, support_surface_name=support_surface_name)
         # mv_left_arm = MoveGroup("left_arm", parent=mv_body_to_left_arm, constraint=constraint)
         # right groups
-        mv_base_to_right_arm = MoveGroup("base_and_right_arm", constraint=right_hand_constraint)
-        mv_body_to_right_arm = MoveGroup("body_and_right_arm", parent=mv_base_to_right_arm, constraint=right_hand_constraint)
+        mv_base_to_right_arm = MoveGroup("base_and_right_arm", constraint=right_hand_constraint, support_surface_name=support_surface_name)
+        mv_body_to_right_arm = MoveGroup("body_and_right_arm", parent=mv_base_to_right_arm, constraint=right_hand_constraint, support_surface_name=support_surface_name)
         # mv_right_arm = MoveGroup("right_arm", parent=mv_body_to_right_arm, constraint=constraint)
         # whole group
-        mv_base_to_arms = MoveGroup("base_and_arms")
+        mv_base_to_arms = MoveGroup("base_and_arms", support_surface_name=support_surface_name)
 
         self.mv_handler = MoveGroupHandler(mv_body_to_left_arm, mv_body_to_right_arm, mv_body_to_left_arm, mv_base_to_arms)
 
-        box_pose = PoseStamped()
-        box_pose.header.frame_id = "world"
-        box_pose.pose.position =Vector3(0, 1, 0.1)
-        q = quaternion_from_euler(0.0, 0.0, 0.0)
-        box_pose.pose.orientation = Quaternion(x=q[0], y=q[1], z=q[2], w=q[3])
-        self.scene_handler.add_box("table", box_pose, size=(0.5, 0.5, 0.2))
-
-        if add_ground:
-            plane_pose = PoseStamped()
-            plane_pose.header.frame_id = "world"
-            self.scene_handler.add_plane("ground plane", plane_pose)
-            
         self.gd_cli = GraspDetectionClient( 
             fps=fps, 
             image_topic=image_topic, 
