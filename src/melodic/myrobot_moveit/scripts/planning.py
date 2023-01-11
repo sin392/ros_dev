@@ -300,9 +300,9 @@ class Myrobot:
         obj_position_vector = Vector3(obj_position_point.x, obj_position_point.y, z)
         # TODO: change grsp frame_id from "base_link" to each hand frame
         arm_index = self.select_arm(obj_position_vector.y)
-        # 実機でハンドがない場合はjointsを空にしておく
-        finger_joints = ["left_finger_1_joint"] if arm_index == 0 else ["right_finger_1_joint"] 
-        # finger_joints = []
+        # TMP: active jointでないといけない & 実機で存在しない関節を指定するとエラー & 空だとretreatが機能しない -> アームの関節を指定
+        # finger_joints = ["left_finger_1_joint"] if arm_index == 0 else ["right_finger_1_joint"] 
+        finger_joints = ["left_joint_6"] if arm_index == 0 else ["right_joint_6"] 
         grasps = [Grasp(
             position=obj_position_vector,
             rpy=(math.pi, 0, np.radians(object_msg.angle)),
@@ -318,7 +318,9 @@ class Myrobot:
         return res, arm_index
 
     def place(self, arm_index, object_name, approach_desired_distance=0.1, approach_min_distance=0.05, retreat_desired_distance=0.01, retreat_min_distance=0.05, pre_move=False):
-        finger_joints = ["left_finger_1_joint"] if arm_index == 0 else ["right_finger_1_joint"]
+        # TMP: active jointでないといけない & 実機で存在しない関節を指定するとエラー & 空だとretreatが機能しない -> アームの関節を指定
+        # finger_joints = ["left_finger_1_joint"] if arm_index == 0 else ["right_finger_1_joint"] 
+        finger_joints = ["left_joint_6"] if arm_index == 0 else ["right_joint_6"]         
         place_position = (0, 1, 0.4)
         # location = PlaceLocation(xyz=place_postion, 
         #                          approach_desired_distance=approach_desired_distance,
