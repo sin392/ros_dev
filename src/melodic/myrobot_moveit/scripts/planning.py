@@ -60,7 +60,8 @@ class MoveGroupHandler:
         
     def initialize_current_pose(self, cartesian_mode=False, c_eef_step=0.01, c_jump_threshold=0.0, wait=True, plan_only=True):
         group_name = self.get_current_name()
-        target_name = "{}_default".format(group_name)
+        # target_name = "{}_default".format(group_name)
+        target_name = "{}_start".format(group_name)
         target_joint_dict = self.current_move_group.get_named_target_values(target_name)
         if cartesian_mode:
             waypoints = [self.current_eef_default_pose]
@@ -72,7 +73,8 @@ class MoveGroupHandler:
         return plan
 
     def initialize_whole_pose(self, wait=True, plan_only=False):
-        target_name = "{}_default".format(self.whole_name)
+        # target_name = "{}_default".format(self.whole_name)
+        target_name = "{}_start".format(self.whole_name)
         target_joint_dict = self.whole_move_group.get_named_target_values(target_name)
         plan = self.whole_move_group.plan(target_joint_dict)
         if not plan_only:
